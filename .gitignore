@@ -1,0 +1,19 @@
+# Node.js
+node_modules/
+dist/
+package-lock.json
+
+# MySQL data
+mysql_data/
+mysql_portable/
+
+# Build artifacts
+Frontend/dist/
+Backend/dist/
+
+# Logs
+*.log
+
+# System files
+.DS_Store
+Thumbs.db

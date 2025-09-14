@@ -1,0 +1,52 @@
+{
+  "name": "x_ray_journal",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "client": "npm --prefix client run dev",
+    "server": "npm --prefix server run start",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "electron": "electron .",
+    "start": "npm run electron",
+    "build": "electron-builder"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^4.0.1",
+    "concurrently": "^8.0.1",
+    "electron": "^26.2.0",
+    "electron-builder": "^24.6.0",
+    "electron-rebuild": "^3.2.9"
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "better-sqlite3": "^12.2.0",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.541.0",
+    "mysql2": "^3.14.3",
+    "react-datepicker": "^8.4.0"
+  },
+  "build": {
+    "appId": "com.example.xrayjournal",
+    "productName": "X-Ray Journal",
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "client/dist/**/*",
+      "server/**/*",
+      "mysql_portable/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

@@ -11,41 +11,38 @@ export default function JointSurfaceSection({
 }) {
   const jointSurfaceSubItems = [
     "не изменены.",
-    "левого коленного сустава",
-    "правого коленного сустава",
+    "левого тазобедренного сустава",
+    "правого тазобедренного сустава",
     "незначительно склерозированы",
     "умеренно склерозированы",
     "выраженно склерозированы",
   ];
 
   const changeOptions = [
-    "незначительно уплощены",
-    "умеренно уплощены",
-    "выраженно уплощены",
-    "деформированы",
-    "склерозированы",
+    "незначительно склерозированы",
+    "умеренно склерозированы",
+    "выраженно склерозированы",
+    "деформированы",    
   ];
 
   const newPlaques = [
-    "в медиальных отделах.",
-    "в латеральных отделах.",
+    "преимущественно в медиальных отделах.",
+    "преимущественно в латеральных отделах.",
     "в медиальных и латеральных отделах.",
   ];
 
   const changeMap = {
-    "незначительно уплощены": "незначительно уплощены",
-    "умеренно уплощены": "умеренно уплощены",
-    "выраженно уплощены": "выраженно уплощены",
+    "незначительно склерозированы": "незначительно склерозированы",
+    "умеренно склерозированы": "умеренно склерозированы",
+    "выраженно склерозированы": "выраженно склерозированы",
     "деформированы": "деформированы",
-    "склерозированы": "склерозированы",
   };
 
   const changeMapSingle = {
-    "незначительно уплощены": "незначительно уплощена",
-    "умеренно уплощены": "умеренно уплощена",
-    "выраженно уплощены": "выраженно уплощена",
+    "незначительно склерозированы": "незначительно склерозированы",
+    "умеренно склерозированы": "умеренно склерозированы",
+    "выраженно склерозированы": "выраженно склерозированы",
     "деформированы": "деформирована",
-    "склерозированы": "склерозирована",
   };
 
   // Вставка простого текста
@@ -82,7 +79,7 @@ export default function JointSurfaceSection({
     if (!textarea) return;
 
     const change = changeMapSingle[selectedChangeLevel] || selectedChangeLevel;
-    const fullText = `Суставная поверхность ${selectedSubItem} ${change} ${location}\n`;
+    const fullText = `Суставные поверхности ${selectedSubItem} ${change} ${location}\n`;
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -107,7 +104,7 @@ export default function JointSurfaceSection({
     if (!textarea) return;
 
     const change = changeMap[changeLevel] || changeLevel;
-    const fullText = `Суставные поверхности коленных суставов ${change} ${location}\n`;
+    const fullText = `Суставные поверхности тазобедренных суставов ${change} ${location}\n`;
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -129,8 +126,8 @@ export default function JointSurfaceSection({
     <div className="ml-6 mt-1 space-y-1">
       {jointSurfaceSubItems.map((subItem, idx) => {
         const isLeftOrRight =
-          subItem === "левого коленного сустава" ||
-          subItem === "правого коленного сустава";
+          subItem === "левого тазобедренного сустава" ||
+          subItem === "правого тазобедренного сустава";
 
         const isChangeOption =
           subItem === "незначительно склерозированы" ||

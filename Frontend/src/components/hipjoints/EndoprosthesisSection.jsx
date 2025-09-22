@@ -1,23 +1,18 @@
 import React from "react";
 
-export default function ParaarticularTissuesSection({ textareaRef, setExpandedPlaque }) {
-  // Варианты параартикулярных тканей
-  const paraarticularOptions = [
-    "Без изменений",
-    "Изменения",
+export default function EndoprosthesisSection({ textareaRef, setExpandedPlaque }) {
+  // Варианты эндопротезирования
+  const endoprosthesisOptions = [
+    "левого тазобедренного сустава",
+    "правого тазобедренного сустава",
   ];
 
   // Вставка текста в textarea
-  const insertParaarticularText = (option) => {
+  const insertEndoprosthesisText = (option) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    let fullText = "";
-    if (option === "Без изменений") {
-      fullText = "Параартикулярные ткани не имеют рентгено-позитивных признаков изменений.";
-    } else if (option === "Изменения") {
-      fullText = "Определяются образования костной плотности в параартикулярных тканях.";
-    }
+    const fullText = `Определяется эндопротез ${option} при удовлетворительном стоянии металлоконструкции.\n`;
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -33,19 +28,19 @@ export default function ParaarticularTissuesSection({ textareaRef, setExpandedPl
     const event = new Event("input", { bubbles: true });
     textarea.dispatchEvent(event);
 
-    // сворачиваем плашку
+    // Сворачиваем плашку после выбора
     setExpandedPlaque(null);
   };
 
   return (
     <div className="ml-6 mt-1 space-y-1">
-      {paraarticularOptions.map((option, idx) => (
+      {endoprosthesisOptions.map((option, idx) => (
         <div
           key={idx}
           className="p-1 bg-gray-700 text-gray-300 text-xs hover:bg-gray-600 cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
-            insertParaarticularText(option);
+            insertEndoprosthesisText(option);
           }}
         >
           {option}

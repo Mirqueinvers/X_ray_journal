@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function BumpsSection({ textareaRef }) {
+export default function BumpsSection({ textareaRef, setExpandedPlaque }) {
   // Варианты формы бугорков
   const shapeOptions = [
     "не изменены",
@@ -32,6 +32,9 @@ export default function BumpsSection({ textareaRef }) {
 
     const event = new Event("input", { bubbles: true });
     textarea.dispatchEvent(event);
+    
+    // Добавляем вызов для сворачивания плашки
+    setExpandedPlaque(null);
   };
 
   return (

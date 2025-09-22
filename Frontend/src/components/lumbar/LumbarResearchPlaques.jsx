@@ -4,9 +4,10 @@ import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import LumbarJointSpaceSection from "./JointSpaceSection";
 import LumbarJointSurfaceSection from "./JointSurfaceSection";
 import LumbarOsteophytesModal from "./OsteophytesModal";
-import LumbarCongruencySection from "./CongruencySection";
 import LumbarIntegritySection from "./IntegritySection";
 import LumbarParaarticularTissuesSection from "./ParaarticularTissuesSection";
+import SpineModal from "./SpineModal"; // ✅ модалка позвоночного столба
+import SpineCurvatureModal from "./SpineCurvatureModal"; // ✅ модалка искривления позвоночника
 
 export default function LumbarResearchPlaques({
   expandedPlaque,
@@ -23,12 +24,15 @@ export default function LumbarResearchPlaques({
   setShowOsteophytesModal,
   textareaRef,
 }) {
+  const [showSpineModal, setShowSpineModal] = useState(false);
+  const [showCurvatureModal, setShowCurvatureModal] = useState(false); // ✅ стейт для модалки искривления
+
   const lumbarJointPlaques = [
+    "Позвоночный столб",
+    "Искривление позвоночника", // ✅ новая плашка
     "Суставные щели",
     "Суставные поверхности",
     "Остеофиты",
-    "Бугорки",
-    "Конгруэнтность",
     "Целостность",
     "Параартикулярные ткани",
   ];
@@ -52,66 +56,34 @@ export default function LumbarResearchPlaques({
           );
         }
 
-        if (plaque === "Бугорки") {
+        if (plaque === "Позвоночный столб") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>
               <div
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (expandedPlaque === plaque) {
-                    setExpandedPlaque(null);
-                  } else {
-                    setExpandedPlaque(plaque);
-                  }
+                  setShowSpineModal(true);
                 }}
               >
                 <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
               </div>
-
-              {expandedPlaque === plaque && (
-                <LumbarBumpsSection
-                  textareaRef={textareaRef}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
             </div>
           );
         }
 
-        if (plaque === "Конгруэнтность") {
+        if (plaque === "Искривление позвоночника") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>
               <div
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (expandedPlaque === plaque) {
-                    setExpandedPlaque(null);
-                  } else {
-                    setExpandedPlaque(plaque);
-                  }
+                  setShowCurvatureModal(true); // ✅ открываем модалку искривления
                 }}
               >
                 <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
               </div>
-
-              {expandedPlaque === plaque && (
-                <LumbarCongruencySection
-                  textareaRef={textareaRef}
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
             </div>
           );
         }
@@ -218,6 +190,28 @@ export default function LumbarResearchPlaques({
           </div>
         );
       })}
+
+ {/* модалки */}
+      {showOsteophytesModal && (
+        <LumbarOsteophytesModal
+          onClose={() => setShowOsteophytesModal(false)}
+          textareaRef={textareaRef}
+        />
+      )}
+
+      {showSpineModal && (
+        <SpineModal
+          onClose={() => setShowSpineModal(false)}
+          textareaRef={textareaRef}
+        />
+      )}
+
+      {showCurvatureModal && (
+        <SpineCurvatureModal
+          onClose={() => setShowCurvatureModal(false)}
+          textareaRef={textareaRef}
+        />
+      )}
     </div>
   );
 }

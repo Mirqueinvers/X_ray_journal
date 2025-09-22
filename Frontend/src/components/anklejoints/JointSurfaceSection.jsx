@@ -11,8 +11,8 @@ export default function JointSurfaceSection({
 }) {
   const jointSurfaceSubItems = [
     "не изменены.",
-    "левого тазобедренного сустава",
-    "правого тазобедренного сустава",
+    "левого голеностопного сустава",
+    "правого голеностопного сустава",
     "незначительно склерозированы",
     "умеренно склерозированы",
     "выраженно склерозированы",
@@ -104,7 +104,7 @@ export default function JointSurfaceSection({
     if (!textarea) return;
 
     const change = changeMap[changeLevel] || changeLevel;
-    const fullText = `Суставные поверхности тазобедренных суставов ${change} ${location}\n`;
+    const fullText = `Суставные поверхности голеностопных суставов ${change} ${location}\n`;
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -126,8 +126,8 @@ export default function JointSurfaceSection({
     <div className="ml-6 mt-1 space-y-1">
       {jointSurfaceSubItems.map((subItem, idx) => {
         const isLeftOrRight =
-          subItem === "левого тазобедренного сустава" ||
-          subItem === "правого тазобедренного сустава";
+          subItem === "левого голеностопного сустава" ||
+          subItem === "правого голеностопного сустава";
 
         const isChangeOption =
           subItem === "незначительно склерозированы" ||

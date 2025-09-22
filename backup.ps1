@@ -1,14 +1,18 @@
-# backup.ps1
-# Скрипт для автоматического бэкапа в GitHub
+# Получаем текущую дату в формате YYYYMMDD
+$date = Get-Date -Format "yyyyMMdd"
 
-# Получаем текущую дату
-$today = Get-Date -Format "yyyy-MM-dd"
+# Создаём уникальное имя ветки
+$branchName = "backup-$date"
 
-# Добавляем все файлы
+# Добавляем все изменения
 git add .
 
-# Делаем коммит
-git commit -m "Backup on $today"
+# Делаем коммит с текущей датой и временем
+$time = Get-Date -Format "HHmmss"
+git commit -m "Backup on $date-$time"
 
-# Пушим (если новая ветка — автоматически привяжем к origin)
-git push -u origin HEAD
+# Создаём ветку с текущей датой (если не существует)
+git checkout -b $branchName 2>$null
+
+# Пушим и сразу привязываем к upstream
+git push --set-upstream origin $branchName

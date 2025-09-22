@@ -1,7 +1,7 @@
 // Frontend/src/components/ResearchDescriptionModal.jsx
 // ResearchDescriptionModal.jsx
 import { useState, useRef } from "react";
-import { XMarkIcon, ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, ChevronDownIcon, ChevronRightIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import researchData from "./ResearchData";
 import KneeResearchPlaques from "./knees/KneeResearchPlaques";
 import HipResearchPlaques from "./hipjoints/HipResearchPlaques";
@@ -11,7 +11,7 @@ import HandResearchPlaques from "./hand/HandResearchPlaques";
 import LumbarResearchPlaques from "./lumbar/LumbarResearchPlaques";
 import OsteophytesModal from "./knees/OsteophytesModal";
 import HipOsteophytesModal from "./hipjoints/OsteophytesModal";
-import AnkleOsteophytesModal from "./anklejoints/OsteophytesModal";
+
 import FeetOsteophytesModal from "./feet/OsteophytesModal";
 import HandOsteophytesModal from "./hand/OsteophytesModal";
 import LumbarOsteophytesModal from "./lumbar/OsteophytesModal";
@@ -32,6 +32,7 @@ export default function ResearchDescriptionModal({ onClose, description }) {
   const [showFeetOsteophytesModal, setShowFeetOsteophytesModal] = useState(false);
   const [showHandOsteophytesModal, setShowHandOsteophytesModal] = useState(false);
   const [showLumbarOsteophytesModal, setShowLumbarOsteophytesModal] = useState(false);
+  const [copied, setCopied] = useState(false);
   const textareaRef = useRef(null);
 
   const researchCategories = researchData.researchCategories;
@@ -69,6 +70,24 @@ export default function ResearchDescriptionModal({ onClose, description }) {
     setExpandedCategory(null);
   };
 
+  const copyToClipboard = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    // Добавляем отступы: два сверху и один снизу
+    const text = textarea.value;
+    const formattedText = `\n\n${text}\n`;
+    
+    navigator.clipboard.writeText(formattedText)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(err => {
+        console.error('Ошибка копирования:', err);
+      });
+  };
+
   const filteredItems = researchCategories[1].items.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -96,13 +115,25 @@ export default function ResearchDescriptionModal({ onClose, description }) {
 
         <div className="p-8 h-full flex">
           {/* Левая часть с textarea */}
-          <div className="w-2/3 pr-4">
+          <div className="w-2/3 pr-4 relative">
             <textarea
               ref={textareaRef}
               className="w-full h-full p-4 bg-gray-700 border border-yellow-500 rounded text-yellow-200 resize-none focus:outline-none focus:ring-2 focus:ring-yellow-500"
               placeholder="Введите описание исследования..."
               defaultValue={description}
             />
+            
+            {/* Кнопка копирования */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                copyToClipboard();
+              }}
+              className="absolute top-2 right-2 p-1 bg-gray-700 border border-yellow-500 rounded text-yellow-200 hover:bg-gray-600 transition-colors"
+              title="Копировать"
+            >
+              <DocumentDuplicateIcon className={`h-5 w-5 ${copied ? 'text-green-400' : 'text-yellow-400'}`} />
+            </button>
           </div>
 
           {/* Разделитель */}
@@ -230,7 +261,7 @@ export default function ResearchDescriptionModal({ onClose, description }) {
                 )}
 
                 {/* Плашки для голеностопного сустава */}
-                {["Рентгенография golenостопных суставов", "Рентгенография левого голеностопного сустава", "Рентгенография правого голеностопного сустава"].includes(selectedResearch) && (
+                {["Рентгенография голеностопных суставов", "Рентгенография левого голеностопного сустава", "Рентгенография правого голеностопного сустава"].includes(selectedResearch) && (
                   <AnkleResearchPlaques
                     expandedPlaque={expandedPlaque}
                     setExpandedPlaque={setExpandedPlaque}
@@ -242,8 +273,7 @@ export default function ResearchDescriptionModal({ onClose, description }) {
                     setSelectedChangeLevel={setSelectedChangeLevel}
                     selectedShapeLevel={selectedShapeLevel}
                     setSelectedShapeLevel={setSelectedShapeLevel}
-                    showOsteophytesModal={showAnkleOsteophytesModal}
-                    setShowOsteophytesModal={setShowAnkleOsteophytesModal}
+
                     textareaRef={textareaRef}
                   />
                 )}
@@ -287,8 +317,7 @@ export default function ResearchDescriptionModal({ onClose, description }) {
                 )}
 
                 {/* Плашки для поясницы */}
-                {["Рентгенография поясничного отдела позвоночника", "Рентгенография грудопоясничного отдела позвоночника"
-                  , "Рентгенография грудного отдела позвоночника", "Рентгенография шейного отдела позвоночника"].includes(selectedResearch) && (
+                {["Рентгенография поясничного отдела позвоночника", "Рентгенография грудопоясничного отдела позвоночника", "Рентгенография грудного отдела позвоночника", "Рентгенография шейного отдела позвоночника"].includes(selectedResearch) && (
                   <LumbarResearchPlaques
                     expandedPlaque={expandedPlaque}
                     setExpandedPlaque={setExpandedPlaque}
@@ -326,13 +355,7 @@ export default function ResearchDescriptionModal({ onClose, description }) {
           />
         )}
 
-        {/* Модалка остеофитов для голеностопного сустава */}
-        {showAnkleOsteophytesModal && (
-          <AnkleOsteophytesModal
-            onClose={() => setShowAnkleOsteophytesModal(false)}
-            textareaRef={textareaRef}
-          />
-        )}
+
 
         {/* Модалка остеофитов для стопы */}
         {showFeetOsteophytesModal && (

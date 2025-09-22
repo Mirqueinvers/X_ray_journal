@@ -12,8 +12,8 @@ export default function JointSpaceSection({
   // Подпункты для суставных щелей
   const jointSpaceSubItems = [
     "равномерной высоты.",
-    "левого тазобедренного сустава",
-    "правого тазобедренного сустава",
+    "левого голеностопного сустава",
+    "правого голеностопного сустава",
     "незначительно сужены",
     "умеренно сужены",
     "выраженно сужены",
@@ -114,7 +114,7 @@ export default function JointSpaceSection({
     if (!textarea) return;
 
     const narrowing = narrowingMap[narrowingLevel] || narrowingLevel;
-    const fullText = `Суставные щели тазобедренных суставов ${narrowing} ${location}\n`;
+    const fullText = `Суставные щели голеностопных суставов ${narrowing} ${location}\n`;
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -138,8 +138,8 @@ export default function JointSpaceSection({
     <div className="ml-6 mt-1 space-y-1">
       {jointSpaceSubItems.map((subItem, subIndex) => {
         const isLeftOrRight =
-          subItem === "левого тазобедренного сустава" ||
-          subItem === "правого тазобедренного сустава";
+          subItem === "левого голеностопного сустава" ||
+          subItem === "правого голеностопного сустава";
         const isDegree = degreeOptions.includes(subItem);
 
         return (

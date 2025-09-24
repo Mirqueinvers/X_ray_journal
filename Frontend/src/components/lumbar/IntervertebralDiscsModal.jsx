@@ -1,12 +1,13 @@
-// Frontend/src/components/lumbar/OsteophytesModal.jsx
+// Frontend/src/components/lumbar/IntervertebralDiscsModal.jsx
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
-export default function OsteophytesModal({ onClose, textareaRef }) {
-  const [activeSurface, setActiveSurface] = useState("передние");
+export default function IntervertebralDiscsModal({ onClose, textareaRef }) {
+  const [activeSeverity, setActiveSeverity] = useState("умеренно");
   const [selected, setSelected] = useState({
-    передние: [],
-    боковые: [],
+    умеренно: [],
+    выраженно: [],
+    резко: [],
   });
 
   const vertebrae = [
@@ -17,11 +18,11 @@ export default function OsteophytesModal({ onClose, textareaRef }) {
   ];
 
   const toggleVertebra = (v) => {
-    const copy = [...selected[activeSurface]];
+    const copy = [...selected[activeSeverity]];
     const idx = copy.indexOf(v);
     if (idx >= 0) copy.splice(idx, 1);
     else copy.push(v);
-    setSelected({ ...selected, [activeSurface]: copy });
+    setSelected({ ...selected, [activeSeverity]: copy });
   };
 
   const buildSegments = (verts) => {
@@ -53,16 +54,16 @@ export default function OsteophytesModal({ onClose, textareaRef }) {
 
     let parts = [];
 
-    if (selected.передние.length > 0) {
-      parts.push(`по передним поверхностям тел ${buildSegments(selected.передние).join(", ")}`);
-    }
-    if (selected.боковые.length > 0) {
-      parts.push(`и боковым поверхностям тел ${buildSegments(selected.боковые).join(", ")}`);
+    for (const sev of ["умеренно", "выраженно", "резко"]) {
+      const segs = buildSegments(selected[sev]);
+      if (segs.length > 0) {
+        parts.push(`${sev} сужена в сегментах ${segs.join(", ")}`);
+      }
     }
 
     if (parts.length === 0) return;
 
-    const insertText = `Определяются краевые костные разрастания ${parts.join(" ")}.\n`;
+    const insertText = `Высота пространств межпозвонковых дисков ${parts.join(", ")}.\n`;
 
     const newText = value.substring(0, start) + insertText + value.substring(end);
     textarea.value = newText;
@@ -91,20 +92,20 @@ export default function OsteophytesModal({ onClose, textareaRef }) {
         </button>
 
         <h2 className="text-yellow-300 text-lg mb-4">
-          Выберите позвонки для остеофитов
+          Выберите позвонки и степень сужения
         </h2>
 
-        {/* кнопки поверхностей */}
+        {/* кнопки степеней */}
         <div className="flex gap-2 mb-4">
-          {["передние", "боковые"].map((surf) => (
+          {["умеренно","выраженно","резко"].map((sev) => (
             <button
-              key={surf}
-              onClick={() => setActiveSurface(surf)}
+              key={sev}
+              onClick={() => setActiveSeverity(sev)}
               className={`px-4 py-2 rounded ${
-                activeSurface === surf ? "bg-yellow-400 text-black" : "bg-gray-700 text-yellow-200 hover:bg-gray-600"
+                activeSeverity === sev ? "bg-yellow-400 text-black" : "bg-gray-700 text-yellow-200 hover:bg-gray-600"
               }`}
             >
-              {surf.charAt(0).toUpperCase() + surf.slice(1)}
+              {sev.charAt(0).toUpperCase() + sev.slice(1)}
             </button>
           ))}
         </div>
@@ -116,7 +117,7 @@ export default function OsteophytesModal({ onClose, textareaRef }) {
               key={v}
               onClick={() => toggleVertebra(v)}
               className={`px-3 py-2 border rounded text-sm ${
-                selected[activeSurface].includes(v)
+                selected[activeSeverity].includes(v)
                   ? "bg-yellow-500 text-black border-yellow-400"
                   : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
               }`}
@@ -128,9 +129,9 @@ export default function OsteophytesModal({ onClose, textareaRef }) {
 
         <button
           onClick={insertSelected}
-          disabled={selected.передние.length === 0 && selected.боковые.length === 0}
+          disabled={["умеренно","выраженно","резко"].every(s => selected[s].length === 0)}
           className={`absolute bottom-4 right-4 px-6 py-2 rounded ${
-            selected.передние.length > 0 || selected.боковые.length > 0
+            ["умеренно","выраженно","резко"].some(s => selected[s].length > 0)
               ? "bg-yellow-400 text-black hover:bg-yellow-300"
               : "bg-gray-600 text-gray-400 cursor-not-allowed"
           }`}

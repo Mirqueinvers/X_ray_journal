@@ -11,10 +11,10 @@ import HandResearchPlaques from "./hand/HandResearchPlaques";
 import LumbarResearchPlaques from "./lumbar/LumbarResearchPlaques";
 import OsteophytesModal from "./knees/OsteophytesModal";
 import HipOsteophytesModal from "./hipjoints/OsteophytesModal";
-
 import FeetOsteophytesModal from "./feet/OsteophytesModal";
 import HandOsteophytesModal from "./hand/OsteophytesModal";
 import LumbarOsteophytesModal from "./lumbar/OsteophytesModal";
+import LungResearchPlaques from "./lungs/LungResearchPlaques";
 
 export default function ResearchDescriptionModal({ onClose, description }) {
   const [expandedCategory, setExpandedCategory] = useState(null);
@@ -32,6 +32,7 @@ export default function ResearchDescriptionModal({ onClose, description }) {
   const [showFeetOsteophytesModal, setShowFeetOsteophytesModal] = useState(false);
   const [showHandOsteophytesModal, setShowHandOsteophytesModal] = useState(false);
   const [showLumbarOsteophytesModal, setShowLumbarOsteophytesModal] = useState(false);
+  const [showLungOsteophytesModal, setShowLungOsteophytesModal] = useState(false);
   const [copied, setCopied] = useState(false);
   const textareaRef = useRef(null);
 
@@ -261,7 +262,8 @@ export default function ResearchDescriptionModal({ onClose, description }) {
                 )}
 
                 {/* Плашки для голеностопного сустава */}
-                {["Рентгенография голеностопных суставов", "Рентгенография левого голеностопного сустава", "Рентгенография правого голеностопного сустава"].includes(selectedResearch) && (
+                {["Рентгенография голеностопных суставов", "Рентгенография левого голеностопного сустава", "Рентгенография правого голеностопного сустава"
+                , "Рентгенография локтевых суставов", "Рентгенография левого локтевого сустава", "Рентгенография правого локтевого сустава"].includes(selectedResearch) && (
                   <AnkleResearchPlaques
                     expandedPlaque={expandedPlaque}
                     setExpandedPlaque={setExpandedPlaque}
@@ -334,6 +336,26 @@ export default function ResearchDescriptionModal({ onClose, description }) {
                     textareaRef={textareaRef}
                   />
                 )}
+
+                  {/* Плашки для легких */}
+                  {["Рентгенография органов грудной клетки", "Рентгенография легких", "Рентгенография левого легкого", "Рентгенография правого легкого"].includes(selectedResearch) && (
+                    <LungResearchPlaques
+                      expandedPlaque={expandedPlaque}
+                      setExpandedPlaque={setExpandedPlaque}
+                      selectedSubItem={selectedSubItem}
+                      setSelectedSubItem={setSelectedSubItem}
+                      selectedNarrowingLevel={selectedNarrowingLevel}
+                      setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                      selectedChangeLevel={selectedChangeLevel}
+                      setSelectedChangeLevel={setSelectedChangeLevel}
+                      selectedShapeLevel={selectedShapeLevel}
+                      setSelectedShapeLevel={setSelectedShapeLevel}
+                      showOsteophytesModal={showLungOsteophytesModal}
+                      setShowOsteophytesModal={setShowLungOsteophytesModal}
+                      textareaRef={textareaRef}
+                    />
+                  )}  
+
               </div>
             </div>
           </div>
@@ -380,6 +402,14 @@ export default function ResearchDescriptionModal({ onClose, description }) {
             textareaRef={textareaRef}
           />
         )}
+
+          {/* Модалка остеофитов для легких */}
+          {showLungOsteophytesModal && (
+            <LungOsteophytesModal
+              onClose={() => setShowLungOsteophytesModal(false)}
+              textareaRef={textareaRef}
+            />
+          )}
       </div>
     </div>
   );

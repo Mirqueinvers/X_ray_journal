@@ -1,7 +1,7 @@
 import React from "react";
 
 export default function LumbarLordosisSection({ textareaRef, setExpandedPlaque }) {
-  const options = ["не измен", "сглажен"];
+  const options = ["не изменен", "сглажен"];
 
   const insertText = (option) => {
     const textarea = textareaRef.current;

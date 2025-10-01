@@ -3,27 +3,27 @@ import { useState } from "react";
 
 export default function MediastinumSection({ textareaRef, setExpandedPlaque }) {
   const mediastinumOptions = [
-    "Не расширено",
-    "Расширено в правых отделах",
-    "Расширено в левых отделах",
-    "Расширено верхнее средостение"
+    { label: "Не расширено", text: "не расширена" },
+    { label: "Расширено в правых отделах", text: "расширена в правых отделах" },
+    { label: "Расширено в левых отделах", text: "расширена в левых отделах" },
+    { label: "Расширено верхнее средостение", text: "расширена в верхних отделах" }
   ];
 
   const insertTextToTextarea = (text) => {
     if (textareaRef?.current) {
       const current = textareaRef.current.value;
-      textareaRef.current.value = current 
-        ? current + "\n" + text 
+      textareaRef.current.value = current
+        ? current + "\n" + text
         : text;
-      
-      // Вызываем событие input для React
-      const event = new Event('input', { bubbles: true });
+
+      // триггерим событие input для React
+      const event = new Event("input", { bubbles: true });
       textareaRef.current.dispatchEvent(event);
     }
   };
 
   const handleOptionClick = (option) => {
-    insertTextToTextarea(`Тень средостения ${option.toLowerCase()}.`);
+    insertTextToTextarea(`Тень средостения ${option.text}.`);
     setExpandedPlaque(null);
   };
 
@@ -38,7 +38,7 @@ export default function MediastinumSection({ textareaRef, setExpandedPlaque }) {
             handleOptionClick(option);
           }}
         >
-          {option}
+          {option.label}
         </div>
       ))}
     </div>

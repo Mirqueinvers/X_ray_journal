@@ -3,12 +3,13 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
 export default function EndplatesModal({ onClose, textareaRef }) {
-  const [activeSeverity, setActiveSeverity] = useState("умеренно");
+  const [activeSeverity, setActiveSeverity] = useState(null);
   const [selected, setSelected] = useState({
     умеренно: [],
     выраженно: [],
     резко: [],
   });
+  const [unchanged, setUnchanged] = useState(true); // по умолчанию "не изменены"
 
   const vertebrae = [
     "C1","C2","C3","C4","C5","C6","C7",
@@ -18,6 +19,7 @@ export default function EndplatesModal({ onClose, textareaRef }) {
   ];
 
   const toggleVertebra = (v) => {
+    if (unchanged) return;
     const copy = [...selected[activeSeverity]];
     const idx = copy.indexOf(v);
     if (idx >= 0) copy.splice(idx, 1);
@@ -45,43 +47,42 @@ export default function EndplatesModal({ onClose, textareaRef }) {
     return ranges;
   };
 
-const insertSelected = () => {
-  if (!textareaRef.current) return;
-  const textarea = textareaRef.current;
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const value = textarea.value;
+  const insertSelected = () => {
+    if (!textareaRef.current) return;
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const value = textarea.value;
 
-  let parts = [];
+    let insertText = "";
 
-  for (const sev of ["умеренно", "выраженно", "резко"]) {
-    const segs = buildSegments(selected[sev]);
-    if (segs.length > 0) {
-      let sevText = sev === "умеренно" ? "умеренно выраженный" :
-                    sev === "выраженно" ? "выраженный" :
-                    "резко выраженный";
+    if (unchanged) {
+      insertText = "Замыкательные пластинки ровные, чёткие, склеротических и деструктивных изменений не выявлено.\n";
+    } else {
+      let parts = [];
+      for (const sev of ["умеренно", "выраженно", "резко"]) {
+        const segs = buildSegments(selected[sev]);
+        if (segs.length > 0) {
+          let sevText = sev === "умеренно" ? "умеренно выраженный" :
+                        sev === "выраженно" ? "выраженный" :
+                        "резко выраженный";
 
-      // добавляем "тел" один раз перед группой сегментов
-      parts.push(`${sevText} склероз смежных замыкательных пластинок тел ${segs.join(", ")}`);
+          parts.push(`${sevText} склероз смежных замыкательных пластинок тел ${segs.join(", ")}`);
+        }
+      }
+      if (parts.length === 0) return;
+      insertText = `Определяется ${parts.join(", ")}.\n`;
     }
-  }
 
-  if (parts.length === 0) return;
+    const newText = value.substring(0, start) + insertText + value.substring(end);
+    textarea.value = newText;
 
-  // соединяем группы через запятую, оставляя один "тел" на каждую степень
-  const insertText = `Определяется ${parts.join(", ")}.\n`;
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+    textarea.focus();
+    textarea.setSelectionRange(start + insertText.length, start + insertText.length);
 
-  const newText = value.substring(0, start) + insertText + value.substring(end);
-  textarea.value = newText;
-
-  textarea.dispatchEvent(new Event("input", { bubbles: true }));
-  textarea.focus();
-  textarea.setSelectionRange(start + insertText.length, start + insertText.length);
-
-  onClose();
-};
-
-
+    onClose();
+  };
 
   return (
     <div
@@ -103,14 +104,34 @@ const insertSelected = () => {
           Выберите позвонки и степень склероза замыкательных пластинок
         </h2>
 
-        {/* кнопки степеней */}
-        <div className="flex gap-2 mb-4">
+        {/* кнопки степеней + не изменены */}
+        <div className="flex gap-2 mb-4 flex-wrap">
+          <button
+            onClick={() => {
+              setUnchanged(true);
+              setActiveSeverity(null);
+              setSelected({ умеренно: [], выраженно: [], резко: [] });
+            }}
+            className={`px-4 py-2 rounded ${
+              unchanged
+                ? "bg-yellow-400 text-black"
+                : "bg-gray-700 text-yellow-200 hover:bg-gray-600"
+            }`}
+          >
+            Не изменены
+          </button>
+
           {["умеренно","выраженно","резко"].map((sev) => (
             <button
               key={sev}
-              onClick={() => setActiveSeverity(sev)}
+              onClick={() => {
+                setActiveSeverity(sev);
+                setUnchanged(false);
+              }}
               className={`px-4 py-2 rounded ${
-                activeSeverity === sev ? "bg-yellow-400 text-black" : "bg-gray-700 text-yellow-200 hover:bg-gray-600"
+                activeSeverity === sev && !unchanged
+                  ? "bg-yellow-400 text-black"
+                  : "bg-gray-700 text-yellow-200 hover:bg-gray-600"
               }`}
             >
               {sev.charAt(0).toUpperCase() + sev.slice(1)}
@@ -118,28 +139,33 @@ const insertSelected = () => {
           ))}
         </div>
 
-        {/* сетка позвонков */}
-        <div className="grid grid-cols-8 gap-2 overflow-y-auto max-h-[500px] pr-2">
-          {vertebrae.map((v) => (
-            <button
-              key={v}
-              onClick={() => toggleVertebra(v)}
-              className={`px-3 py-2 border rounded text-sm ${
-                selected[activeSeverity].includes(v)
-                  ? "bg-yellow-500 text-black border-yellow-400"
-                  : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
-              }`}
-            >
-              {v}
-            </button>
-          ))}
-        </div>
+        {/* сетка позвонков (только если не "не изменены") */}
+        {!unchanged && (
+          <div className="grid grid-cols-8 gap-2 overflow-y-auto max-h-[500px] pr-2">
+            {vertebrae.map((v) => (
+              <button
+                key={v}
+                onClick={() => toggleVertebra(v)}
+                className={`px-3 py-2 border rounded text-sm ${
+                  selected[activeSeverity]?.includes(v)
+                    ? "bg-yellow-500 text-black border-yellow-400"
+                    : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
+                }`}
+              >
+                {v}
+              </button>
+            ))}
+          </div>
+        )}
 
         <button
           onClick={insertSelected}
-          disabled={["умеренно","выраженно","резко"].every(s => selected[s].length === 0)}
+          disabled={
+            !unchanged &&
+            ["умеренно","выраженно","резко"].every(s => selected[s].length === 0)
+          }
           className={`absolute bottom-4 right-4 px-6 py-2 rounded ${
-            ["умеренно","выраженно","резко"].some(s => selected[s].length > 0)
+            unchanged || ["умеренно","выраженно","резко"].some(s => selected[s].length > 0)
               ? "bg-yellow-400 text-black hover:bg-yellow-300"
               : "bg-gray-600 text-gray-400 cursor-not-allowed"
           }`}

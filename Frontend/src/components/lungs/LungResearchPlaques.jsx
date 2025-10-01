@@ -8,7 +8,7 @@ import SinusSection from "./SinusSection";
 import PleuraSection from "./PleuraSection";
 import MediastinumSection from "./MediastinumSection";
 import HeartSection from "./HeartSection";
-import RibsModal from "./RibsModal";
+import ChestCageSection from "./ChestCageSection";
 
 export default function LungResearchPlaques({
   expandedPlaque,
@@ -67,14 +67,16 @@ export default function LungResearchPlaques({
                 onClick={(e) => {
                   e.stopPropagation();
                   insertTextToTextarea(
-                   `Легкие без инфильтративных и очаговых теней.
-Сосудистый рисунок не изменен.
-Корни легких не расширены, структурны.
-Синусы плевры свободны.
-Диафрагма куполообразной формы, расположена обычно.
-Тень средостения не расширена.
-Сердце в пределах возрастной нормы.
-                    `,
+                    [
+                      "Легкие без инфильтративных и очаговых теней.",
+                      "Сосудистый рисунок не изменен.",
+                      "Корни легких не расширены, структурны.",
+                      "Синусы плевры свободны.",
+                      "Диафрагма куполообразной формы, расположена обычно.",
+                      "Тень средостения не расширена.",
+                      "Сердце в пределах возрастной нормы.",
+                      "Целостность костей грудной клетки не нарушена."
+                    ].join("\n"),
                     plaque
                   );
                 }}
@@ -84,6 +86,7 @@ export default function LungResearchPlaques({
             </div>
           );
         }
+
 
         if (plaque === "Без патологических теней") {
           return (
@@ -283,11 +286,21 @@ export default function LungResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowRibsModal(true); // открываем модалку ребер
+                  setExpandedPlaque(expandedPlaque === plaque ? null : plaque);
                 }}
               >
                 <span>{plaque}</span>
+                {expandedPlaque === plaque && (
+                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
+                )}
               </div>
+
+              {expandedPlaque === plaque && (
+                <ChestCageSection
+                  textareaRef={textareaRef}
+                  setExpandedPlaque={setExpandedPlaque}
+                />
+              )}
             </div>
           );
         }

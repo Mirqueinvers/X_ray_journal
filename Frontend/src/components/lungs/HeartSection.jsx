@@ -3,10 +3,10 @@ import { useState } from "react";
 
 export default function HeartSection({ textareaRef, setExpandedPlaque }) {
   const heartOptions = [
-    "Не расширена",
-    "расширена слева",
-    "расширена справа",
-    "расширена с двух сторон"
+    { label: "не расширена", text: "в пределах возрастной нормы" },
+    { label: "расширена слева", text: "расширена преимущественно за счет левых отделов" },
+    { label: "расширена справа", text: "расширена преимущественно за счет правых отделов" },
+    { label: "расширена с двух сторон", text: "расширена за счет правых и левых отделов" }
   ];
 
   const insertTextToTextarea = (text) => {
@@ -17,13 +17,13 @@ export default function HeartSection({ textareaRef, setExpandedPlaque }) {
         : text;
       
       // Вызываем событие input для React
-      const event = new Event('input', { bubbles: true });
+      const event = new Event("input", { bubbles: true });
       textareaRef.current.dispatchEvent(event);
     }
   };
 
   const handleOptionClick = (option) => {
-    insertTextToTextarea(`Сердце ${option}.`);
+    insertTextToTextarea(`Тень сердца ${option.text}.`);
     setExpandedPlaque(null);
   };
 
@@ -38,7 +38,7 @@ export default function HeartSection({ textareaRef, setExpandedPlaque }) {
             handleOptionClick(option);
           }}
         >
-          {option}
+          {option.label}
         </div>
       ))}
     </div>

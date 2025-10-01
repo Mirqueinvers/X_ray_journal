@@ -1,6 +1,6 @@
 // Frontend/src/components/ResearchDescriptionModal.jsx
 // ResearchDescriptionModal.jsx
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { XMarkIcon, ChevronDownIcon, ChevronRightIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import researchData from "./ResearchData";
 import KneeResearchPlaques from "./knees/KneeResearchPlaques";
@@ -35,6 +35,21 @@ export default function ResearchDescriptionModal({ onClose, description }) {
   const [showLungOsteophytesModal, setShowLungOsteophytesModal] = useState(false);
   const [copied, setCopied] = useState(false);
   const textareaRef = useRef(null);
+
+    useEffect(() => {
+    const handleKeyDown = (e) => {
+      // запрещаем закрытие по пробелу внутри модалки
+      if (e.code === "Space" || e.key === " ") {
+        e.stopPropagation();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown, true);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown, true);
+    };
+  }, []);
 
   const researchCategories = researchData.researchCategories;
 
@@ -93,50 +108,33 @@ export default function ResearchDescriptionModal({ onClose, description }) {
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  
+
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 cursor-pointer"
-      onClick={onClose}
-    >
-      <div
-        className="bg-gray-800 rounded-lg shadow-xl w-[350mm] h-[148.5mm] relative overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
+<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+  <div
+    className="bg-gray-800 rounded-lg shadow-xl w-[350mm] h-[148.5mm] relative overflow-hidden"
+    onClick={(e) => e.stopPropagation()} // клики внутри модалки не всплывают
+  >
         {/* Кнопка закрытия */}
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onClose();
-          }}
+          onClick={onClose}
           className="absolute top-4 right-4 text-yellow-400 hover:text-yellow-200 z-10"
-          title="Закрыть"
         >
           <XMarkIcon className="h-6 w-6" />
         </button>
 
-        <div className="p-8 h-full flex">
-          {/* Левая часть с textarea */}
-          <div className="w-2/3 pr-4 relative">
-            <textarea
-              ref={textareaRef}
-              className="w-full h-full p-4 bg-gray-700 border border-yellow-500 rounded text-yellow-200 resize-none focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              placeholder="Введите описание исследования..."
-              defaultValue={description}
-            />
-            
-            {/* Кнопка копирования */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                copyToClipboard();
-              }}
-              className="absolute top-2 right-2 p-1 bg-gray-700 border border-yellow-500 rounded text-yellow-200 hover:bg-gray-600 transition-colors"
-              title="Копировать"
-            >
-              <DocumentDuplicateIcon className={`h-5 w-5 ${copied ? 'text-green-400' : 'text-yellow-400'}`} />
-            </button>
-          </div>
-
+    <div className="p-8 h-full flex">
+      {/* Левая часть с textarea */}
+      <div className="w-2/3 pr-4 relative">
+        <textarea
+          ref={textareaRef}
+          className="w-full h-full p-4 bg-gray-700 border border-yellow-500 rounded text-yellow-200 resize-none focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          placeholder="Введите описание исследования..."
+          defaultValue={description}
+          onClick={(e) => e.stopPropagation()} // предотвращаем всплытие
+        />
+      </div>
           {/* Разделитель */}
           <div className="w-1 flex items-center justify-center">
             <div className="h-full w-px bg-yellow-500"></div>

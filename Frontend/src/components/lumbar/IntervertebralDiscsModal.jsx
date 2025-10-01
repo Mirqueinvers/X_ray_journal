@@ -3,12 +3,13 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
 export default function IntervertebralDiscsModal({ onClose, textareaRef }) {
-  const [activeSeverity, setActiveSeverity] = useState("умеренно");
+  const [activeSeverity, setActiveSeverity] = useState(null);
   const [selected, setSelected] = useState({
     умеренно: [],
     выраженно: [],
     резко: [],
   });
+  const [unchanged, setUnchanged] = useState(true); // по умолчанию "не изменена"
 
   const vertebrae = [
     "C1","C2","C3","C4","C5","C6","C7",
@@ -18,6 +19,7 @@ export default function IntervertebralDiscsModal({ onClose, textareaRef }) {
   ];
 
   const toggleVertebra = (v) => {
+    if (unchanged) return; 
     const copy = [...selected[activeSeverity]];
     const idx = copy.indexOf(v);
     if (idx >= 0) copy.splice(idx, 1);
@@ -52,18 +54,21 @@ export default function IntervertebralDiscsModal({ onClose, textareaRef }) {
     const end = textarea.selectionEnd;
     const value = textarea.value;
 
-    let parts = [];
+    let insertText = "";
 
-    for (const sev of ["умеренно", "выраженно", "резко"]) {
-      const segs = buildSegments(selected[sev]);
-      if (segs.length > 0) {
-        parts.push(`${sev} сужена в сегментах ${segs.join(", ")}`);
+    if (unchanged) {
+      insertText = "Высота пространств межпозвонковых дисков не изменена.\n";
+    } else {
+      let parts = [];
+      for (const sev of ["умеренно", "выраженно", "резко"]) {
+        const segs = buildSegments(selected[sev]);
+        if (segs.length > 0) {
+          parts.push(`${sev} сужена в сегментах ${segs.join(", ")}`);
+        }
       }
+      if (parts.length === 0) return;
+      insertText = `Высота пространств межпозвонковых дисков ${parts.join(", ")}.\n`;
     }
-
-    if (parts.length === 0) return;
-
-    const insertText = `Высота пространств межпозвонковых дисков ${parts.join(", ")}.\n`;
 
     const newText = value.substring(0, start) + insertText + value.substring(end);
     textarea.value = newText;
@@ -95,14 +100,35 @@ export default function IntervertebralDiscsModal({ onClose, textareaRef }) {
           Выберите позвонки и степень сужения
         </h2>
 
-        {/* кнопки степеней */}
-        <div className="flex gap-2 mb-4">
+        {/* кнопки степеней + не изменена */}
+        <div className="flex gap-2 mb-4 flex-wrap">
+          {/* кнопка "не изменена" слева */}
+          <button
+            onClick={() => {
+              setUnchanged(true);
+              setActiveSeverity(null);
+              setSelected({ умеренно: [], выраженно: [], резко: [] });
+            }}
+            className={`px-4 py-2 rounded ${
+              unchanged
+                ? "bg-yellow-400 text-black"
+                : "bg-gray-700 text-yellow-200 hover:bg-gray-600"
+            }`}
+          >
+            Не изменена
+          </button>
+
           {["умеренно","выраженно","резко"].map((sev) => (
             <button
               key={sev}
-              onClick={() => setActiveSeverity(sev)}
+              onClick={() => {
+                setActiveSeverity(sev);
+                setUnchanged(false);
+              }}
               className={`px-4 py-2 rounded ${
-                activeSeverity === sev ? "bg-yellow-400 text-black" : "bg-gray-700 text-yellow-200 hover:bg-gray-600"
+                activeSeverity === sev && !unchanged
+                  ? "bg-yellow-400 text-black"
+                  : "bg-gray-700 text-yellow-200 hover:bg-gray-600"
               }`}
             >
               {sev.charAt(0).toUpperCase() + sev.slice(1)}
@@ -110,28 +136,33 @@ export default function IntervertebralDiscsModal({ onClose, textareaRef }) {
           ))}
         </div>
 
-        {/* сетка позвонков */}
-        <div className="grid grid-cols-8 gap-2 overflow-y-auto max-h-[500px] pr-2">
-          {vertebrae.map((v) => (
-            <button
-              key={v}
-              onClick={() => toggleVertebra(v)}
-              className={`px-3 py-2 border rounded text-sm ${
-                selected[activeSeverity].includes(v)
-                  ? "bg-yellow-500 text-black border-yellow-400"
-                  : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
-              }`}
-            >
-              {v}
-            </button>
-          ))}
-        </div>
+        {/* сетка позвонков (отключена если "не изменена") */}
+        {!unchanged && (
+          <div className="grid grid-cols-8 gap-2 overflow-y-auto max-h-[500px] pr-2">
+            {vertebrae.map((v) => (
+              <button
+                key={v}
+                onClick={() => toggleVertebra(v)}
+                className={`px-3 py-2 border rounded text-sm ${
+                  selected[activeSeverity]?.includes(v)
+                    ? "bg-yellow-500 text-black border-yellow-400"
+                    : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
+                }`}
+              >
+                {v}
+              </button>
+            ))}
+          </div>
+        )}
 
         <button
           onClick={insertSelected}
-          disabled={["умеренно","выраженно","резко"].every(s => selected[s].length === 0)}
+          disabled={
+            !unchanged &&
+            ["умеренно","выраженно","резко"].every(s => selected[s].length === 0)
+          }
           className={`absolute bottom-4 right-4 px-6 py-2 rounded ${
-            ["умеренно","выраженно","резко"].some(s => selected[s].length > 0)
+            unchanged || ["умеренно","выраженно","резко"].some(s => selected[s].length > 0)
               ? "bg-yellow-400 text-black hover:bg-yellow-300"
               : "bg-gray-600 text-gray-400 cursor-not-allowed"
           }`}

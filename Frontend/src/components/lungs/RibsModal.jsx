@@ -1,206 +1,200 @@
-// Frontend/src/components/lungs/RibsModal.jsx
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
 export default function RibsModal({ onClose, textareaRef }) {
-  const [selectedType, setSelectedType] = useState(null);
-  const [selectedSide, setSelectedSide] = useState([]);
-  const [selectedLevel, setSelectedLevel] = useState([]);
-  const [selectedIntensity, setSelectedIntensity] = useState(null);
-  const [selectedSegments, setSelectedSegments] = useState([]);
+  const [selectedRibs, setSelectedRibs] = useState([]);
+  const [fractureType, setFractureType] = useState(""); 
+  const [line, setLine] = useState(""); 
 
-  // Для уникальности используем Map с text как ключом
-  const ribs = [
-    { id: 1, text: "I ребро", pos: { top: "18%", left: "32%" } },
-    { id: 2, text: "II ребро", pos: { top: "23%", left: "31%" } },
-    { id: 3, text: "III ребро", pos: { top: "28%", left: "30%" } },
-    { id: 4, text: "IV ребро", pos: { top: "33%", left: "29%" } },
-    { id: 5, text: "V ребро", pos: { top: "38%", left: "28%" } },
-    { id: 6, text: "VI ребро", pos: { top: "43%", left: "27%" } },
-    { id: 7, text: "VII ребро", pos: { top: "48%", left: "26%" } },
-    { id: 8, text: "VIII ребро", pos: { top: "53%", left: "25%" } },
-    { id: 9, text: "IX ребро", pos: { top: "58%", left: "24%" } },
-    { id: 10, text: "X ребро", pos: { top: "63%", left: "23%" } },
-    { id: 11, text: "XI ребро", pos: { top: "68%", left: "22%" } },
-    { id: 12, text: "XII ребро", pos: { top: "73%", left: "21%" } },
-    { id: 13, text: "I ребро", pos: { top: "18%", left: "67%" } },
-    { id: 14, text: "II ребро", pos: { top: "23%", left: "68%" } },
-    { id: 15, text: "III ребро", pos: { top: "28%", left: "69%" } },
-    { id: 16, text: "IV ребро", pos: { top: "33%", left: "70%" } },
-    { id: 17, text: "V ребро", pos: { top: "38%", left: "71%" } },
-    { id: 18, text: "VI ребро", pos: { top: "43%", left: "72%" } },
-    { id: 19, text: "VII ребро", pos: { top: "48%", left: "73%" } },
-    { id: 20, text: "VIII ребро", pos: { top: "53%", left: "74%" } },
-    { id: 21, text: "IX ребро", pos: { top: "58%", left: "75%" } },
-    { id: 22, text: "X ребро", pos: { top: "63%", left: "76%" } },
-    { id: 23, text: "XI ребро", pos: { top: "68%", left: "77%" } },
-    { id: 24, text: "XII ребро", pos: { top: "73%", left: "78%" } },
-  ];
+  const ribsRight = Array.from({ length: 12 }, (_, i) => i + 1);
+  const ribsLeft = Array.from({ length: 12 }, (_, i) => i + 1);
 
-  const types = ["Перелом", "Деформация", "Остеопороз", "Остеосклероз"];
-  const sides = ["Слева", "Справа"];
-  const levels = ["I-II", "III-V", "VI-VIII", "IX-XII"];
-  const intensities = ["Слабый", "Умеренный", "Выраженный"];
-
-  const handleClickSelect = (value, setter, state) => {
-    setter(state === value ? null : value);
+  const toggleRib = (side, rib) => {
+    const ribId = `${side}-${rib}`;
+    if (selectedRibs.includes(ribId)) {
+      setSelectedRibs(selectedRibs.filter((r) => r !== ribId));
+    } else {
+      setSelectedRibs([...selectedRibs, ribId]);
+    }
   };
 
-  const toggleSide = (side) => {
-    setSelectedSide(prev =>
-      prev.includes(side) ? prev.filter(s => s !== side) : [...prev, side]
-    );
-  };
+const fractureTypes = {
+  "Сросшийся": { single: "сросшийся", plural: "сросшиеся" },
+  "Свежий": { single: "свежий", plural: "свежие" },
+};
 
-  const toggleLevel = (level) => {
-    setSelectedLevel(prev =>
-      prev.includes(level) ? prev.filter(l => l !== level) : [...prev, level]
-    );
-  };
+const lineForms = {
+  "Средне-ключичная": "средне-ключичной",
+  "Передняя подмышечная": "передней подмышечной",
+  "Средняя подмышечная": "средней подмышечной",
+  "Задняя подмышечная": "задней подмышечной",
+  "Лопаточная": "лопаточной",
+};
 
-  const toggleSegment = (id) => {
-    setSelectedSegments((prev) =>
-      prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]
-    );
-  };
+function formatRibs(ribs) {
+  if (ribs.length === 1) {
+    return `${ribs[0]}-го ребра`;
+  }
+  return `${ribs.join(", ")} ребер`;
+}
 
-  const insertSelected = () => {
-    if (!textareaRef?.current || selectedSegments.length === 0) return;
+const insertSelected = () => {
+  if (!textareaRef.current || selectedRibs.length === 0 || !fractureType || !line) return;
 
-    const textarea = textareaRef.current;
-    const parts = selectedSegments.map(seg => {
-      const typeText = selectedType ? selectedType.toLowerCase() : "";
-      const sideText = selectedSide.length > 0 ? selectedSide.join(", ") + " " : "";
-      const levelText = selectedLevel.length > 0 ? "уровни " + selectedLevel.join(", ") : "";
-      const intensityText = selectedIntensity ? 
-        selectedIntensity === "Слабый" ? "слабой" :
-        selectedIntensity === "Умеренный" ? "умеренной" :
-        "выраженной"
-        : "";
+  const textarea = textareaRef.current;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const value = textarea.value;
 
-      return `В ${sideText}${seg} ${typeText}${intensityText ? ` ${intensityText}` : ""}${levelText ? `, ${levelText}` : ""}.`;
-    });
+  const ribsBySide = { L: [], R: [] };
+  selectedRibs.forEach((r) => {
+    const [side, num] = r.split("-");
+    ribsBySide[side].push(Number(num));
+  });
 
-    const current = textarea.value;
-    textarea.value = current + (current.length > 0 ? " " : "") + parts.join(" ");
-    textarea.dispatchEvent(new Event("input", { bubbles: true }));
-    textarea.focus();
-  };
+  let phrases = [];
+  let isSingle = false;
+
+  if (ribsBySide.L.length > 0) {
+    ribsBySide.L.sort((a, b) => a - b);
+    isSingle = ribsBySide.L.length === 1;
+    phrases.push(`${formatRibs(ribsBySide.L)} левой половины грудной клетки`);
+  }
+  if (ribsBySide.R.length > 0) {
+    ribsBySide.R.sort((a, b) => a - b);
+    isSingle = ribsBySide.R.length === 1 && phrases.length === 0; // если только одно ребро всего
+    phrases.push(`${formatRibs(ribsBySide.R)} правой половины грудной клетки`);
+  }
+
+  const ribsText = phrases.join(", ");
+
+  const insertText = isSingle
+    ? `Определяется ${fractureTypes[fractureType].single} перелом ${ribsText}, по ${lineForms[line]} линии.\n`
+    : `Определяются ${fractureTypes[fractureType].plural} переломы ${ribsText}, по ${lineForms[line]} линии.\n`;
+
+  const newText = value.substring(0, start) + insertText + value.substring(end);
+  textarea.value = newText;
+
+  const event = new Event("input", { bubbles: true });
+  textarea.dispatchEvent(event);
+
+  textarea.focus();
+  textarea.setSelectionRange(start + insertText.length, start + insertText.length);
+
+  onClose();
+};
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50" onClick={onClose}>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+      
+    >
       <div
-        className="relative w-[983px] h-[680px] bg-gray-900 rounded-lg shadow-xl overflow-hidden"
+        className="relative w-[800px] h-[750px] bg-gray-900 rounded-lg overflow-hidden shadow-xl p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Кнопка закрытия */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-yellow-400 hover:text-yellow-200 z-20"
+          className="absolute top-4 right-4 text-yellow-400 hover:text-yellow-200"
         >
           <XMarkIcon className="h-6 w-6" />
         </button>
 
-        {/* Нижняя секция с картинкой и ребрами */}
-        <div className="absolute top-0 w-full" style={{ height: "403px" }}>
-          <img
-            src="/images/lungs.jpg"
-            alt="Легкие"
-            className="w-full h-full object-cover rounded"
-          />
-          {ribs.map(({ id, text, pos }) => (
+        <h2 className="text-yellow-300 text-lg mb-4">Выберите рёбра</h2>
+
+        {/* Левое и правое */}
+        <div className="flex gap-8 mb-6">
+          {/* Левое */}
+          <div>
+            <h3 className="text-yellow-400 mb-2">Левые рёбра</h3>
+            <div className="grid grid-cols-6 gap-2">
+              {ribsLeft.map((rib) => (
+                <button
+                  key={`L-${rib}`}
+                  onClick={() => toggleRib("L", rib)}
+                  className={`px-3 py-2 border rounded text-sm ${
+                    selectedRibs.includes(`L-${rib}`)
+                      ? "bg-yellow-500 text-black border-yellow-400"
+                      : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
+                  }`}
+                >
+                  {rib}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Правое */}
+          <div>
+            <h3 className="text-yellow-400 mb-2">Правые рёбра</h3>
+            <div className="grid grid-cols-6 gap-2">
+              {ribsRight.map((rib) => (
+                <button
+                  key={`R-${rib}`}
+                  onClick={() => toggleRib("R", rib)}
+                  className={`px-3 py-2 border rounded text-sm ${
+                    selectedRibs.includes(`R-${rib}`)
+                      ? "bg-yellow-500 text-black border-yellow-400"
+                      : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
+                  }`}
+                >
+                  {rib}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Состояние перелома */}
+        <h3 className="text-yellow-300 mb-2">Состояние перелома</h3>
+        <div className="flex gap-4 mb-6">
+          {["Сросшийся", "Свежий"].map((type) => (
             <button
-              key={id}
-              onClick={() => toggleSegment(text)}
-              className={`absolute w-10 h-10 rounded-full border border-black flex items-center justify-center hover:bg-yellow-100/30 ${
-                selectedSegments.includes(text) ? "bg-yellow-400/50" : ""
+              key={type}
+              onClick={() => setFractureType(type)}
+              className={`px-4 py-2 rounded border ${
+                fractureType === type
+                  ? "bg-yellow-500 text-black border-yellow-400"
+                  : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
               }`}
-              style={pos}
             >
-              {id}
+              {type}
             </button>
           ))}
         </div>
 
-        {/* Верхняя секция кнопок */}
-        <div className="absolute bottom-0 left-0 w-full h-[270px] bg-gray-900 flex flex-col justify-center px-6 py-4 space-y-3">
-          {/* Тип патологии */}
-          <div className="flex items-center space-x-4">
-            <span className="text-yellow-400 font-semibold">Тип патологии:</span>
-            {types.map((type) => (
+        {/* Линия грудной клетки */}
+        <h3 className="text-yellow-300 mb-2">Линия грудной клетки</h3>
+        <div className="flex flex-wrap gap-4 mb-6">
+          {["Средне-ключичная", "Передняя подмышечная", "Средняя подмышечная", "Задняя подмышечная", "Лопаточная"].map(
+            (ln) => (
               <button
-                key={type}
-                onClick={() => handleClickSelect(type, setSelectedType, selectedType)}
-                className={`px-3 py-1.5 rounded-full border border-yellow-400 text-yellow-200 hover:bg-yellow-400/30 ${
-                  selectedType === type ? "bg-yellow-400/50" : ""
+                key={ln}
+                onClick={() => setLine(ln)}
+                className={`px-4 py-2 rounded border ${
+                  line === ln
+                    ? "bg-yellow-500 text-black border-yellow-400"
+                    : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
                 }`}
               >
-                {type}
+                {ln}
               </button>
-            ))}
-          </div>
-
-          {/* Сторона */}
-          <div className="flex items-center space-x-4">
-            <span className="text-yellow-400 font-semibold">Сторона:</span>
-            {sides.map((side) => (
-              <button
-                key={side}
-                onClick={() => toggleSide(side)}
-                className={`px-3 py-1.5 rounded-full border border-yellow-400 text-yellow-200 hover:bg-yellow-400/30 ${
-                  selectedSide.includes(side) ? "bg-yellow-400/50" : ""
-                }`}
-              >
-                {side}
-              </button>
-            ))}
-          </div>
-
-          {/* Уровень ребер */}
-          <div className="flex items-center space-x-4">
-            <span className="text-yellow-400 font-semibold">Уровень:</span>
-            {levels.map((level) => (
-              <button
-                key={level}
-                onClick={() => toggleLevel(level)}
-                className={`px-3 py-1.5 rounded-full border border-yellow-400 text-yellow-200 hover:bg-yellow-400/30 ${
-                  selectedLevel.includes(level) ? "bg-yellow-400/50" : ""
-                }`}
-              >
-                {level}
-              </button>
-            ))}
-          </div>
-
-          {/* Интенсивность */}
-          <div className="flex items-center space-x-4">
-            <span className="text-yellow-400 font-semibold">Интенсивность:</span>
-            {intensities.map((i) => (
-              <button
-                key={i}
-                onClick={() => handleClickSelect(i, setSelectedIntensity, selectedIntensity)}
-                className={`px-3 py-1.5 rounded-full border border-yellow-400 text-yellow-200 hover:bg-yellow-400/30 ${
-                  selectedIntensity === i ? "bg-yellow-400/50" : ""
-                }`}
-              >
-                {i}
-              </button>
-            ))}
-          </div>
-
-          {/* Кнопка добавить */}
-          <div className="mt-2">
-            <button
-              onClick={() => {
-                insertSelected();
-                onClose();
-              }}
-              className="px-6 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-300"
-            >
-              Добавить
-            </button>
-          </div>
+            )
+          )}
         </div>
+
+        {/* Добавить */}
+        <button
+          onClick={insertSelected}
+          disabled={selectedRibs.length === 0 || !fractureType || !line}
+          className={`absolute bottom-4 right-4 px-6 py-2 rounded ${
+            selectedRibs.length > 0 && fractureType && line
+              ? "bg-yellow-400 text-black hover:bg-yellow-300"
+              : "bg-gray-600 text-gray-400 cursor-not-allowed"
+          }`}
+        >
+          Добавить
+        </button>
       </div>
     </div>
   );

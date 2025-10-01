@@ -3,8 +3,9 @@ import { useState } from "react";
 
 export default function SpineCurvatureModal({ onClose, textareaRef }) {
   const [selected, setSelected] = useState([]);
-  const [curveType, setCurveType] = useState("не искривлена"); // ✅ по дефолту
+  const [curveType, setCurveType] = useState("не искривлена"); // по дефолту
   const [cobbAngle, setCobbAngle] = useState("");
+  const [cCurveDirection, setCCurveDirection] = useState("влево"); // направление C-образного
 
   const vertebraeGroups = {
     "Шейный отдел": ["C1","C2","C3","C4","C5","C6","C7"],
@@ -27,55 +28,54 @@ export default function SpineCurvatureModal({ onClose, textareaRef }) {
   };
 
   const insertSelected = () => {
-  if (!textareaRef.current) return;
-  if ((curveType === "C-образно" && selected.length !== 3) ||
-      (curveType === "S-образно" && selected.length !== 4)) return;
+    if (!textareaRef.current) return;
+    if ((curveType === "C-образно" && selected.length !== 3) ||
+        (curveType === "S-образно" && selected.length !== 4)) return;
 
-  const textarea = textareaRef.current;
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const value = textarea.value;
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const value = textarea.value;
 
-  let insertText = "";
+    let insertText = "";
 
-  if (curveType === "не искривлена") {
-    insertText = "Ось позвоночника не искривлена.\n"; // ✅ новый текст
-  } else {
-    const sortedSelected = selected.slice().sort((a,b) => allVertebrae.indexOf(a) - allVertebrae.indexOf(b));
-
-    if (curveType === "C-образно") {
-      const from = sortedSelected[0];
-      const to = sortedSelected[2];
-      const mid = sortedSelected[1];
-
-      insertText = `Позвоночный столб ${curveType} искривлен на уровне ${from}-${to} с высотой в ${mid}`;
-      if (cobbAngle.trim() !== "") {
-        insertText += `, угол отклонения ${cobbAngle}° по методу Кобба`;
-      }
-      insertText += ".\n";
+    if (curveType === "не искривлена") {
+      insertText = "Ось позвоночника не искривлена.\n";
     } else {
-      // S-образно
-      const from = sortedSelected[0];
-      const to = sortedSelected[3];
-      const mid1 = sortedSelected[1];
-      const mid2 = sortedSelected[2];
+      const sortedSelected = selected.slice().sort((a,b) => allVertebrae.indexOf(a) - allVertebrae.indexOf(b));
 
-      insertText = `Позвоночный столб ${curveType} искривлен на уровне ${from}-${to} с высотой искривления в ${mid1} и ${mid2}.\n`;
+      if (curveType === "C-образно") {
+        const from = sortedSelected[0];
+        const to = sortedSelected[2];
+        const mid = sortedSelected[1];
+
+        insertText = `Ось позвоночника ${curveType} искривлена ${cCurveDirection} на уровне ${from}-${to} с высотой в ${mid}`;
+        if (cobbAngle.trim() !== "") {
+          insertText += `, угол отклонения ${cobbAngle}° по методу Кобба`;
+        }
+        insertText += ".\n";
+      } else {
+        // S-образно
+        const from = sortedSelected[0];
+        const to = sortedSelected[3];
+        const mid1 = sortedSelected[1];
+        const mid2 = sortedSelected[2];
+
+        insertText = `Позвоночный столб ${curveType} искривлен на уровне ${from}-${to} с высотой искривления в ${mid1} и ${mid2}.\n`;
+      }
     }
-  }
 
-  const newText = value.substring(0, start) + insertText + value.substring(end);
-  textarea.value = newText;
+    const newText = value.substring(0, start) + insertText + value.substring(end);
+    textarea.value = newText;
 
-  const event = new Event("input", { bubbles: true });
-  textarea.dispatchEvent(event);
+    const event = new Event("input", { bubbles: true });
+    textarea.dispatchEvent(event);
 
-  textarea.focus();
-  textarea.setSelectionRange(start + insertText.length, start + insertText.length);
+    textarea.focus();
+    textarea.setSelectionRange(start + insertText.length, start + insertText.length);
 
-  onClose();
-};
-
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50" onClick={onClose}>
@@ -96,6 +96,7 @@ export default function SpineCurvatureModal({ onClose, textareaRef }) {
                 setCurveType(type);
                 setSelected([]);
                 setCobbAngle("");
+                if(type !== "C-образно") setCCurveDirection("влево");
               }}
               className={`px-4 py-2 rounded border ${
                 curveType === type
@@ -103,10 +104,29 @@ export default function SpineCurvatureModal({ onClose, textareaRef }) {
                   : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
               }`}
             >
-              {type.charAt(0).toUpperCase() + type.slice(1)} {/* ✅ заглавная буква */}
+              {type.charAt(0).toUpperCase() + type.slice(1)}
             </button>
           ))}
         </div>
+
+        {/* Выбор направления для C-образного */}
+        {curveType === "C-образно" && (
+          <div className="flex gap-2 mb-4">
+            {["влево","вправо"].map((dir) => (
+              <button
+                key={dir}
+                onClick={() => setCCurveDirection(dir)}
+                className={`px-4 py-2 rounded border ${
+                  cCurveDirection === dir
+                    ? "bg-yellow-400 text-black border-yellow-400"
+                    : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
+                }`}
+              >
+                {dir.charAt(0).toUpperCase() + dir.slice(1)}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Угол отклонения только для С-образного */}
         {curveType === "C-образно" && (
@@ -122,7 +142,7 @@ export default function SpineCurvatureModal({ onClose, textareaRef }) {
         )}
 
         <div className="space-y-4 overflow-y-auto max-h-[520px] pr-2">
-          {Object.entries(vertebraeGroups).map(([section, verts]) => (
+          {curveType !== "не искривлена" && Object.entries(vertebraeGroups).map(([section, verts]) => (
             <div key={section}>
               <h3 className="text-yellow-400 mb-2">{section}</h3>
               <div className="grid grid-cols-8 gap-2">
@@ -135,7 +155,7 @@ export default function SpineCurvatureModal({ onClose, textareaRef }) {
                         ? "bg-yellow-500 text-black border-yellow-400"
                         : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
                     }`}
-                    disabled={curveType === "не искривлена"} // ✅ блокировка кнопок
+                    disabled={curveType === "не искривлена"}
                   >
                     {v}
                   </button>

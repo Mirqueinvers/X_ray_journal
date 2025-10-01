@@ -104,7 +104,7 @@ export default function JointSurfaceSection({
     if (!textarea) return;
 
     const change = changeMap[changeLevel] || changeLevel;
-    const fullText = `Суставные поверхности коленных суставов ${change} ${location}\n`;
+    const fullText = `Суставные поверхности ${change} ${location}\n`;
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;

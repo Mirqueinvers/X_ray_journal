@@ -69,8 +69,8 @@ const insertSelected = () => {
   const ribsText = phrases.join(", ");
 
   const insertText = isSingle
-    ? `Определяется ${fractureTypes[fractureType].single} перелом ${ribsText}, по ${lineForms[line]} линии.\n`
-    : `Определяются ${fractureTypes[fractureType].plural} переломы ${ribsText}, по ${lineForms[line]} линии.\n`;
+    ? `\nОпределяется ${fractureTypes[fractureType].single} перелом ${ribsText}, по ${lineForms[line]} линии.\n`
+    : `\nОпределяются ${fractureTypes[fractureType].plural} переломы ${ribsText}, по ${lineForms[line]} линии.\n`;
 
   const newText = value.substring(0, start) + insertText + value.substring(end);
   textarea.value = newText;

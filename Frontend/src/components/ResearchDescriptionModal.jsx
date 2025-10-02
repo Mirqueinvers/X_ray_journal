@@ -8,13 +8,16 @@ import HipResearchPlaques from "./hipjoints/HipResearchPlaques";
 import AnkleResearchPlaques from "./anklejoints/AnkleResearchPlaques";
 import FeetResearchPlaques from "./feet/FeetResearchPlaques";
 import HandResearchPlaques from "./hand/HandResearchPlaques";
-import LumbarResearchPlaques from "./lumbar/LumbarResearchPlaques";
+import LumbarResearchPlaques from "./spine/LumbarResearchPlaques";
+import ThoracicResearchPlaques from "./spine/ThoracicResearchPlaques"; // ✅ импорт компонента ThoracicResearchPlaques
 import OsteophytesModal from "./knees/OsteophytesModal";
 import HipOsteophytesModal from "./hipjoints/OsteophytesModal";
 import FeetOsteophytesModal from "./feet/OsteophytesModal";
 import HandOsteophytesModal from "./hand/OsteophytesModal";
-import LumbarOsteophytesModal from "./lumbar/OsteophytesModal";
+import LumbarOsteophytesModal from "./spine/OsteophytesModal";
 import LungResearchPlaques from "./lungs/LungResearchPlaques";
+import ThoracicOsteophytesModal from "./spine/OsteophytesModal"; // ✅ импорт модалки остеофитов для грудного отдела
+import CervicalResearchPlaques from "./spine/CervicalResearchPlaques"; // Добавлен импорт
 
 export default function ResearchDescriptionModal({ onClose, description }) {
   const [expandedCategory, setExpandedCategory] = useState(null);
@@ -32,6 +35,7 @@ export default function ResearchDescriptionModal({ onClose, description }) {
   const [showFeetOsteophytesModal, setShowFeetOsteophytesModal] = useState(false);
   const [showHandOsteophytesModal, setShowHandOsteophytesModal] = useState(false);
   const [showLumbarOsteophytesModal, setShowLumbarOsteophytesModal] = useState(false);
+  const [showThoracicOsteophytesModal, setShowThoracicOsteophytesModal] = useState(false); // ✅ стейт для остеофитов грудного отдела
   const [showLungOsteophytesModal, setShowLungOsteophytesModal] = useState(false);
   const [copied, setCopied] = useState(false);
   const textareaRef = useRef(null);
@@ -336,7 +340,7 @@ export default function ResearchDescriptionModal({ onClose, description }) {
                 )}
 
                 {/* Плашки для поясницы */}
-                {["Рентгенография поясничного отдела позвоночника", "Рентгенография грудопоясничного отдела позвоночника", "Рентгенография грудного отдела позвоночника", "Рентгенография шейного отдела позвоночника"].includes(selectedResearch) && (
+                {["Рентгенография поясничного отдела позвоночника", "Рентгенография грудопоясничного отдела позвоночника"].includes(selectedResearch) && (
                   <LumbarResearchPlaques
                     expandedPlaque={expandedPlaque}
                     setExpandedPlaque={setExpandedPlaque}
@@ -350,6 +354,34 @@ export default function ResearchDescriptionModal({ onClose, description }) {
                     setSelectedShapeLevel={setSelectedShapeLevel}
                     showOsteophytesModal={showLumbarOsteophytesModal}
                     setShowOsteophytesModal={setShowLumbarOsteophytesModal}
+                    textareaRef={textareaRef}
+                  />
+                )}
+
+                {/* Плашки для грудного отдела */}
+                {["Рентгенография грудного отдела позвоночника"].includes(selectedResearch) && ( // ✅ условие для грудного отдела
+                  <ThoracicResearchPlaques
+                    expandedPlaque={expandedPlaque}
+                    setExpandedPlaque={setExpandedPlaque}
+                    selectedSubItem={selectedSubItem}
+                    setSelectedSubItem={setSelectedSubItem}
+                    selectedNarrowingLevel={selectedNarrowingLevel}
+                    setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                    selectedChangeLevel={selectedChangeLevel}
+                    setSelectedChangeLevel={setSelectedChangeLevel}
+                    selectedShapeLevel={selectedShapeLevel}
+                    setSelectedShapeLevel={setSelectedShapeLevel}
+                    showOsteophytesModal={showThoracicOsteophytesModal} // ✅ состояние для остеофитов
+                    setShowOsteophytesModal={setShowThoracicOsteophytesModal} // ✅ обработчик для остеофитов
+                    textareaRef={textareaRef}
+                  />
+                )}
+
+                {/* Плашки для шейного отдела позвоночника */}
+                {["Рентгенография шейного отдела позвоночника"].includes(selectedResearch) && (
+                  <CervicalResearchPlaques
+                    expandedPlaque={expandedPlaque}
+                    setExpandedPlaque={setExpandedPlaque}
                     textareaRef={textareaRef}
                   />
                 )}
@@ -416,6 +448,14 @@ export default function ResearchDescriptionModal({ onClose, description }) {
         {showLumbarOsteophytesModal && (
           <LumbarOsteophytesModal
             onClose={() => setShowLumbarOsteophytesModal(false)}
+            textareaRef={textareaRef}
+          />
+        )}
+
+        {/* Модалка остеофитов для грудного отдела */}
+        {showThoracicOsteophytesModal && ( // ✅ рендер модалки остеофитов для грудного отдела
+          <ThoracicOsteophytesModal
+            onClose={() => setShowThoracicOsteophytesModal(false)}
             textareaRef={textareaRef}
           />
         )}

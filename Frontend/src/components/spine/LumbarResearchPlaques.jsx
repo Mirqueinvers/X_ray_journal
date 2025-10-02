@@ -5,10 +5,11 @@ import LumbarIntegritySection from "./IntegritySection";
 import LumbarParaarticularTissuesSection from "./ParaarticularTissuesSection";
 import SpineModal from "./SpineModal";
 import SpineCurvatureModal from "./SpineCurvatureModal";
-import LumbarLordosisSection from "./LumbarLordosisSection";
+import LumbarLordosisSection from "./LordosisSection";
 import IntervertebralDiscsModal from "./IntervertebralDiscsModal";
 import EndplatesModal from "./EndplatesModal";
-import OsteophytesModal from "./OsteophytesModal"; // ✅ импорт модалки остеофитов
+import OsteophytesModal from "./OsteophytesModal";
+import InstabilityModal from "./InstabilityModal"; // Добавлен импорт InstabilityModal
 
 export default function LumbarResearchPlaques({
   expandedPlaque,
@@ -19,7 +20,8 @@ export default function LumbarResearchPlaques({
   const [showCurvatureModal, setShowCurvatureModal] = useState(false);
   const [showDiscsModal, setShowDiscsModal] = useState(false);
   const [showEndplatesModal, setShowEndplatesModal] = useState(false);
-  const [showOsteophytesModal, setShowOsteophytesModal] = useState(false); // ✅ стейт для остеофитов
+  const [showOsteophytesModal, setShowOsteophytesModal] = useState(false);
+  const [showInstabilityModal, setShowInstabilityModal] = useState(false); // Состояние для InstabilityModal
 
   const lumbarJointPlaques = [
     "Позвоночный столб",
@@ -27,7 +29,8 @@ export default function LumbarResearchPlaques({
     "Лордоз",
     "Межпозвонковые диски",
     "Замыкательные пластинки",
-    "Остеофиты", // ✅ новая плашка
+    "Остеофиты",
+    "Нестабильность", // Добавлена плашка Нестабильность
     "Целостность",
     "Параартикулярные ткани",
   ];
@@ -99,7 +102,7 @@ export default function LumbarResearchPlaques({
           );
         }
 
-        if (plaque === "Остеофиты") { // ✅ обработка остеофитов
+        if (plaque === "Остеофиты") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>
               <div
@@ -107,6 +110,22 @@ export default function LumbarResearchPlaques({
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowOsteophytesModal(true);
+                }}
+              >
+                <span>{plaque}</span>
+              </div>
+            </div>
+          );
+        }
+
+        if (plaque === "Нестабильность") { // Обработка плашки Нестабильность
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowInstabilityModal(true);
                 }}
               >
                 <span>{plaque}</span>
@@ -222,9 +241,17 @@ export default function LumbarResearchPlaques({
         />
       )}
 
-      {showOsteophytesModal && ( // ✅ рендер модалки остеофитов
+      {showOsteophytesModal && (
         <OsteophytesModal
           onClose={() => setShowOsteophytesModal(false)}
+          textareaRef={textareaRef}
+        />
+      )}
+
+      {/* Модалка Нестабильности */}
+      {showInstabilityModal && (
+        <InstabilityModal
+          onClose={() => setShowInstabilityModal(false)}
           textareaRef={textareaRef}
         />
       )}

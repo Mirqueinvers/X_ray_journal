@@ -6,6 +6,7 @@ export default function SpineCurvatureModal({ onClose, textareaRef }) {
   const [curveType, setCurveType] = useState("не искривлена"); // по дефолту
   const [cobbAngle, setCobbAngle] = useState("");
   const [cCurveDirection, setCCurveDirection] = useState("влево"); // направление C-образного
+  const [torsion, setTorsion] = useState(false);
 
   const vertebraeGroups = {
     "Шейный отдел": ["C1","C2","C3","C4","C5","C6","C7"],
@@ -28,54 +29,69 @@ export default function SpineCurvatureModal({ onClose, textareaRef }) {
   };
 
   const insertSelected = () => {
-    if (!textareaRef.current) return;
-    if ((curveType === "C-образно" && selected.length !== 3) ||
-        (curveType === "S-образно" && selected.length !== 4)) return;
+  if (!textareaRef.current) return;
 
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const value = textarea.value;
+  const textarea = textareaRef.current;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const value = textarea.value;
 
-    let insertText = "";
+  let insertText = "";
 
-    if (curveType === "не искривлена") {
-      insertText = "Ось позвоночника не искривлена.\n";
-    } else {
-      const sortedSelected = selected.slice().sort((a,b) => allVertebrae.indexOf(a) - allVertebrae.indexOf(b));
+  // --- не искривлена ---
+  if (curveType === "не искривлена") {
+    insertText = "Ось позвоночника не искривлена.\n";
+  } else {
+    const sortedSelected = selected.slice().sort(
+      (a, b) => allVertebrae.indexOf(a) - allVertebrae.indexOf(b)
+    );
 
-      if (curveType === "C-образно") {
-        const from = sortedSelected[0];
-        const to = sortedSelected[2];
-        const mid = sortedSelected[1];
+    // --- C-образно ---
+    if (curveType === "C-образно" && selected.length === 3) {
+      const from = sortedSelected[0];
+      const to = sortedSelected[2];
+      const mid = sortedSelected[1];
 
-        insertText = `Ось позвоночника ${curveType} искривлена ${cCurveDirection} на уровне ${from}-${to} с высотой в ${mid}`;
-        if (cobbAngle.trim() !== "") {
-          insertText += `, угол отклонения ${cobbAngle}° по методу Кобба`;
-        }
-        insertText += ".\n";
-      } else {
-        // S-образно
-        const from = sortedSelected[0];
-        const to = sortedSelected[3];
-        const mid1 = sortedSelected[1];
-        const mid2 = sortedSelected[2];
-
-        insertText = `Позвоночный столб ${curveType} искривлен на уровне ${from}-${to} с высотой искривления в ${mid1} и ${mid2}.\n`;
+      insertText = `Ось позвоночника ${curveType} искривлена ${cCurveDirection} на уровне ${from}-${to} с высотой в ${mid}`;
+      if (cobbAngle.trim() !== "") {
+        insertText += `, угол отклонения ${cobbAngle}° по методу Кобба`;
       }
+      insertText += ".\n";
     }
 
-    const newText = value.substring(0, start) + insertText + value.substring(end);
-    textarea.value = newText;
+    // --- S-образно ---
+    if (curveType === "S-образно" && selected.length === 4) {
+      const from = sortedSelected[0];
+      const to = sortedSelected[3];
+      const mid1 = sortedSelected[1];
+      const mid2 = sortedSelected[2];
 
-    const event = new Event("input", { bubbles: true });
-    textarea.dispatchEvent(event);
+      insertText = `Позвоночный столб ${curveType} искривлен на уровне ${from}-${to} с высотой искривления в ${mid1} и ${mid2}.\n`;
+    }
 
-    textarea.focus();
-    textarea.setSelectionRange(start + insertText.length, start + insertText.length);
+    // --- торсия ---
+    if (torsion) {
+      
+      insertText = insertText.trim().replace(/\.$/, ""); // убираем точку в конце
+      insertText += ", определяется торсия позвонков на высоте изгиба.";
+    }
+  }
 
-    onClose();
-  };
+  const newText = value.substring(0, start) + insertText + value.substring(end);
+  textarea.value = newText;
+
+  const event = new Event("input", { bubbles: true });
+  textarea.dispatchEvent(event);
+
+  textarea.focus();
+  textarea.setSelectionRange(
+    start + insertText.length,
+    start + insertText.length
+  );
+
+  onClose();
+};
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50" onClick={onClose}>
@@ -125,6 +141,21 @@ export default function SpineCurvatureModal({ onClose, textareaRef }) {
                 {dir.charAt(0).toUpperCase() + dir.slice(1)}
               </button>
             ))}
+          </div>
+        )}
+
+        {curveType === "C-образно" && (
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => setTorsion(!torsion)}
+              className={`px-4 py-2 rounded border ${
+                torsion
+                  ? "bg-yellow-400 text-black border-yellow-400"
+                  : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
+              }`}
+            >
+              Торсия
+            </button>
           </div>
         )}
 

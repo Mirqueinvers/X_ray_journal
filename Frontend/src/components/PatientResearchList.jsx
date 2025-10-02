@@ -1,10 +1,16 @@
 import { PencilIcon, TrashIcon, DocumentDuplicateIcon, CheckCircleIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import { useState, useEffect } from 'react';
+import ResearchTypeModal from './ResearchTypeModal';
 import ResearchDescriptionModal from './ResearchDescriptionModal';
 
 export default function PatientResearchList({ patientId, researches, onEdit, onDelete, onIssue }) {
   const [issuedResearchIds, setIssuedResearchIds] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
+  const [selectedResearch, setSelectedResearch] = useState(null);
+  const [currentDescription, setCurrentDescription] = useState("");
+  const [insertedText, setInsertedText] = useState("");
+  const [textareaRef, setTextareaRef] = useState(null);
   
   // Инициализируем состояние на основе данных с сервера
   useEffect(() => {
@@ -19,7 +25,6 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
 
   // Функция для выдачи снимков
   const handleIssue = (researchId) => {
-    // Если исследование уже выдано, то отменяем выдачу
     const isCurrentlyIssued = issuedResearchIds.includes(researchId) || 
                              researches.find(r => r.id === researchId)?.issued_on_hands;
     
@@ -27,24 +32,52 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
       handleCancelIssue(researchId);
     } else {
       setIssuedResearchIds(prev => [...prev, researchId]);
-      onIssue?.(researchId, false); // false - не отмена, а выдача
+      onIssue?.(researchId, false);
     }
   };
 
   // Функция для отмены выдачи
   const handleCancelIssue = (researchId) => {
     setIssuedResearchIds(prev => prev.filter(id => id !== researchId));
-    onIssue?.(researchId, true); // true - отмена выдачи
+    onIssue?.(researchId, true);
+  };
+
+  // Открыть модальное окно выбора типа исследования
+  const openTypeModal = (ref) => {
+    setTextareaRef(ref);
+    setIsTypeModalOpen(true);
+  };
+
+  // Закрыть модальное окно выбора типа исследования
+  const closeTypeModal = () => {
+    setIsTypeModalOpen(false);
+  };
+
+  // Обработчик выбора типа исследования
+  const handleResearchTypeSelect = (researchName) => {
+    setSelectedResearch(researchName);
+    setCurrentDescription("");
+  };
+
+  // Обработчик открытия модалки описания
+  const handleOpenDescriptionModal = () => {
+    setIsDescriptionModalOpen(true);
+  };
+
+  // Обработчик вставки текста в описание
+  const handleInsertText = (text, researchName) => {
+    setInsertedText(text);
+    setSelectedResearch(researchName); // Устанавливаем selectedResearch
   };
 
   // Открыть модальное окно описания
   const openDescriptionModal = () => {
-    setIsModalOpen(true);
+    setIsDescriptionModalOpen(true);
   };
 
-  // Закрыть модальное окно
+  // Закрыть модальное окно описания
   const closeDescriptionModal = () => {
-    setIsModalOpen(false);
+    setIsDescriptionModalOpen(false);
   };
 
   return (
@@ -65,7 +98,7 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
               <button
                 onClick={(e) => { 
                   e.stopPropagation(); 
-                  openDescriptionModal();
+                  openTypeModal();
                 }}
                 className="h-4 w-4 text-yellow-400 cursor-pointer hover:text-yellow-300"
                 title="Описание исследования"
@@ -89,7 +122,7 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
               <button
                 onClick={(e) => { 
                   e.stopPropagation(); 
-                  handleIssue(r.id); // Объединенная функция для выдачи/отмены
+                  handleIssue(r.id);
                 }}
                 className={`h-4 w-4 cursor-pointer ${
                   isIssued 
@@ -125,9 +158,24 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
         );
       })}
       
+      {/* Модальное окно выбора типа исследования */}
+      {isTypeModalOpen && (
+        <ResearchTypeModal 
+          onClose={closeTypeModal} 
+          onResearchSelect={handleResearchTypeSelect}
+          onInsertText={handleInsertText}
+          onOpenDescriptionModal={handleOpenDescriptionModal}
+        />
+      )}
+
       {/* Модальное окно описания исследования */}
-      {isModalOpen && (
-        <ResearchDescriptionModal onClose={closeDescriptionModal} />
+      {isDescriptionModalOpen && (
+        <ResearchDescriptionModal 
+          onClose={closeDescriptionModal} 
+          selectedResearch={selectedResearch}
+          description={insertedText}
+          setTextareaRef={setTextareaRef}
+        />
       )}
     </div>
   );

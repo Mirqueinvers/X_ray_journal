@@ -1,29 +1,19 @@
-// Frontend/src/components/ResearchDescriptionModal.jsx
-// ResearchDescriptionModal.jsx
 import { useState, useRef, useEffect } from "react";
-import { XMarkIcon, ChevronDownIcon, ChevronRightIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
-import researchData from "./ResearchData";
+import { XMarkIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import KneeResearchPlaques from "./knees/KneeResearchPlaques";
 import HipResearchPlaques from "./hipjoints/HipResearchPlaques";
 import AnkleResearchPlaques from "./anklejoints/AnkleResearchPlaques";
 import FeetResearchPlaques from "./feet/FeetResearchPlaques";
 import HandResearchPlaques from "./hand/HandResearchPlaques";
 import LumbarResearchPlaques from "./spine/LumbarResearchPlaques";
-import ThoracicResearchPlaques from "./spine/ThoracicResearchPlaques"; // ✅ импорт компонента ThoracicResearchPlaques
+import ThoracicResearchPlaques from "./spine/ThoracicResearchPlaques";
 import OsteophytesModal from "./knees/OsteophytesModal";
-import HipOsteophytesModal from "./hipjoints/OsteophytesModal";
-import FeetOsteophytesModal from "./feet/OsteophytesModal";
-import HandOsteophytesModal from "./hand/OsteophytesModal";
 import LumbarOsteophytesModal from "./spine/OsteophytesModal";
 import LungResearchPlaques from "./lungs/LungResearchPlaques";
-import ThoracicOsteophytesModal from "./spine/OsteophytesModal"; // ✅ импорт модалки остеофитов для грудного отдела
-import CervicalResearchPlaques from "./spine/CervicalResearchPlaques"; // Добавлен импорт
+import ThoracicOsteophytesModal from "./spine/OsteophytesModal";
+import CervicalResearchPlaques from "./spine/CervicalResearchPlaques";
 
-export default function ResearchDescriptionModal({ onClose, description }) {
-  const [expandedCategory, setExpandedCategory] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [expandedItems, setExpandedItems] = useState({});
-  const [selectedResearch, setSelectedResearch] = useState(null);
+export default function ResearchDescriptionModal({ onClose, description, selectedResearch, setTextareaRef }) {
   const [expandedPlaque, setExpandedPlaque] = useState(null);
   const [selectedSubItem, setSelectedSubItem] = useState(null);
   const [selectedNarrowingLevel, setSelectedNarrowingLevel] = useState(null);
@@ -35,14 +25,25 @@ export default function ResearchDescriptionModal({ onClose, description }) {
   const [showFeetOsteophytesModal, setShowFeetOsteophytesModal] = useState(false);
   const [showHandOsteophytesModal, setShowHandOsteophytesModal] = useState(false);
   const [showLumbarOsteophytesModal, setShowLumbarOsteophytesModal] = useState(false);
-  const [showThoracicOsteophytesModal, setShowThoracicOsteophytesModal] = useState(false); // ✅ стейт для остеофитов грудного отдела
+  const [showThoracicOsteophytesModal, setShowThoracicOsteophytesModal] = useState(false);
   const [showLungOsteophytesModal, setShowLungOsteophytesModal] = useState(false);
   const [copied, setCopied] = useState(false);
   const textareaRef = useRef(null);
 
-    useEffect(() => {
+  // Добавим отладочную информацию
+  useEffect(() => {
+    console.log("ResearchDescriptionModal selectedResearch:", selectedResearch);
+  }, [selectedResearch]);
+
+  useEffect(() => {
+    // Передаем textareaRef родительскому компоненту
+    if (setTextareaRef) {
+      setTextareaRef(textareaRef.current);
+    }
+  }, [setTextareaRef]);
+
+  useEffect(() => {
     const handleKeyDown = (e) => {
-      // запрещаем закрытие по пробелу внутри модалки
       if (e.code === "Space" || e.key === " ") {
         e.stopPropagation();
       }
@@ -55,18 +56,19 @@ export default function ResearchDescriptionModal({ onClose, description }) {
     };
   }, []);
 
-  const researchCategories = researchData.researchCategories;
-
-  const toggleCategory = (categoryId) => {
-    setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
-  };
-
-  const toggleItem = (index) => {
-    setExpandedItems((prev) => ({
-      ...prev,
-      [index]: prev[index] === true ? false : true,
-    }));
-  };
+  // Эффект для вставки текста при открытии модалки
+  useEffect(() => {
+    if (description && textareaRef.current) {
+      const textarea = textareaRef.current;
+      // Устанавливаем значение и фокусируемся на поле
+      textarea.value = description;
+      textarea.focus();
+      
+      // Перемещаем курсор в конец
+      const length = textarea.value.length;
+      textarea.setSelectionRange(length, length);
+    }
+  }, [description]);
 
   const insertTextToTextarea = (researchName, projection) => {
     const textarea = textareaRef.current;
@@ -85,16 +87,12 @@ export default function ResearchDescriptionModal({ onClose, description }) {
 
     const event = new Event("input", { bubbles: true });
     textarea.dispatchEvent(event);
-
-    setSelectedResearch(researchName);
-    setExpandedCategory(null);
   };
 
   const copyToClipboard = () => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    // Добавляем отступы: два сверху и один снизу
     const text = textarea.value;
     const formattedText = `\n\n${text}\n`;
     
@@ -107,12 +105,6 @@ export default function ResearchDescriptionModal({ onClose, description }) {
         console.error('Ошибка копирования:', err);
       });
   };
-
-  const filteredItems = researchCategories[1].items.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  
 
   return (
     <div
@@ -163,254 +155,173 @@ export default function ResearchDescriptionModal({ onClose, description }) {
             <div className="h-full w-px bg-yellow-500"></div>
           </div>
 
-          {/* Правая часть с категориями */}
-          <div className="w-1/3 pl-4 flex flex-col">
+          {/* Правая часть с плашками */}
+          <div className="w-1/3 pl-4">
             <div className="space-y-4">
-              <div>
-                <div
-                  className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer flex justify-between items-center"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleCategory(1);
-                  }}
-                >
-                  <span>Вид исследования</span>
-                  {expandedCategory === 1 ? (
-                    <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                  ) : (
-                    <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-                  )}
-                </div>
+              {/* Плашки для коленного сустава */}
+              {selectedResearch && ["Рентгенография коленных суставов", "Рентгенoграфия левого коленного сустава", "Рентгенография правого коленного сустава"].includes(selectedResearch) && (
+                <KneeResearchPlaques
+                  expandedPlaque={expandedPlaque}
+                  setExpandedPlaque={setExpandedPlaque}
+                  selectedSubItem={selectedSubItem}
+                  setSelectedSubItem={setSelectedSubItem}
+                  selectedNarrowingLevel={selectedNarrowingLevel}
+                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                  selectedChangeLevel={selectedChangeLevel}
+                  setSelectedChangeLevel={setSelectedChangeLevel}
+                  selectedShapeLevel={selectedShapeLevel}
+                  setSelectedShapeLevel={setSelectedShapeLevel}
+                  showOsteophytesModal={showOsteophytesModal}
+                  setShowOsteophytesModal={setShowOsteophytesModal}
+                  textareaRef={textareaRef}
+                />
+              )}
 
-                {expandedCategory === 1 && (
-                  <div className="mt-2 ml-4 flex flex-col">
-                    {/* Поиск */}
-                    <div className="mb-2">
-                      <input
-                        type="text"
-                        placeholder="Поиск исследования..."
-                        className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </div>
+              {/* Плашки для тазобедренного сустава */}
+              {selectedResearch && ["Рентгенография тазобедренных суставов", "Рентгенография левого тазобедренного сустава", "Рентгенография правого тазобедренного сустава"].includes(selectedResearch) && (
+                <HipResearchPlaques
+                  expandedPlaque={expandedPlaque}
+                  setExpandedPlaque={setExpandedPlaque}
+                  selectedSubItem={selectedSubItem}
+                  setSelectedSubItem={setSelectedSubItem}
+                  selectedNarrowingLevel={selectedNarrowingLevel}
+                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                  selectedChangeLevel={selectedChangeLevel}
+                  setSelectedChangeLevel={setSelectedChangeLevel}
+                  selectedShapeLevel={selectedShapeLevel}
+                  setSelectedShapeLevel={setSelectedShapeLevel}
+                  showOsteophytesModal={showHipOsteophytesModal}
+                  setShowOsteophytesModal={setShowHipOsteophytesModal}
+                  textareaRef={textareaRef}
+                />
+              )}
 
-                    {/* Список исследований */}
-                    <div className="h-[400px] overflow-y-auto space-y-2">
-                      {filteredItems.length > 0 ? (
-                        filteredItems.map((item, index) => {
-                          const isExpanded = expandedItems[index] || false;
+              {/* Плашки для голеностопного сустава */}
+              {selectedResearch && ["Рентгенография голеностопных суставов", "Рентгенография левого голеностопного сустава", "Рентгенография правого голеностопного сустава"
+              , "Рентгенография локтевых суставов", "Рентгенография левого локтевого сустава", "Рентгенография правого локтевого сустава"].includes(selectedResearch) && (
+                <AnkleResearchPlaques
+                  expandedPlaque={expandedPlaque}
+                  setExpandedPlaque={setExpandedPlaque}
+                  selectedSubItem={selectedSubItem}
+                  setSelectedSubItem={setSelectedSubItem}
+                  selectedNarrowingLevel={selectedNarrowingLevel}
+                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                  selectedChangeLevel={selectedChangeLevel}
+                  setSelectedChangeLevel={setSelectedChangeLevel}
+                  selectedShapeLevel={selectedShapeLevel}
+                  setSelectedShapeLevel={setSelectedShapeLevel}
+                  textareaRef={textareaRef}
+                />
+              )}
 
-                          return (
-                            <div key={index} onClick={(e) => e.stopPropagation()}>
-                              <div
-                                className="p-2 bg-gray-600 border-l-2 border-yellow-500 text-yellow-200 text-sm hover:bg-gray-500 cursor-pointer flex justify-between items-center"
-                                onClick={() => toggleItem(index)}
-                              >
-                                <span>{item.name}</span>
-                                {isExpanded ? (
-                                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                                ) : (
-                                  <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-                                )}
-                              </div>
+              {/* Плашки для стопы */}
+              {selectedResearch && ["Рентгенография стоп", "Рентгенография левой стопы", "Рентгенография правой стопы"].includes(selectedResearch) && (
+                <FeetResearchPlaques
+                  expandedPlaque={expandedPlaque}
+                  setExpandedPlaque={setExpandedPlaque}
+                  selectedSubItem={selectedSubItem}
+                  setSelectedSubItem={setSelectedSubItem}
+                  selectedNarrowingLevel={selectedNarrowingLevel}
+                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                  selectedChangeLevel={selectedChangeLevel}
+                  setSelectedChangeLevel={setSelectedChangeLevel}
+                  selectedShapeLevel={selectedShapeLevel}
+                  setSelectedShapeLevel={setSelectedShapeLevel}
+                  showOsteophytesModal={showFeetOsteophytesModal}
+                  setShowOsteophytesModal={setShowFeetOsteophytesModal}
+                  textareaRef={textareaRef}
+                />
+              )}
 
-                              {isExpanded && (
-                                <div className="ml-6 mt-1 space-y-1">
-                                  {item.subItems.map((subItem, subIndex) => (
-                                    <div
-                                      key={subIndex}
-                                      className="p-1 bg-gray-700 text-gray-300 text-xs hover:bg-gray-600 cursor-pointer"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        insertTextToTextarea(item.name, subItem);
-                                      }}
-                                    >
-                                      {subItem}
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })
-                      ) : (
-                        <div className="p-2 text-gray-400 text-sm text-center">
-                          Ничего не найдено
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
+              {/* Плашки для кисти */}
+              {selectedResearch && ["Рентгенография кистей", "Рентгенография левой кисти", "Рентгенография правой кисти"].includes(selectedResearch) && (
+                <HandResearchPlaques
+                  expandedPlaque={expandedPlaque}
+                  setExpandedPlaque={setExpandedPlaque}
+                  selectedSubItem={selectedSubItem}
+                  setSelectedSubItem={setSelectedSubItem}
+                  selectedNarrowingLevel={selectedNarrowingLevel}
+                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                  selectedChangeLevel={selectedChangeLevel}
+                  setSelectedChangeLevel={setSelectedChangeLevel}
+                  selectedShapeLevel={selectedShapeLevel}
+                  setSelectedShapeLevel={setSelectedShapeLevel}
+                  showOsteophytesModal={showHandOsteophytesModal}
+                  setShowOsteophytesModal={setShowHandOsteophytesModal}
+                  textareaRef={textareaRef}
+                />
+              )}
 
-                {/* Плашки для коленного сустава */}
-                {["Рентгенография коленных суставов", "Рентгенoграфия левого коленного сустава", "Рентгенография правого коленного сустава"].includes(selectedResearch) && (
-                  <KneeResearchPlaques
-                    expandedPlaque={expandedPlaque}
-                    setExpandedPlaque={setExpandedPlaque}
-                    selectedSubItem={selectedSubItem}
-                    setSelectedSubItem={setSelectedSubItem}
-                    selectedNarrowingLevel={selectedNarrowingLevel}
-                    setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                    selectedChangeLevel={selectedChangeLevel}
-                    setSelectedChangeLevel={setSelectedChangeLevel}
-                    selectedShapeLevel={selectedShapeLevel}
-                    setSelectedShapeLevel={setSelectedShapeLevel}
-                    showOsteophytesModal={showOsteophytesModal}
-                    setShowOsteophytesModal={setShowOsteophytesModal}
-                    textareaRef={textareaRef}
-                  />
-                )}
+              {/* Плашки для поясницы */}
+              {selectedResearch && ["Рентгенография поясничного отдела позвоночника", "Рентгенография грудопоясничного отдела позвоночника"].includes(selectedResearch) && (
+                <LumbarResearchPlaques
+                  expandedPlaque={expandedPlaque}
+                  setExpandedPlaque={setExpandedPlaque}
+                  selectedSubItem={selectedSubItem}
+                  setSelectedSubItem={setSelectedSubItem}
+                  selectedNarrowingLevel={selectedNarrowingLevel}
+                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                  selectedChangeLevel={selectedChangeLevel}
+                  setSelectedChangeLevel={setSelectedChangeLevel}
+                  selectedShapeLevel={selectedShapeLevel}
+                  setSelectedShapeLevel={setSelectedShapeLevel}
+                  showOsteophytesModal={showLumbarOsteophytesModal}
+                  setShowOsteophytesModal={setShowLumbarOsteophytesModal}
+                  textareaRef={textareaRef}
+                />
+              )}
 
-                {/* Плашки для тазобедренного сустава */}
-                {["Рентгенография тазобедренных суставов", "Рентгенография левого тазобедренного сустава", "Рентгенография правого тазобедренного сустава"].includes(selectedResearch) && (
-                  <HipResearchPlaques
-                    expandedPlaque={expandedPlaque}
-                    setExpandedPlaque={setExpandedPlaque}
-                    selectedSubItem={selectedSubItem}
-                    setSelectedSubItem={setSelectedSubItem}
-                    selectedNarrowingLevel={selectedNarrowingLevel}
-                    setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                    selectedChangeLevel={selectedChangeLevel}
-                    setSelectedChangeLevel={setSelectedChangeLevel}
-                    selectedShapeLevel={selectedShapeLevel}
-                    setSelectedShapeLevel={setSelectedShapeLevel}
-                    showOsteophytesModal={showHipOsteophytesModal}
-                    setShowOsteophytesModal={setShowHipOsteophytesModal}
-                    textareaRef={textareaRef}
-                  />
-                )}
+              {/* Плашки для грудного отдела */}
+              {selectedResearch && ["Рентгенография грудного отдела позвоночника"].includes(selectedResearch) && (
+                <ThoracicResearchPlaques
+                  expandedPlaque={expandedPlaque}
+                  setExpandedPlaque={setExpandedPlaque}
+                  selectedSubItem={selectedSubItem}
+                  setSelectedSubItem={setSelectedSubItem}
+                  selectedNarrowingLevel={selectedNarrowingLevel}
+                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                  selectedChangeLevel={selectedChangeLevel}
+                  setSelectedChangeLevel={setSelectedChangeLevel}
+                  selectedShapeLevel={selectedShapeLevel}
+                  setSelectedShapeLevel={setSelectedShapeLevel}
+                  showOsteophytesModal={showThoracicOsteophytesModal}
+                  setShowOsteophytesModal={setShowThoracicOsteophytesModal}
+                  textareaRef={textareaRef}
+                />
+              )}
 
-                {/* Плашки для голеностопного сустава */}
-                {["Рентгенография голеностопных суставов", "Рентгенография левого голеностопного сустава", "Рентгенография правого голеностопного сустава"
-                , "Рентгенография локтевых суставов", "Рентгенография левого локтевого сустава", "Рентгенография правого локтевого сустава"].includes(selectedResearch) && (
-                  <AnkleResearchPlaques
-                    expandedPlaque={expandedPlaque}
-                    setExpandedPlaque={setExpandedPlaque}
-                    selectedSubItem={selectedSubItem}
-                    setSelectedSubItem={setSelectedSubItem}
-                    selectedNarrowingLevel={selectedNarrowingLevel}
-                    setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                    selectedChangeLevel={selectedChangeLevel}
-                    setSelectedChangeLevel={setSelectedChangeLevel}
-                    selectedShapeLevel={selectedShapeLevel}
-                    setSelectedShapeLevel={setSelectedShapeLevel}
+              {/* Плашки для шейного отдела позвоночника */}
+              {selectedResearch && ["Рентгенография шейного отдела позвоночника"].includes(selectedResearch) && (
+                <CervicalResearchPlaques
+                  expandedPlaque={expandedPlaque}
+                  setExpandedPlaque={setExpandedPlaque}
+                  textareaRef={textareaRef}
+                />
+              )}
 
-                    textareaRef={textareaRef}
-                  />
-                )}
-
-                {/* Плашки для стопы */}
-                {["Рентгенография стоп", "Рентгенография левой стопы", "Рентгенография правой стопы"].includes(selectedResearch) && (
-                  <FeetResearchPlaques
-                    expandedPlaque={expandedPlaque}
-                    setExpandedPlaque={setExpandedPlaque}
-                    selectedSubItem={selectedSubItem}
-                    setSelectedSubItem={setSelectedSubItem}
-                    selectedNarrowingLevel={selectedNarrowingLevel}
-                    setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                    selectedChangeLevel={selectedChangeLevel}
-                    setSelectedChangeLevel={setSelectedChangeLevel}
-                    selectedShapeLevel={selectedShapeLevel}
-                    setSelectedShapeLevel={setSelectedShapeLevel}
-                    showOsteophytesModal={showFeetOsteophytesModal}
-                    setShowOsteophytesModal={setShowFeetOsteophytesModal}
-                    textareaRef={textareaRef}
-                  />
-                )}
-
-                {/* Плашки для кисти */}
-                {["Рентгенография кистей", "Рентгенография левой кисти", "Рентгенография правой кисти"].includes(selectedResearch) && (
-                  <HandResearchPlaques
-                    expandedPlaque={expandedPlaque}
-                    setExpandedPlaque={setExpandedPlaque}
-                    selectedSubItem={selectedSubItem}
-                    setSelectedSubItem={setSelectedSubItem}
-                    selectedNarrowingLevel={selectedNarrowingLevel}
-                    setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                    selectedChangeLevel={selectedChangeLevel}
-                    setSelectedChangeLevel={setSelectedChangeLevel}
-                    selectedShapeLevel={selectedShapeLevel}
-                    setSelectedShapeLevel={setSelectedShapeLevel}
-                    showOsteophytesModal={showHandOsteophytesModal}
-                    setShowOsteophytesModal={setShowHandOsteophytesModal}
-                    textareaRef={textareaRef}
-                  />
-                )}
-
-                {/* Плашки для поясницы */}
-                {["Рентгенография поясничного отдела позвоночника", "Рентгенография грудопоясничного отдела позвоночника"].includes(selectedResearch) && (
-                  <LumbarResearchPlaques
-                    expandedPlaque={expandedPlaque}
-                    setExpandedPlaque={setExpandedPlaque}
-                    selectedSubItem={selectedSubItem}
-                    setSelectedSubItem={setSelectedSubItem}
-                    selectedNarrowingLevel={selectedNarrowingLevel}
-                    setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                    selectedChangeLevel={selectedChangeLevel}
-                    setSelectedChangeLevel={setSelectedChangeLevel}
-                    selectedShapeLevel={selectedShapeLevel}
-                    setSelectedShapeLevel={setSelectedShapeLevel}
-                    showOsteophytesModal={showLumbarOsteophytesModal}
-                    setShowOsteophytesModal={setShowLumbarOsteophytesModal}
-                    textareaRef={textareaRef}
-                  />
-                )}
-
-                {/* Плашки для грудного отдела */}
-                {["Рентгенография грудного отдела позвоночника"].includes(selectedResearch) && ( // ✅ условие для грудного отдела
-                  <ThoracicResearchPlaques
-                    expandedPlaque={expandedPlaque}
-                    setExpandedPlaque={setExpandedPlaque}
-                    selectedSubItem={selectedSubItem}
-                    setSelectedSubItem={setSelectedSubItem}
-                    selectedNarrowingLevel={selectedNarrowingLevel}
-                    setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                    selectedChangeLevel={selectedChangeLevel}
-                    setSelectedChangeLevel={setSelectedChangeLevel}
-                    selectedShapeLevel={selectedShapeLevel}
-                    setSelectedShapeLevel={setSelectedShapeLevel}
-                    showOsteophytesModal={showThoracicOsteophytesModal} // ✅ состояние для остеофитов
-                    setShowOsteophytesModal={setShowThoracicOsteophytesModal} // ✅ обработчик для остеофитов
-                    textareaRef={textareaRef}
-                  />
-                )}
-
-                {/* Плашки для шейного отдела позвоночника */}
-                {["Рентгенография шейного отдела позвоночника"].includes(selectedResearch) && (
-                  <CervicalResearchPlaques
-                    expandedPlaque={expandedPlaque}
-                    setExpandedPlaque={setExpandedPlaque}
-                    textareaRef={textareaRef}
-                  />
-                )}
-
-                  {/* Плашки для легких */}
-                  {["Рентгенография органов грудной клетки", "Рентгенография легких", "Рентгенография левого легкого", "Рентгенография правого легкого"].includes(selectedResearch) && (
-                    <LungResearchPlaques
-                      expandedPlaque={expandedPlaque}
-                      setExpandedPlaque={setExpandedPlaque}
-                      selectedSubItem={selectedSubItem}
-                      setSelectedSubItem={setSelectedSubItem}
-                      selectedNarrowingLevel={selectedNarrowingLevel}
-                      setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                      selectedChangeLevel={selectedChangeLevel}
-                      setSelectedChangeLevel={setSelectedChangeLevel}
-                      selectedShapeLevel={selectedShapeLevel}
-                      setSelectedShapeLevel={setSelectedShapeLevel}
-                      showOsteophytesModal={showLungOsteophytesModal}
-                      setShowOsteophytesModal={setShowLungOsteophytesModal}
-                      textareaRef={textareaRef}
-                    />
-                  )}  
-
-              </div>
+               {/* Плашки для легких */}
+              {selectedResearch && ["Рентгенография органов грудной клетки", "Рентгенография легких", "Рентгенография левого легкого", "Рентгенография правого легкого"].includes(selectedResearch) && (
+                <LungResearchPlaques
+                  expandedPlaque={expandedPlaque}
+                  setExpandedPlaque={setExpandedPlaque}
+                  selectedSubItem={selectedSubItem}
+                  setSelectedSubItem={setSelectedSubItem}
+                  selectedNarrowingLevel={selectedNarrowingLevel}
+                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                  selectedChangeLevel={selectedChangeLevel}
+                  setSelectedChangeLevel={setSelectedChangeLevel}
+                  selectedShapeLevel={selectedShapeLevel}
+                  setSelectedShapeLevel={setSelectedShapeLevel}
+                  showOsteophytesModal={showLungOsteophytesModal}
+                  setShowOsteophytesModal={setShowLungOsteophytesModal}
+                  textareaRef={textareaRef}
+                />
+              )}
             </div>
           </div>
         </div>
 
-        {/* Модалка остеофитов для коленного сустава */}
+        {/* Модалки остеофитов */}
         {showOsteophytesModal && (
           <OsteophytesModal
             onClose={() => setShowOsteophytesModal(false)}
@@ -418,7 +329,6 @@ export default function ResearchDescriptionModal({ onClose, description }) {
           />
         )}
 
-        {/* Модалка остеофитов для тазобедренного сустава */}
         {showHipOsteophytesModal && (
           <HipOsteophytesModal
             onClose={() => setShowHipOsteophytesModal(false)}
@@ -426,9 +336,6 @@ export default function ResearchDescriptionModal({ onClose, description }) {
           />
         )}
 
-
-
-        {/* Модалка остеофитов для стопы */}
         {showFeetOsteophytesModal && (
           <FeetOsteophytesModal
             onClose={() => setShowFeetOsteophytesModal(false)}
@@ -436,7 +343,6 @@ export default function ResearchDescriptionModal({ onClose, description }) {
           />
         )}
 
-        {/* Модалка остеофитов для кисти */}
         {showHandOsteophytesModal && (
           <HandOsteophytesModal
             onClose={() => setShowHandOsteophytesModal(false)}
@@ -444,7 +350,6 @@ export default function ResearchDescriptionModal({ onClose, description }) {
           />
         )}
 
-        {/* Модалка остеофитов для поясницы */}
         {showLumbarOsteophytesModal && (
           <LumbarOsteophytesModal
             onClose={() => setShowLumbarOsteophytesModal(false)}
@@ -452,21 +357,19 @@ export default function ResearchDescriptionModal({ onClose, description }) {
           />
         )}
 
-        {/* Модалка остеофитов для грудного отдела */}
-        {showThoracicOsteophytesModal && ( // ✅ рендер модалки остеофитов для грудного отдела
+        {showThoracicOsteophytesModal && (
           <ThoracicOsteophytesModal
             onClose={() => setShowThoracicOsteophytesModal(false)}
             textareaRef={textareaRef}
           />
         )}
 
-          {/* Модалка остеофитов для легких */}
-          {showLungOsteophytesModal && (
-            <LungOsteophytesModal
-              onClose={() => setShowLungOsteophytesModal(false)}
-              textareaRef={textareaRef}
-            />
-          )}
+        {showLungOsteophytesModal && (
+          <LungOsteophytesModal
+            onClose={() => setShowLungOsteophytesModal(false)}
+            textareaRef={textareaRef}
+          />
+        )}
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import LumbarOsteophytesModal from "./spine/OsteophytesModal";
 import LungResearchPlaques from "./lungs/LungResearchPlaques";
 import ThoracicOsteophytesModal from "./spine/OsteophytesModal";
 import CervicalResearchPlaques from "./spine/CervicalResearchPlaques";
+import JointSpaceSection from "./knees/JointSpaceModal"; // 1. Импортируем наш модальный окно
 
 export default function ResearchDescriptionModal({ onClose, description, selectedResearch, setTextareaRef }) {
   const [expandedPlaque, setExpandedPlaque] = useState(null);
@@ -28,6 +29,7 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
   const [showThoracicOsteophytesModal, setShowThoracicOsteophytesModal] = useState(false);
   const [showLungOsteophytesModal, setShowLungOsteophytesModal] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isJointSpaceModalOpen, setIsJointSpaceModalOpen] = useState(false); // 2. Добавляем состояние для модального окна суставных щелей
   const textareaRef = useRef(null);
 
   // Добавим отладочную информацию
@@ -174,11 +176,12 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
                   showOsteophytesModal={showOsteophytesModal}
                   setShowOsteophytesModal={setShowOsteophytesModal}
                   textareaRef={textareaRef}
+                  setIsJointSpaceModalOpen={setIsJointSpaceModalOpen} // 3. Передаем сеттер для модального окна
                 />
               )}
 
               {/* Плашки для тазобедренного сустава */}
-              {selectedResearch && ["Рентгенография тазобедренных суставов", "Рентгенография левого тазобедренного сустава", "Рентгенография правого тазобедренного сустава"].includes(selectedResearch) && (
+              {selectedResearch && ["Рентгенография тазобедренных суставов", "Рентгенographия левого тазобедренного сустава", "Рентгенография правого тазобедренного сустава"].includes(selectedResearch) && (
                 <HipResearchPlaques
                   expandedPlaque={expandedPlaque}
                   setExpandedPlaque={setExpandedPlaque}
@@ -197,8 +200,8 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
               )}
 
               {/* Плашки для голеностопного сустава */}
-              {selectedResearch && ["Рентгенография голеностопных суставов", "Рентгенография левого голеностопного сустава", "Рентгенография правого голеностопного сустава"
-              , "Рентгенография локтевых суставов", "Рентгенография левого локтевого сустава", "Рентгенография правого локтевого сустава"].includes(selectedResearch) && (
+              {selectedResearch && ["Рентгенография голenостопных суставов", "Рентгенография левого голеностопного сустава", "Рентгенография правого голеностопного сустава"
+              , "Рентгенография локтевых суставов", "Рентгенография левого локtевого сустава", "Рентгенография правого локтевого сустава"].includes(selectedResearch) && (
                 <AnkleResearchPlaques
                   expandedPlaque={expandedPlaque}
                   setExpandedPlaque={setExpandedPlaque}
@@ -370,6 +373,13 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
             textareaRef={textareaRef}
           />
         )}
+
+        {/* 4. Рендерим модальное окно суставных щелей здесь */}
+        <JointSpaceSection
+          isOpen={isJointSpaceModalOpen}
+          onClose={() => setIsJointSpaceModalOpen(false)}
+          textareaRef={textareaRef}
+        />
       </div>
     </div>
   );

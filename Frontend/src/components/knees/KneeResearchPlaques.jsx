@@ -1,7 +1,7 @@
 // Frontend/src/components/KneeResearchPlaques.jsx
 import { useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import JointSpaceSection from "./JointSpaceSection";
+import JointSpaceSection from "./JointSpaceModal"; // Это теперь наше модальное окно
 import JointSurfaceSection from "./JointSurfaceSection";
 import OsteophytesModal from "./OsteophytesModal";
 import BumpsSection from "./BumpsSection";
@@ -23,6 +23,7 @@ export default function KneeResearchPlaques({
   showOsteophytesModal,
   setShowOsteophytesModal,
   textareaRef,
+  setIsJointSpaceModalOpen, // Добавляем пропс для управления модальным окном
 }) {
   const kneeJointPlaques = [
     "Суставные щели",
@@ -177,6 +178,25 @@ export default function KneeResearchPlaques({
           );
         }
 
+        // Для "Суставные щели" теперь используем модальное окно
+        if (plaque === "Суставные щели") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsJointSpaceModalOpen(true);
+                }}
+              >
+                <span>{plaque}</span>
+                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
+              </div>
+            </div>
+          );
+        }
+
+        // Остальные пункты (в данном случае "Суставные поверхности") оставляем без изменений
         const isExpanded = expandedPlaque === plaque;
         return (
           <div key={index} onClick={(e) => e.stopPropagation()}>
@@ -194,17 +214,6 @@ export default function KneeResearchPlaques({
                 <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
               )}
             </div>
-
-            {isExpanded && plaque === "Суставные щели" && (
-              <JointSpaceSection
-                textareaRef={textareaRef}
-                selectedSubItem={selectedSubItem}
-                setSelectedSubItem={setSelectedSubItem}
-                selectedNarrowingLevel={selectedNarrowingLevel}
-                setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                setExpandedPlaque={setExpandedPlaque}
-              />
-            )}
 
             {isExpanded && plaque === "Суставные поверхности" && (
               <JointSurfaceSection

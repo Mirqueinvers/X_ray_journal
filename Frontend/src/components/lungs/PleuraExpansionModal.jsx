@@ -88,10 +88,11 @@ const generateDescription = () => {
   const leftEmpty = !leftOpts.length && rightOpts.length ? "слева без особенностей" : "";
   const rightEmpty = !rightOpts.length && leftOpts.length ? "справа без особенностей" : "";
 
-  // Собираем финальный текст
+  // Собираем финальный текст и добавляем точку
   const parts = [leftText, rightText, leftEmpty, rightEmpty].filter(Boolean);
-  return parts.join("; ");
+  return parts.join("; ").trim().replace(/;?$/, "."); // добавили точку
 };
+
 
 
 

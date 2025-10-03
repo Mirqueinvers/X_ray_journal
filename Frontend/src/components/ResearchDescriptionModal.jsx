@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { XMarkIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import KneeResearchPlaques from "./knees/KneeResearchPlaques";
@@ -12,7 +13,8 @@ import LumbarOsteophytesModal from "./spine/OsteophytesModal";
 import LungResearchPlaques from "./lungs/LungResearchPlaques";
 import ThoracicOsteophytesModal from "./spine/OsteophytesModal";
 import CervicalResearchPlaques from "./spine/CervicalResearchPlaques";
-import JointSpaceSection from "./knees/JointSpaceModal"; // 1. Импортируем наш модальный окно
+import JointSpaceSection from "./knees/JointSpaceModal"; // Импортируем модальное окно суставных щелей
+import JointSurfaceModal from "./knees/JointSurfaceModal"; // Импортируем модальное окно суставных поверхностей
 
 export default function ResearchDescriptionModal({ onClose, description, selectedResearch, setTextareaRef }) {
   const [expandedPlaque, setExpandedPlaque] = useState(null);
@@ -29,7 +31,8 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
   const [showThoracicOsteophytesModal, setShowThoracicOsteophytesModal] = useState(false);
   const [showLungOsteophytesModal, setShowLungOsteophytesModal] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [isJointSpaceModalOpen, setIsJointSpaceModalOpen] = useState(false); // 2. Добавляем состояние для модального окна суставных щелей
+  const [isJointSpaceModalOpen, setIsJointSpaceModalOpen] = useState(false); // Состояние для модального окна суставных щелей
+  const [isJointSurfaceModalOpen, setIsJointSurfaceModalOpen] = useState(false); // Состояние для модального окна суставных поверхностей
   const textareaRef = useRef(null);
 
   // Добавим отладочную информацию
@@ -176,7 +179,8 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
                   showOsteophytesModal={showOsteophytesModal}
                   setShowOsteophytesModal={setShowOsteophytesModal}
                   textareaRef={textareaRef}
-                  setIsJointSpaceModalOpen={setIsJointSpaceModalOpen} // 3. Передаем сеттер для модального окна
+                  setIsJointSpaceModalOpen={setIsJointSpaceModalOpen} // Передаем сеттер для модального окна суставных щелей
+                  setIsJointSurfaceModalOpen={setIsJointSurfaceModalOpen} // Передаем сеттер для модального окна суставных поверхностей
                 />
               )}
 
@@ -374,10 +378,17 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
           />
         )}
 
-        {/* 4. Рендерим модальное окно суставных щелей здесь */}
+        {/* Модальное окно суставных щелей */}
         <JointSpaceSection
           isOpen={isJointSpaceModalOpen}
           onClose={() => setIsJointSpaceModalOpen(false)}
+          textareaRef={textareaRef}
+        />
+
+        {/* Модальное окно суставных поверхностей */}
+        <JointSurfaceModal
+          isOpen={isJointSurfaceModalOpen}
+          onClose={() => setIsJointSurfaceModalOpen(false)}
           textareaRef={textareaRef}
         />
       </div>

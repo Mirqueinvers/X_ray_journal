@@ -16,6 +16,14 @@ const narrowingMapSingle = {
   "резко сужены": "резко сужена",
 };
 
+const narrowingMapPlural = {
+  "незначительно сужена": "незначительно сужены",
+  "умеренно сужена": "умеренно сужены",
+  "выраженно сужена": "выраженно сужены",
+  "резко сужена": "резко сужены",
+};
+
+
 export default function JointSpaceSection({ isOpen, onClose, textareaRef }) {
   const [selectedOptions, setSelectedOptions] = useState({
     leftMedial: [],
@@ -106,9 +114,9 @@ const generateDescription = () => {
 
   if (leftDegree && rightDegree && leftDegree === rightDegree) {
     const partText = part === "медиальном" ? "медиальных" : "латеральных";
-    descriptions.push(
-      `Суставные щели коленных суставов ${narrowingMapSingle[leftDegree]} в ${partText} отделах`
-    );
+descriptions.push(
+  `Суставные щели коленных суставов ${narrowingMapPlural[narrowingMapSingle[leftDegree]]} в ${partText} отделах.`
+);
     usedParts.add(part); // отмечаем, что отдел уже обработан
   }
 });
@@ -132,29 +140,19 @@ const generateDescription = () => {
   const kneeParts = perKnee[knee];
   const sideName = knee === "left" ? "левого" : "правого";
 
-  const medialDegree = kneeParts["медиальном"];
-  const lateralDegree = kneeParts["латеральном"];
+  // Проверяем, остались ли неиспользованные отделы
+  const remainingParts = Object.keys(kneeParts).filter(part => !usedParts.has(part));
+  if (remainingParts.length === 0) return; // всё уже учтено
 
-  const partsDesc = [];
-
-  if (medialDegree && lateralDegree) {
-    if (medialDegree === lateralDegree) {
-      // оба отдела одного колена с одинаковой степенью
-      partsDesc.push(`${narrowingMapSingle[medialDegree]} в медиальном и латеральном отделах`);
-    } else {
-      // разные степени
-      partsDesc.push(`${narrowingMapSingle[medialDegree]} в медиальном, ${narrowingMapSingle[lateralDegree]} в латеральном отделе`);
-    }
-  } else if (medialDegree) {
-    partsDesc.push(`${narrowingMapSingle[medialDegree]} в медиальном отделе`);
-  } else if (lateralDegree) {
-    partsDesc.push(`${narrowingMapSingle[lateralDegree]} в латеральном отделе`);
-  }
+  const partsDesc = remainingParts.map(part => {
+    return `${narrowingMapSingle[kneeParts[part]]} в ${part === "медиальном" ? "медиальном" : "латеральном"} отделе`;
+  });
 
   if (partsDesc.length > 0) {
     descriptions.push(`Суставная щель ${sideName} коленного сустава ${partsDesc.join(", ")}`);
   }
 });
+
 
 
 

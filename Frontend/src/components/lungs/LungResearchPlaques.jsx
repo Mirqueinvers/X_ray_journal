@@ -57,7 +57,7 @@ export default function LungResearchPlaques({
   };
 
   return (
-    <div className="mt-4 h-96 overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-yellow-500 scrollbar-track-gray-800">
+    <div className="mt-4 h-[500px] overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-yellow-500 scrollbar-track-gray-800">
       {lungJointPlaques.map((plaque, index) => {
         if (plaque === "Норма") {
           return (

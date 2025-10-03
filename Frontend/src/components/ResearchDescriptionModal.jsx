@@ -19,6 +19,8 @@ import HipJointSpaceModal from "./hipjoints/HipJointSpaceModal";
 import HipJointSurfaceModal from "./hipjoints/HipJointSurfaceModal";
 import HipOsteophytesModal from "./hipjoints/HipOsteophytesModal";
 import PubicSymphysisModal from "./hipjoints/PubicSymphysisModal";
+import HandJointSpaceModal from "./hand/HandJointSpaceModal";
+
 
 
 
@@ -44,6 +46,8 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
   const [isHipJointSurfaceModalOpen, setIsHipJointSurfaceModalOpen] = useState(false);
   const [isHipJointOsteophytesModalOpen, setIsHipJointOsteophytesModalOpen] = useState(false);
   const [isPubicSymphysisModalOpen, setIsPubicSymphysisModalOpen] = useState(false);
+  const [isHandJointSpaceModalOpen, setIsHandJointSpaceModalOpen] = useState(false);
+
 
 
 
@@ -277,6 +281,7 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
                   showOsteophytesModal={showHandOsteophytesModal}
                   setShowOsteophytesModal={setShowHandOsteophytesModal}
                   textareaRef={textareaRef}
+                  setIsHandJointSpaceModalOpen={setIsHandJointSpaceModalOpen}
                 />
               )}
 
@@ -442,6 +447,14 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
           <PubicSymphysisModal
             isOpen={isPubicSymphysisModalOpen}
             onClose={() => setIsPubicSymphysisModalOpen(false)}
+            textareaRef={textareaRef}
+          />
+        )}
+
+        {isHandJointSpaceModalOpen && (
+          <HandJointSpaceModal
+            isOpen={isHandJointSpaceModalOpen}
+            onClose={() => setIsHandJointSpaceModalOpen(false)}
             textareaRef={textareaRef}
           />
         )}

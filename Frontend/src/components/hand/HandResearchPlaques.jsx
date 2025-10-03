@@ -1,8 +1,8 @@
 // Frontend/src/components/hand/HandResearchPlaques.jsx
+// Frontend/src/components/hand/HandResearchPlaques.jsx
 import { useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import HandJointSpaceSection from "./JointSpaceSection";
-import HandJointSurfaceSection from "./JointSurfaceSection";
+import HandJointSpaceModal from "./HandJointSpaceModal"; // Импортируем модальное окно суставных щей кистей
 import HandOsteophytesModal from "./OsteophytesModal";
 import HandCongruencySection from "./CongruencySection";
 import HandIntegritySection from "./IntegritySection";
@@ -22,12 +22,11 @@ export default function HandResearchPlaques({
   showOsteophytesModal,
   setShowOsteophytesModal,
   textareaRef,
+  setIsHandJointSpaceModalOpen, // Добавляем пропс для управления модальным окном
 }) {
   const handJointPlaques = [
     "Суставные щели",
-    "Суставные поверхности",
     "Остеофиты",
-    "Бугорки",
     "Конгруэнтность",
     "Целостность",
     "Параартикулярные ткани",
@@ -52,36 +51,19 @@ export default function HandResearchPlaques({
           );
         }
 
-        if (plaque === "Бугорки") {
+        if (plaque === "Суставные щели") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>
               <div
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (expandedPlaque === plaque) {
-                    setExpandedPlaque(null);
-                  } else {
-                    setExpandedPlaque(plaque);
-                  }
+                  setIsHandJointSpaceModalOpen(true);
                 }}
               >
                 <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
+                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
               </div>
-
-              {expandedPlaque === plaque && (
-                <HandBumpsSection
-                  textareaRef={textareaRef}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
             </div>
           );
         }
@@ -175,48 +157,6 @@ export default function HandResearchPlaques({
             </div>
           );
         }
-
-        const isExpanded = expandedPlaque === plaque;
-        return (
-          <div key={index} onClick={(e) => e.stopPropagation()}>
-            <div
-              className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer flex justify-between items-center"
-              onClick={(e) => {
-                e.stopPropagation();
-                setExpandedPlaque(isExpanded ? null : plaque);
-              }}
-            >
-              <span>{plaque}</span>
-              {isExpanded ? (
-                <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-              ) : (
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-              )}
-            </div>
-
-            {isExpanded && plaque === "Суставные щели" && (
-              <HandJointSpaceSection
-                textareaRef={textareaRef}
-                selectedSubItem={selectedSubItem}
-                setSelectedSubItem={setSelectedSubItem}
-                selectedNarrowingLevel={selectedNarrowingLevel}
-                setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                setExpandedPlaque={setExpandedPlaque}
-              />
-            )}
-
-            {isExpanded && plaque === "Суставные поверхности" && (
-              <HandJointSurfaceSection
-                textareaRef={textareaRef}
-                selectedSubItem={selectedSubItem}
-                setSelectedSubItem={setSelectedSubItem}
-                selectedChangeLevel={selectedChangeLevel}
-                setSelectedChangeLevel={setSelectedChangeLevel}
-                setExpandedPlaque={setExpandedPlaque}
-              />
-            )}
-          </div>
-        );
       })}
     </div>
   );

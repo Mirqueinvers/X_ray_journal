@@ -15,6 +15,13 @@ import ThoracicOsteophytesModal from "./spine/OsteophytesModal";
 import CervicalResearchPlaques from "./spine/CervicalResearchPlaques";
 import JointSpaceSection from "./knees/JointSpaceModal"; // Импортируем модальное окно суставных щелей
 import JointSurfaceModal from "./knees/JointSurfaceModal"; // Импортируем модальное окно суставных поверхностей
+import HipJointSpaceModal from "./hipjoints/HipJointSpaceModal";
+import HipJointSurfaceModal from "./hipjoints/HipJointSurfaceModal";
+import HipOsteophytesModal from "./hipjoints/HipOsteophytesModal";
+import PubicSymphysisModal from "./hipjoints/PubicSymphysisModal";
+
+
+
 
 export default function ResearchDescriptionModal({ onClose, description, selectedResearch, setTextareaRef }) {
   const [expandedPlaque, setExpandedPlaque] = useState(null);
@@ -33,6 +40,13 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
   const [copied, setCopied] = useState(false);
   const [isJointSpaceModalOpen, setIsJointSpaceModalOpen] = useState(false); // Состояние для модального окна суставных щелей
   const [isJointSurfaceModalOpen, setIsJointSurfaceModalOpen] = useState(false); // Состояние для модального окна суставных поверхностей
+  const [isHipJointSpaceModalOpen, setIsHipJointSpaceModalOpen] = useState(false);
+  const [isHipJointSurfaceModalOpen, setIsHipJointSurfaceModalOpen] = useState(false);
+  const [isHipJointOsteophytesModalOpen, setIsHipJointOsteophytesModalOpen] = useState(false);
+  const [isPubicSymphysisModalOpen, setIsPubicSymphysisModalOpen] = useState(false);
+
+
+
   const textareaRef = useRef(null);
 
   // Добавим отладочную информацию
@@ -200,6 +214,13 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
                   showOsteophytesModal={showHipOsteophytesModal}
                   setShowOsteophytesModal={setShowHipOsteophytesModal}
                   textareaRef={textareaRef}
+                  setIsHipJointSpaceModalOpen={setIsHipJointSpaceModalOpen}
+                  setIsHipJointSurfaceModalOpen={setIsHipJointSurfaceModalOpen}
+                  setIsHipJointOsteophytesModalOpen={setIsHipJointOsteophytesModalOpen}
+                  setIsPubicSymphysisModalOpen={setIsPubicSymphysisModalOpen}
+
+
+
                 />
               )}
 
@@ -391,6 +412,39 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
           onClose={() => setIsJointSurfaceModalOpen(false)}
           textareaRef={textareaRef}
         />
+        
+        {/* Добавляем модальное окно в JSX */}
+        {isHipJointSpaceModalOpen && (
+          <HipJointSpaceModal
+            isOpen={isHipJointSpaceModalOpen}
+            onClose={() => setIsHipJointSpaceModalOpen(false)}
+            textareaRef={textareaRef}
+          />
+        )}
+
+        {isHipJointSurfaceModalOpen && (
+          <HipJointSurfaceModal
+            isOpen={isHipJointSurfaceModalOpen}
+            onClose={() => setIsHipJointSurfaceModalOpen(false)}
+            textareaRef={textareaRef}
+          />
+        )}
+
+        {isHipJointOsteophytesModalOpen && (
+          <HipOsteophytesModal
+            isOpen={isHipJointOsteophytesModalOpen}
+            onClose={() => setIsHipJointOsteophytesModalOpen(false)}
+            textareaRef={textareaRef}
+          />
+        )}
+
+        {isPubicSymphysisModalOpen && (
+          <PubicSymphysisModal
+            isOpen={isPubicSymphysisModalOpen}
+            onClose={() => setIsPubicSymphysisModalOpen(false)}
+            textareaRef={textareaRef}
+          />
+        )}
       </div>
     </div>
   );

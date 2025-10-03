@@ -1,13 +1,16 @@
 // Frontend/src/components/hipjoints/HipResearchPlaques.jsx
+// Frontend/src/components/hipjoints/HipResearchPlaques.jsx
 import { useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import HipJointSpaceSection from "./JointSpaceSection";
-import HipJointSurfaceSection from "./JointSurfaceSection";
-import HipOsteophytesModal from "./OsteophytesModal";
+import HipJointSpaceModal from "./HipJointSpaceModal"; // Импортируем модальное окно суставных щей тазобедренных суставов
+import HipJointSurfaceModal from "./HipJointSurfaceModal";
 import HipCongruencySection from "./CongruencySection";
 import HipIntegritySection from "./IntegritySection";
 import HipParaarticularTissuesSection from "./ParaarticularTissuesSection";
-import HipEndoprosthesisSection from "./EndoprosthesisSection"; // ✅ добавил импорт
+import HipEndoprosthesisSection from "./EndoprosthesisSection";
+import HipOsteophytesModal from "./HipOsteophytesModal";
+import FlebolytesSection from "./FlebolytesSection";
+import PubicSymphysisModal from "./PubicSymphysisModal";
 
 export default function HipResearchPlaques({
   expandedPlaque,
@@ -23,12 +26,18 @@ export default function HipResearchPlaques({
   showOsteophytesModal,
   setShowOsteophytesModal,
   textareaRef,
+  setIsHipJointSpaceModalOpen, // Добавляем пропс для управления модальным окном
+  setIsHipJointSurfaceModalOpen,
+  setIsHipJointOsteophytesModalOpen,
+  setIsPubicSymphysisModalOpen,
 }) {
   const hipJointPlaques = [
     "Эндопротез",
     "Суставные щели",
     "Суставные поверхности",
     "Остеофиты",
+    "Лонное сочленение",
+    "Флеболиты",
     "Конгруэнтность",
     "Целостность",
     "Параартикулярные ткани",
@@ -44,10 +53,38 @@ export default function HipResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowOsteophytesModal(true);
+                  setIsHipJointOsteophytesModalOpen(true);
                 }}
               >
                 <span>{plaque}</span>
+                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
+              </div>
+            </div>
+          );
+        }
+
+        // Добавьте обработчик для плашки "Флеболиты" в блоке map:
+        if (plaque === "Флеболиты") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <FlebolytesSection textareaRef={textareaRef} />
+            </div>
+          );
+        }
+
+        // Добавьте обработчик для плашки "Лонное сочленение" в блоке map:
+        if (plaque === "Лонное сочленение") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsPubicSymphysisModalOpen(true); // <-- ДОБАВИТЬ ЭТУ СТРОКУ
+                }}
+              >
+                <span>{plaque}</span>
+                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
               </div>
             </div>
           );
@@ -143,7 +180,7 @@ export default function HipResearchPlaques({
           );
         }
 
-        if (plaque === "Эндопротез") { // ✅ обработка новой плашки
+        if (plaque === "Эндопротез") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>
               <div
@@ -173,47 +210,41 @@ export default function HipResearchPlaques({
           );
         }
 
-        const isExpanded = expandedPlaque === plaque;
-        return (
-          <div key={index} onClick={(e) => e.stopPropagation()}>
-            <div
-              className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer flex justify-between items-center"
-              onClick={(e) => {
-                e.stopPropagation();
-                setExpandedPlaque(isExpanded ? null : plaque);
-              }}
-            >
-              <span>{plaque}</span>
-              {isExpanded ? (
-                <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-              ) : (
+        // Для "Суставные щели" теперь используем модальное окно
+        if (plaque === "Суставные щели") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsHipJointSpaceModalOpen(true);
+                }}
+              >
+                <span>{plaque}</span>
                 <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-              )}
+              </div>
             </div>
+          );
+        }
 
-            {isExpanded && plaque === "Суставные щели" && (
-              <HipJointSpaceSection
-                textareaRef={textareaRef}
-                selectedSubItem={selectedSubItem}
-                setSelectedSubItem={setSelectedSubItem}
-                selectedNarrowingLevel={selectedNarrowingLevel}
-                setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                setExpandedPlaque={setExpandedPlaque}
-              />
-            )}
-
-            {isExpanded && plaque === "Суставные поверхности" && (
-              <HipJointSurfaceSection
-                textareaRef={textareaRef}
-                selectedSubItem={selectedSubItem}
-                setSelectedSubItem={setSelectedSubItem}
-                selectedChangeLevel={selectedChangeLevel}
-                setSelectedChangeLevel={setSelectedChangeLevel}
-                setExpandedPlaque={setExpandedPlaque}
-              />
-            )}
-          </div>
-        );
+        // Для "Суставные поверхности" оставляем без изменений
+        if (plaque === "Суставные поверхности") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsHipJointSurfaceModalOpen(true);
+                }}
+              >
+                <span>{plaque}</span>
+                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
+              </div>
+            </div>
+          );
+        }
       })}
     </div>
   );

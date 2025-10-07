@@ -20,6 +20,10 @@ import HipJointSurfaceModal from "./hipjoints/HipJointSurfaceModal";
 import HipOsteophytesModal from "./hipjoints/HipOsteophytesModal";
 import PubicSymphysisModal from "./hipjoints/PubicSymphysisModal";
 import HandJointSpaceModal from "./hand/HandJointSpaceModal";
+import HandJointSurfaceModal from "./hand/HandJointSurfaceModal";
+import HandOsteophytesModal from "./hand/HandOsteophytesModal";
+import HandCongruencyModal from "./hand/HandCongruencyModal";
+
 
 
 
@@ -35,7 +39,6 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
   const [showHipOsteophytesModal, setShowHipOsteophytesModal] = useState(false);
   const [showAnkleOsteophytesModal, setShowAnkleOsteophytesModal] = useState(false);
   const [showFeetOsteophytesModal, setShowFeetOsteophytesModal] = useState(false);
-  const [showHandOsteophytesModal, setShowHandOsteophytesModal] = useState(false);
   const [showLumbarOsteophytesModal, setShowLumbarOsteophytesModal] = useState(false);
   const [showThoracicOsteophytesModal, setShowThoracicOsteophytesModal] = useState(false);
   const [showLungOsteophytesModal, setShowLungOsteophytesModal] = useState(false);
@@ -47,6 +50,10 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
   const [isHipJointOsteophytesModalOpen, setIsHipJointOsteophytesModalOpen] = useState(false);
   const [isPubicSymphysisModalOpen, setIsPubicSymphysisModalOpen] = useState(false);
   const [isHandJointSpaceModalOpen, setIsHandJointSpaceModalOpen] = useState(false);
+  const [isHandJointSurfaceModalOpen, setIsHandJointSurfaceModalOpen] = useState(false);
+  const [showHandOsteophytesModal, setShowHandOsteophytesModal] = useState(false);
+  const [showHandCongruencyModal, setShowHandCongruencyModal] = useState(false);
+
 
 
 
@@ -278,10 +285,13 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
                   setSelectedChangeLevel={setSelectedChangeLevel}
                   selectedShapeLevel={selectedShapeLevel}
                   setSelectedShapeLevel={setSelectedShapeLevel}
-                  showOsteophytesModal={showHandOsteophytesModal}
-                  setShowOsteophytesModal={setShowHandOsteophytesModal}
                   textareaRef={textareaRef}
                   setIsHandJointSpaceModalOpen={setIsHandJointSpaceModalOpen}
+                  setIsHandJointSurfaceModalOpen={setIsHandJointSurfaceModalOpen}
+                  setShowHandOsteophytesModal={setShowHandOsteophytesModal}
+                  setShowHandCongruencyModal={setShowHandCongruencyModal} // Добавить этот пропс
+
+
                 />
               )}
 
@@ -455,6 +465,30 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
           <HandJointSpaceModal
             isOpen={isHandJointSpaceModalOpen}
             onClose={() => setIsHandJointSpaceModalOpen(false)}
+            textareaRef={textareaRef}
+          />
+        )}
+
+        {isHandJointSurfaceModalOpen && (
+          <HandJointSurfaceModal
+            isOpen={isHandJointSurfaceModalOpen}
+            onClose={() => setIsHandJointSurfaceModalOpen(false)}
+            textareaRef={textareaRef}
+          />
+        )}
+
+        {showHandOsteophytesModal && (
+          <HandOsteophytesModal
+            isOpen={showHandOsteophytesModal} // Добавлен пропс isOpen
+            onClose={() => setShowHandOsteophytesModal(false)}
+            textareaRef={textareaRef}
+          />
+        )}
+
+        {showHandCongruencyModal && (
+          <HandCongruencyModal
+            isOpen={showHandCongruencyModal}
+            onClose={() => setShowHandCongruencyModal(false)}
             textareaRef={textareaRef}
           />
         )}

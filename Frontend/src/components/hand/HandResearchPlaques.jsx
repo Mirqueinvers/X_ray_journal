@@ -1,12 +1,11 @@
-// Frontend/src/components/hand/HandResearchPlaques.jsx
-// Frontend/src/components/hand/HandResearchPlaques.jsx
 import { useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import HandJointSpaceModal from "./HandJointSpaceModal"; // Импортируем модальное окно суставных щей кистей
-import HandOsteophytesModal from "./OsteophytesModal";
-import HandCongruencySection from "./CongruencySection";
+import HandJointSpaceModal from "./HandJointSpaceModal"; 
 import HandIntegritySection from "./IntegritySection";
 import HandParaarticularTissuesSection from "./ParaarticularTissuesSection";
+import HandJointSurfaceModal from "./HandJointSurfaceModal";
+import HandOsteophytesModal from "./HandOsteophytesModal";
+import HandCongruencyModal from "./HandCongruencyModal";
 
 export default function HandResearchPlaques({
   expandedPlaque,
@@ -19,18 +18,38 @@ export default function HandResearchPlaques({
   setSelectedChangeLevel,
   selectedShapeLevel,
   setSelectedShapeLevel,
-  showOsteophytesModal,
-  setShowOsteophytesModal,
   textareaRef,
-  setIsHandJointSpaceModalOpen, // Добавляем пропс для управления модальным окном
+  setIsHandJointSpaceModalOpen, 
+  setIsHandJointSurfaceModalOpen,
+  setShowHandOsteophytesModal,
+  setShowHandCongruencyModal,
 }) {
   const handJointPlaques = [
     "Суставные щели",
+    "Суставные поверхности",
     "Остеофиты",
     "Конгруэнтность",
     "Целостность",
     "Параартикулярные ткани",
   ];
+
+  const insertNormalText = () => {
+    if (!textareaRef?.current) return;
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const textBefore = textarea.value.substring(0, start);
+    const textAfter = textarea.value.substring(end);
+    const normalText = `Суставные щели мелких суставов кистей сохранены, равномерные.
+Суставные поверхности ровные, чёткие, без признаков деформации.
+Конгруэнтность суставных поверхностей не нарушена.
+Костно-травматических и костно-деструктивных изменений не выявлено.
+Параартикулярные ткани не имеют рентгено-позитивных признаков изменений.`;
+    textarea.value = textBefore + normalText + textAfter;
+    const cursorPos = start + normalText.length;
+    textarea.selectionStart = textarea.selectionEnd = cursorPos;
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+  };
 
   return (
     <div className="mt-4 space-y-2">
@@ -42,7 +61,7 @@ export default function HandResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowOsteophytesModal(true);
+                  setShowHandOsteophytesModal(true);
                 }}
               >
                 <span>{plaque}</span>
@@ -68,6 +87,23 @@ export default function HandResearchPlaques({
           );
         }
 
+        if (plaque === "Суставные поверхности") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsHandJointSurfaceModalOpen(true);
+                }}
+              >
+                <span>{plaque}</span>
+                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
+              </div>
+            </div>
+          );
+        }
+
         if (plaque === "Конгруэнтность") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>
@@ -75,25 +111,12 @@ export default function HandResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (expandedPlaque === plaque) {
-                    setExpandedPlaque(null);
-                  } else {
-                    setExpandedPlaque(plaque);
-                  }
+                  setShowHandCongruencyModal(true);
                 }}
               >
                 <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
+                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
               </div>
-
-              {expandedPlaque === plaque && (
-                <HandCongruencySection
-                  textareaRef={textareaRef}
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
             </div>
           );
         }
@@ -158,6 +181,16 @@ export default function HandResearchPlaques({
           );
         }
       })}
+
+      {/* Плашка "Норма" внизу с отступом */}
+<div className="h-20"></div>
+<div
+  className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+  onClick={insertNormalText}
+>
+  <span>Норма</span>
+</div>
+
     </div>
   );
 }

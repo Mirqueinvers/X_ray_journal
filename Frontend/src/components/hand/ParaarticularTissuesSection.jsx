@@ -19,6 +19,11 @@ export default function ParaarticularTissuesSection({ textareaRef, setExpandedPl
       fullText = "Определяются образования костной плотности в параартикулярных тканях.\n";
     }
 
+    const textBeforeCursor = textarea.value.substring(0, textarea.selectionStart);
+    if (textBeforeCursor.length > 0 && !textBeforeCursor.endsWith("\n")) {
+      fullText = "\n" + fullText;
+    }
+
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const text = textarea.value;

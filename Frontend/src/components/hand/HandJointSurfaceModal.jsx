@@ -1,8 +1,9 @@
+// Frontend/src/components/hand/HandJointSurfaceModal.jsx
+// Суставные поверхности кистей
 import React, { useState } from "react";
 
-export default function HandJointSpaceModal({ isOpen, onClose, textareaRef }) {
-  const degrees = ["Не изменены", "Незначительно", "Умеренно", "Выраженно", "Резко"];
-
+export default function HandJointSurfaceModal({ isOpen, onClose, textareaRef }) {
+  const degrees = ["Не изменены", "Незначительно", "Умеренно", "Выраженно"];
 
   const [activeDegree, setActiveDegree] = useState(degrees[0]);
 
@@ -178,7 +179,7 @@ export default function HandJointSpaceModal({ isOpen, onClose, textareaRef }) {
       Object.entries(hands).forEach(([hand, types]) => {
         if (types.Wrist) {
           wristParts.push(
-            `суставная щель ${handNamesGenitive[hand]} лучезапястного сустава ${deg} сужена`
+            `суставные поверхности ${handNamesGenitive[hand]} лучезапястного сустава ${deg}`
           );
           delete types.Wrist; // чтобы не дублировать в общем блоке
         }
@@ -199,7 +200,7 @@ export default function HandJointSpaceModal({ isOpen, onClose, textareaRef }) {
 
         Object.entries(types).forEach(([type, labels]) => {
           const joint = jointGroups[type];
-          const fingers = compressFingers(labels); // всегда сжимает и один, и несколько пальцев
+          const fingers = compressFingers(labels);
 
           if (type === "Ip") {
             typeParts.push(`${joint.single} ${handNames[hand]} кисти`);
@@ -214,7 +215,7 @@ export default function HandJointSpaceModal({ isOpen, onClose, textareaRef }) {
       });
 
       if (handParts.length) {
-        degreeParts.push(`${deg} сужены в ${handParts.join(", ")}`);
+        degreeParts.push(`${deg} склерозированы в ${handParts.join(", ")}`);
       }
     });
 
@@ -231,11 +232,11 @@ export default function HandJointSpaceModal({ isOpen, onClose, textareaRef }) {
     }
 
     if (degreeParts.length) {
-      parts.push("Суставные щели " + degreeParts.join("; ") + ".");
+      parts.push("Суставные поверхности " + degreeParts.join("; ") + ".");
     }
 
     if (!parts.length) {
-      return "Суставные щели кистей рук равномерной высоты.";
+      return "Суставные поверхности кистей рук без патологических изменений.";
     }
 
     return parts.join(" ");
@@ -310,18 +311,17 @@ export default function HandJointSpaceModal({ isOpen, onClose, textareaRef }) {
                 let insertText = "";
 
                 if (activeDegree === "Не изменены") {
-                  insertText = "Суставные щели мелких суставов кистей сохранены, равномерные.";
+                  insertText = "Суставные поверхности ровные, чёткие, без признаков деформации.";
                 } else {
                   insertText = generateDescription();
                 }
 
-                // если перед вставкой нет переноса — добавить
+                // Добавляем перенос строки, если перед вставкой нет его
                 if (textBefore.length > 0 && !textBefore.endsWith("\n")) {
                   insertText = "\n" + insertText;
                 }
 
                 textarea.value = textBefore + insertText + textAfter;
-
                 const cursorPos = start + insertText.length;
                 textarea.selectionStart = textarea.selectionEnd = cursorPos;
                 textarea.dispatchEvent(new Event("input", { bubbles: true }));

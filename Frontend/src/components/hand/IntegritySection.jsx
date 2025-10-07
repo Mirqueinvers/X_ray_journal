@@ -9,48 +9,39 @@ export default function IntegritySection({ textareaRef, setExpandedPlaque }) {
 
   // Вставка текста в textarea
   const insertIntegrityText = (option) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+  const textarea = textareaRef.current;
+  if (!textarea) return;
 
-    if (option === "Не нарушена") {
-      const fullText = "Костно-травматических и костно-деструктивных изменений не выявлено.\n";
-      
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const text = textarea.value;
+  let fullText = "";
+  if (option === "Не нарушена") {
+    fullText = "Костно-травматических и костно-деструктивных изменений не выявлено.";
+  } else if (option === "Нарушена") {
+    fullText = "Определяется нарушение целостности костной ткани в";
+  }
 
-      const newText = text.substring(0, start) + fullText + text.substring(end);
-      textarea.value = newText;
+  // добавляем перенос строки перед текстом, если курсор не в начале или textarea не пустая
+  const textBeforeCursor = textarea.value.substring(0, textarea.selectionStart);
+  if (textBeforeCursor.length > 0 && !textBeforeCursor.endsWith("\n")) {
+    fullText = "\n" + fullText;
+  }
 
-      const newCursorPosition = start + fullText.length;
-      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-      textarea.focus();
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const text = textarea.value;
 
-      const event = new Event("input", { bubbles: true });
-      textarea.dispatchEvent(event);
-      
-      setExpandedPlaque(null);
-    } 
-    else if (option === "Нарушена") {
-      const fullText = "Определяется нарушение целостности костной ткани в";
-      
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const text = textarea.value;
+  const newText = text.substring(0, start) + fullText + text.substring(end);
+  textarea.value = newText;
 
-      const newText = text.substring(0, start) + fullText + text.substring(end);
-      textarea.value = newText;
+  const newCursorPosition = start + fullText.length;
+  textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+  textarea.focus();
 
-      const newCursorPosition = start + fullText.length;
-      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-      textarea.focus();
+  const event = new Event("input", { bubbles: true });
+  textarea.dispatchEvent(event);
 
-      const event = new Event("input", { bubbles: true });
-      textarea.dispatchEvent(event);
-      
-      setExpandedPlaque(null);
-    }
-  };
+  setExpandedPlaque(null);
+};
+
 
   return (
     <div className="ml-6 mt-1 space-y-1">

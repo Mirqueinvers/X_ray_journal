@@ -25,7 +25,6 @@ export default function CervicalResearchPlaques({
 
   const cervicalJointPlaques = [
     "Позвоночный столб",
-    "Лордоз",
     "Межпозвонковые диски",
     "Замыкательные пластинки",
     "Остеофиты",
@@ -162,32 +161,6 @@ export default function CervicalResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <LumbarParaarticularTissuesSection
-                  textareaRef={textareaRef}
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
-            </div>
-          );
-        }
-
-        if (plaque === "Лордоз") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setExpandedPlaque(expandedPlaque === plaque ? null : plaque);
-                }}
-              >
-                <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
-              </div>
-
-              {expandedPlaque === plaque && (
-                <LumbarLordosisSection
                   textareaRef={textareaRef}
                   setExpandedPlaque={setExpandedPlaque}
                 />

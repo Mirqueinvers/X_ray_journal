@@ -1,12 +1,13 @@
-// Frontend/src/components/feet/FeetResearchPlaques.jsx
+// Frontend/src/components/foot/FootResearchPlaques.jsx
 import { useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import FeetJointSpaceSection from "./JointSpaceSection";
-import FeetJointSurfaceSection from "./JointSurfaceSection";
-import FeetOsteophytesModal from "./OsteophytesModal";
-import FeetCongruencySection from "./CongruencySection";
-import FeetIntegritySection from "./IntegritySection";
-import FeetParaarticularTissuesSection from "./ParaarticularTissuesSection";
+import FootIntegritySection from "./IntegritySection";
+import FootParaarticularTissuesSection from "./ParaarticularTissuesSection";
+import FootJointSpaceModal from "./FootJointSpaceModal";
+import FootJointSurfaceModal from "./FootJointSurfaceModal";
+import FootOsteophytesModal from "./FootOsteophytesModal";
+import FootCongruencyModal from "./FootCongruencyModal";
+
 
 export default function FeetResearchPlaques({
   expandedPlaque,
@@ -19,19 +20,40 @@ export default function FeetResearchPlaques({
   setSelectedChangeLevel,
   selectedShapeLevel,
   setSelectedShapeLevel,
-  showOsteophytesModal,
-  setShowOsteophytesModal,
+  setIsFootJointSpaceModalOpen,
+  setIsFootJointSurfaceModalOpen,
+  showFeetOsteophytesModal, // Переименован с showOsteophytesModal
+  setShowFeetOsteophytesModal, // Переименован с setShowOsteophytesModal
+  showFootCongruencyModal,
+setShowFootCongruencyModal,
   textareaRef,
 }) {
   const feetJointPlaques = [
     "Суставные щели",
     "Суставные поверхности",
     "Остеофиты",
-    "Бугорки",
     "Конгруэнтность",
     "Целостность",
     "Параартикулярные ткани",
   ];
+
+  const insertNormalText = () => {
+    if (!textareaRef?.current) return;
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const textBefore = textarea.value.substring(0, start);
+    const textAfter = textarea.value.substring(end);
+    const normalText = `Суставные щели мелких суставов стоп сохранены, равномерные.
+Суставные поверхности ровные, чёткие, без признаков деформации.
+Конгруэнтность суставных поверхностей не нарушена.
+Костно-травматических и костно-деструктивных изменений не выявлено.
+Параартикулярные ткани не имеют рентгено-позитивных признаков изменений.`;
+    textarea.value = textBefore + normalText + textAfter;
+    const cursorPos = start + normalText.length;
+    textarea.selectionStart = textarea.selectionEnd = cursorPos;
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
+  };
 
   return (
     <div className="mt-4 space-y-2">
@@ -43,7 +65,7 @@ export default function FeetResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowOsteophytesModal(true);
+                  setShowFeetOsteophytesModal(true);
                 }}
               >
                 <span>{plaque}</span>
@@ -52,36 +74,36 @@ export default function FeetResearchPlaques({
           );
         }
 
-        if (plaque === "Бугорки") {
+        if (plaque === "Суставные щели") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>
               <div
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (expandedPlaque === plaque) {
-                    setExpandedPlaque(null);
-                  } else {
-                    setExpandedPlaque(plaque);
-                  }
+                  setIsFootJointSpaceModalOpen(true);
                 }}
               >
                 <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
+                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
               </div>
+            </div>
+          );
+        }
 
-              {expandedPlaque === plaque && (
-                <FeetBumpsSection
-                  textareaRef={textareaRef}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
+        if (plaque === "Суставные поверхности") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsFootJointSurfaceModalOpen(true);
+                }}
+              >
+                <span>{plaque}</span>
+                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
+              </div>
             </div>
           );
         }
@@ -93,25 +115,12 @@ export default function FeetResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (expandedPlaque === plaque) {
-                    setExpandedPlaque(null);
-                  } else {
-                    setExpandedPlaque(plaque);
-                  }
+                  setShowFootCongruencyModal(true);
                 }}
               >
                 <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
+                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
               </div>
-
-              {expandedPlaque === plaque && (
-                <FeetCongruencySection
-                  textareaRef={textareaRef}
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
             </div>
           );
         }
@@ -137,7 +146,7 @@ export default function FeetResearchPlaques({
               </div>
 
               {expandedPlaque === plaque && (
-                <FeetIntegritySection
+                <FootIntegritySection
                   textareaRef={textareaRef}
                   setExpandedPlaque={setExpandedPlaque}
                 />
@@ -167,7 +176,7 @@ export default function FeetResearchPlaques({
               </div>
 
               {expandedPlaque === plaque && (
-                <FeetParaarticularTissuesSection
+                <FootParaarticularTissuesSection
                   textareaRef={textareaRef}
                   setExpandedPlaque={setExpandedPlaque}
                 />
@@ -175,49 +184,16 @@ export default function FeetResearchPlaques({
             </div>
           );
         }
-
-        const isExpanded = expandedPlaque === plaque;
-        return (
-          <div key={index} onClick={(e) => e.stopPropagation()}>
-            <div
-              className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer flex justify-between items-center"
-              onClick={(e) => {
-                e.stopPropagation();
-                setExpandedPlaque(isExpanded ? null : plaque);
-              }}
-            >
-              <span>{plaque}</span>
-              {isExpanded ? (
-                <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-              ) : (
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-              )}
-            </div>
-
-            {isExpanded && plaque === "Суставные щели" && (
-              <FeetJointSpaceSection
-                textareaRef={textareaRef}
-                selectedSubItem={selectedSubItem}
-                setSelectedSubItem={setSelectedSubItem}
-                selectedNarrowingLevel={selectedNarrowingLevel}
-                setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                setExpandedPlaque={setExpandedPlaque}
-              />
-            )}
-
-            {isExpanded && plaque === "Суставные поверхности" && (
-              <FeetJointSurfaceSection
-                textareaRef={textareaRef}
-                selectedSubItem={selectedSubItem}
-                setSelectedSubItem={setSelectedSubItem}
-                selectedChangeLevel={selectedChangeLevel}
-                setSelectedChangeLevel={setSelectedChangeLevel}
-                setExpandedPlaque={setExpandedPlaque}
-              />
-            )}
-          </div>
-        );
       })}
+
+      {/* Плашка "Норма" внизу с отступом */}
+      <div className="h-20"></div>
+      <div
+        className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+        onClick={insertNormalText}
+      >
+        <span>Норма</span>
+      </div>
     </div>
   );
 }

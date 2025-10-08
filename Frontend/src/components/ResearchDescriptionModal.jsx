@@ -3,8 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { XMarkIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import KneeResearchPlaques from "./knees/KneeResearchPlaques";
 import HipResearchPlaques from "./hipjoints/HipResearchPlaques";
-import AnkleResearchPlaques from "./anklejoints/AnkleResearchPlaques";
-import FeetResearchPlaques from "./feet/FeetResearchPlaques";
+import FeetResearchPlaques from "./foot/FootResearchPlaques";
 import HandResearchPlaques from "./hand/HandResearchPlaques";
 import LumbarResearchPlaques from "./spine/LumbarResearchPlaques";
 import ThoracicResearchPlaques from "./spine/ThoracicResearchPlaques";
@@ -23,6 +22,14 @@ import HandJointSpaceModal from "./hand/HandJointSpaceModal";
 import HandJointSurfaceModal from "./hand/HandJointSurfaceModal";
 import HandOsteophytesModal from "./hand/HandOsteophytesModal";
 import HandCongruencyModal from "./hand/HandCongruencyModal";
+import FootJointSpaceModal from "./foot/FootJointSpaceModal";
+import FootJointSurfaceModal from "./foot/FootJointSurfaceModal";
+import FootOsteophytesModal from "./foot/FootOsteophytesModal";
+import FootCongruencyModal from "./foot/FootCongruencyModal";
+import AnkleResearchPlaques from "./anklejoints/AnkleResearchPlaques";
+import AnkleJoinSpaceModal from "./anklejoints/AnkleJoinSpaceModal";
+
+
 
 
 
@@ -37,8 +44,6 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
   const [selectedShapeLevel, setSelectedShapeLevel] = useState(null);
   const [showOsteophytesModal, setShowOsteophytesModal] = useState(false);
   const [showHipOsteophytesModal, setShowHipOsteophytesModal] = useState(false);
-  const [showAnkleOsteophytesModal, setShowAnkleOsteophytesModal] = useState(false);
-  const [showFeetOsteophytesModal, setShowFeetOsteophytesModal] = useState(false);
   const [showLumbarOsteophytesModal, setShowLumbarOsteophytesModal] = useState(false);
   const [showThoracicOsteophytesModal, setShowThoracicOsteophytesModal] = useState(false);
   const [showLungOsteophytesModal, setShowLungOsteophytesModal] = useState(false);
@@ -53,7 +58,12 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
   const [isHandJointSurfaceModalOpen, setIsHandJointSurfaceModalOpen] = useState(false);
   const [showHandOsteophytesModal, setShowHandOsteophytesModal] = useState(false);
   const [showHandCongruencyModal, setShowHandCongruencyModal] = useState(false);
-
+  const [isFootJointSpaceModalOpen, setIsFootJointSpaceModalOpen] = useState(false);
+  const [isFootJointSurfaceModalOpen, setIsFootJointSurfaceModalOpen] = useState(false);
+  const [showFeetOsteophytesModal, setShowFeetOsteophytesModal] = useState(false);
+  const [showFootCongruencyModal, setShowFootCongruencyModal] = useState(false);
+  const [isAnkleJointSpaceModalOpen, setIsAnkleJointSpaceModalOpen] = useState(false); // Изменено на булево значение
+  const [ankleJointSide, setAnkleJointSide] = useState(null); // Добавлено состояние для стороны сустава
 
 
 
@@ -210,7 +220,7 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
               )}
 
               {/* Плашки для тазобедренного сустава */}
-              {selectedResearch && ["Рентгенография тазобедренных суставов", "Рентгенographия левого тазобедренного сустава", "Рентгенография правого тазобедренного сустава"].includes(selectedResearch) && (
+              {selectedResearch && ["Рентгенография тазобедренных суставов", "Рентгенoграфия левого тазобедренного сустава", "Рентгенография правого тазобедренного сустава"].includes(selectedResearch) && (
                 <HipResearchPlaques
                   expandedPlaque={expandedPlaque}
                   setExpandedPlaque={setExpandedPlaque}
@@ -235,24 +245,6 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
                 />
               )}
 
-              {/* Плашки для голеностопного сустава */}
-              {selectedResearch && ["Рентгенография голenостопных суставов", "Рентгенография левого голеностопного сустава", "Рентгенография правого голеностопного сустава"
-              , "Рентгенография локтевых суставов", "Рентгенография левого локtевого сустава", "Рентгенография правого локтевого сустава"].includes(selectedResearch) && (
-                <AnkleResearchPlaques
-                  expandedPlaque={expandedPlaque}
-                  setExpandedPlaque={setExpandedPlaque}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedNarrowingLevel={selectedNarrowingLevel}
-                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                  selectedChangeLevel={selectedChangeLevel}
-                  setSelectedChangeLevel={setSelectedChangeLevel}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  textareaRef={textareaRef}
-                />
-              )}
-
               {/* Плашки для стопы */}
               {selectedResearch && ["Рентгенография стоп", "Рентгенография левой стопы", "Рентгенография правой стопы"].includes(selectedResearch) && (
                 <FeetResearchPlaques
@@ -266,9 +258,14 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
                   setSelectedChangeLevel={setSelectedChangeLevel}
                   selectedShapeLevel={selectedShapeLevel}
                   setSelectedShapeLevel={setSelectedShapeLevel}
-                  showOsteophytesModal={showFeetOsteophytesModal}
-                  setShowOsteophytesModal={setShowFeetOsteophytesModal}
+                  showFeetOsteophytesModal={showFeetOsteophytesModal} // Переименован с showOsteophytesModal
+                  setShowFeetOsteophytesModal={setShowFeetOsteophytesModal} // Переименован с setShowOsteophytesModal
                   textareaRef={textareaRef}
+                  setIsFootJointSpaceModalOpen={setIsFootJointSpaceModalOpen}
+                  setIsFootJointSurfaceModalOpen={setIsFootJointSurfaceModalOpen}
+                  showFootCongruencyModal={showFootCongruencyModal}
+                  setShowFootCongruencyModal={setShowFootCongruencyModal}
+
                 />
               )}
 
@@ -360,6 +357,23 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
                   textareaRef={textareaRef}
                 />
               )}
+              {selectedResearch && ["Рентгенография голеностопных суставов", "Рентгенография левого голеностопного сустава", "Рентгенография правого голеностопного сустава"].includes(selectedResearch) && (
+                <AnkleResearchPlaques
+                  expandedPlaque={expandedPlaque}
+                  setExpandedPlaque={setExpandedPlaque}
+                  selectedSubItem={selectedSubItem}
+                  setSelectedSubItem={setSelectedSubItem}
+                  selectedNarrowingLevel={selectedNarrowingLevel}
+                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                  selectedChangeLevel={selectedChangeLevel}
+                  setSelectedChangeLevel={setSelectedChangeLevel}
+                  selectedShapeLevel={selectedShapeLevel}
+                  setSelectedShapeLevel={setSelectedShapeLevel}
+                  textareaRef={textareaRef}
+                  setIsAnkleJointSpaceModalOpen={setIsAnkleJointSpaceModalOpen}
+                  setAnkleJointSide={setAnkleJointSide}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -375,13 +389,6 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
         {showHipOsteophytesModal && (
           <HipOsteophytesModal
             onClose={() => setShowHipOsteophytesModal(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {showFeetOsteophytesModal && (
-          <FeetOsteophytesModal
-            onClose={() => setShowFeetOsteophytesModal(false)}
             textareaRef={textareaRef}
           />
         )}
@@ -492,6 +499,50 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
             textareaRef={textareaRef}
           />
         )}
+
+        {isFootJointSpaceModalOpen && (
+          <FootJointSpaceModal
+            isOpen={isFootJointSpaceModalOpen}
+            onClose={() => setIsFootJointSpaceModalOpen(false)}
+            textareaRef={textareaRef}
+          />
+        )}
+       
+        {isFootJointSurfaceModalOpen && (
+          <FootJointSurfaceModal
+            isOpen={isFootJointSurfaceModalOpen}
+            onClose={() => setIsFootJointSurfaceModalOpen(false)}
+            textareaRef={textareaRef}
+          />
+        )}
+
+          {showFeetOsteophytesModal && (
+            <FootOsteophytesModal
+              isOpen={showFeetOsteophytesModal} // Добавлен пропс isOpen
+              onClose={() => setShowFeetOsteophytesModal(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+
+          {showFootCongruencyModal && (
+            <FootCongruencyModal
+              isOpen={showFootCongruencyModal}
+              onClose={() => setShowFootCongruencyModal(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+
+          {isAnkleJointSpaceModalOpen && (
+            <AnkleJoinSpaceModal
+              isOpen={isAnkleJointSpaceModalOpen}
+              onClose={() => {
+                setIsAnkleJointSpaceModalOpen(false);
+                setAnkleJointSide(null);
+              }}
+              textareaRef={textareaRef}
+              side={ankleJointSide}
+            />
+          )}
       </div>
     </div>
   );

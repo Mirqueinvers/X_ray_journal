@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { useEffect, useState } from 'react';
+import { TrashIcon, PencilIcon, ClipboardIcon, CheckIcon } from '@heroicons/react/24/outline';
 import PatientResearchList from './PatientResearchList';
 import API_BASE from './api';
 
@@ -15,7 +15,9 @@ export default function DayResult({
   formatBirthDate,
   onEditResearch,
 }) {
-  // Функция удаления исследования
+  const [copiedId, setCopiedId] = useState(null);
+
+  // Удаление исследования
   const handleDeleteResearch = async (researchId) => {
     if (!confirm('Удалить исследование?')) return;
 
@@ -35,17 +37,13 @@ export default function DayResult({
     }
   };
 
-  // Функция выдачи/отмены выдачи снимков
+  // Выдача/отмена выдачи снимков
   const handleIssueResearch = async (researchId, isCancel) => {
     try {
       const res = await fetch(`${API_BASE}/api/research/${researchId}/issue`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          issued_on_hands: !isCancel // Если isCancel=true (отмена), устанавливаем false
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ issued_on_hands: !isCancel }),
       });
 
       const data = await res.json();
@@ -53,23 +51,21 @@ export default function DayResult({
         setPatientsOnDate(prev =>
           prev.map(patient => ({
             ...patient,
-            researches: patient.researches.map(research =>
-              research.id === researchId 
-                ? { ...research, issued_on_hands: !isCancel }
-                : research
-            )
+            researches: patient.researches.map(r =>
+              r.id === researchId ? { ...r, issued_on_hands: !isCancel } : r
+            ),
           }))
         );
       } else {
         alert(data.error || 'Ошибка при обновлении статуса');
       }
     } catch (err) {
-      console.error('Ошибка при обновlении статуса:', err);
+      console.error('Ошибка при обновлении статуса:', err);
       alert('Ошибка сервера');
     }
   };
 
-  // useEffect для загрузки пациентов и их исследований
+  // Загрузка пациентов
   useEffect(() => {
     if (!selectedDate) return;
 
@@ -81,7 +77,7 @@ export default function DayResult({
         const patientsWithResearches = await Promise.all(
           patients.map(async (p) => {
             const resR = await fetch(`${API_BASE}/api/patient/${p.id}/researches`);
-            let researches = await resR.json();
+            const researches = await resR.json();
             return { ...p, researches };
           })
         );
@@ -94,6 +90,25 @@ export default function DayResult({
 
     fetchPatients();
   }, [selectedDate, setPatientsOnDate]);
+
+  // Копирование ФИО и даты рождения в формат "кдю12101990"
+  const handleCopy = (e, patient) => {
+    e.stopPropagation();
+    const parts = patient.full_name.trim().split(' ');
+    const initials = parts.length >= 3
+      ? `${parts[0][0]}${parts[1][0]}${parts[2][0]}`.toLowerCase()
+      : parts.map(w => w[0].toLowerCase()).join('');
+
+    const formattedBirth = patient.birth_date
+      ? patient.birth_date.split('-').reverse().join('').replaceAll('.', '')
+      : '';
+
+    const result = `${initials}${formattedBirth}`;
+    navigator.clipboard.writeText(result);
+
+    setCopiedId(patient.id);
+    setTimeout(() => setCopiedId(null), 1000);
+  };
 
   return (
     <div className="mb-8 w-full bg-gray-800 p-4 rounded shadow overflow-x-auto border border-yellow-500">
@@ -133,13 +148,42 @@ export default function DayResult({
                     </button>
                   </div>
 
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 relative">
+
+                    {/* 📋 / ✅ Копировать */}
+                    <button
+                      onClick={(e) => handleCopy(e, p)}
+                      className="relative ml-2 self-center w-5 h-5 flex items-center justify-center text-green-400 hover:text-green-300 transition-transform duration-300"
+                      title="Скопировать ФИО и ДР"
+                    >
+                      {/* Иконка копирования */}
+                      <ClipboardIcon
+                        className={`h-5 w-5 absolute transition-all duration-300 transform ${
+                          copiedId === p.id
+                            ? 'opacity-0 scale-75'
+                            : 'opacity-100 scale-100'
+                        }`}
+                      />
+
+                      {/* Галочка после копирования */}
+                      <CheckIcon
+                        className={`h-5 w-5 absolute text-green-400 transition-all duration-300 transform ${
+                          copiedId === p.id
+                            ? 'opacity-100 scale-100'
+                            : 'opacity-0 scale-75'
+                        }`}
+                      />
+                    </button>
+
+                    {/* ✏️ Редактировать */}
                     <button
                       onClick={(e) => { e.stopPropagation(); openEditModal(p); }}
                       className="text-yellow-400 hover:text-yellow-200 ml-2 self-center"
                     >
                       <PencilIcon className="h-5 w-5" />
                     </button>
+
+                    {/* 🗑️ Удалить */}
                     <button
                       onClick={(e) => { e.stopPropagation(); deletePatient(p.id); }}
                       className="text-red-500 hover:text-red-400 ml-2 self-center"

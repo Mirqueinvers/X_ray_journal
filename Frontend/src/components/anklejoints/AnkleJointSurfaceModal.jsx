@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-export default function AnkleJoinSpaceModal({ onClose, textareaRef }) {
+export default function AnkleJointSurfaceModal({ isOpen, onClose, textareaRef }) {
+  if (!isOpen) return null;
+
   const [selectedSides, setSelectedSides] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState({
     left: [],
@@ -38,7 +40,7 @@ export default function AnkleJoinSpaceModal({ onClose, textareaRef }) {
       const currentOptions = prev[side];
       const newOptions = currentOptions.includes(option)
         ? currentOptions.filter((opt) => opt !== option)
-        : [option]; // только одна степень
+        : [option];
       if (newOptions.length > 0) setIsNormal(false);
       return {
         ...prev,
@@ -70,34 +72,43 @@ const generateDescriptionCompact = () => {
     }
   };
 
+  // Если ничего не выбрано
   if (!leftOpts.length && !rightOpts.length) {
-    return "Суставные щели голеностопных суставов сохранены, равномерные.";
+    return "Суставные поверхности голеностопных суставов не изменены, без особенностей.";
   }
 
+  // Если выбраны оба сустава
   if (leftOpts.length && rightOpts.length) {
     const sameDegree = leftOpts[0] === rightOpts[0];
     const samePos = leftPos === rightPos;
 
+    // Если только степень без позиции и одинаковая
+    if (sameDegree && !leftPos && !rightPos) {
+      return `Суставные поверхности голеностопных суставов ${leftOpts[0]} склерозированы.`;
+    }
+
+    // Если одинаковая степень и позиция
     if (sameDegree && samePos) {
-      return `Суставные щели голеностопных суставов ${leftOpts[0]} сужены, преимущественно в ${positionPhrase(leftPos, true)} отделах.`;
-    } else {
-      return `Суставная щель правого голеностопного сустава ${rightOpts[0]} сужена, преимущественно в ${positionPhrase(rightPos)} отделе; левого ${leftOpts[0]} сужена, преимущественно в ${positionPhrase(leftPos)} отделе.`;
+      return `Суставные поверхности голеностопных суставов ${leftOpts[0]} склерозированы, преимущественно в ${positionPhrase(leftPos, true)} отделах.`;
+    } 
+    // Если разная степень или позиция
+    else {
+      return `Суставная поверхность правого голеностопного сустава ${rightOpts[0]} склерозирована${rightPos ? `, преимущественно в ${positionPhrase(rightPos)} отделе` : ""}; левого ${leftOpts[0]} склерозирована${leftPos ? `, преимущественно в ${positionPhrase(leftPos)} отделе` : ""}.`;
     }
   }
 
+  // Если только левый сустав
   if (leftOpts.length) {
-    return `Суставная щель левого голеностопного сустава ${leftOpts[0]} сужена, преимущественно в ${positionPhrase(leftPos)} отделе, правого не изменена.`;
+    return `Суставная поверхность левого голеностопного сустава ${leftOpts[0]} склерозирована${leftPos ? `, преимущественно в ${positionPhrase(leftPos)} отделе` : ""}, правая без особенностей.`;
   }
 
+  // Если только правый сустав
   if (rightOpts.length) {
-    return `Суставная щель правого голеностопного сустава ${rightOpts[0]} сужена, преимущественно в ${positionPhrase(rightPos)} отделе, левого не изменена.`;
+    return `Суставная поверхность правого голеностопного сустава ${rightOpts[0]} склерозирована${rightPos ? `, преимущественно в ${positionPhrase(rightPos)} отделе` : ""}, левая без особенностей.`;
   }
 
   return "Изменений не выявлено.";
 };
-
-
-
 
 
   return (
@@ -173,7 +184,7 @@ const generateDescriptionCompact = () => {
             }}
           ></div>
 
-          {/* Опции сужения + положение */}
+          {/* Опции изменения + положение */}
           {selectedSides.includes("right") && (
             <div className="absolute top-[40%] transform -translate-y-1/2 ml-[11%] flex space-x-2">
               <div className="w-28 space-y-2">
@@ -262,7 +273,7 @@ const generateDescriptionCompact = () => {
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
             onClick={() => {
-              insertTextToTextarea(generateDescriptionCompact()); // ← используем новую функцию
+              insertTextToTextarea(generateDescriptionCompact());
               onClose();
             }}
           >

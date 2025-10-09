@@ -28,6 +28,9 @@ import FootOsteophytesModal from "./foot/FootOsteophytesModal";
 import FootCongruencyModal from "./foot/FootCongruencyModal";
 import AnkleResearchPlaques from "./anklejoints/AnkleResearchPlaques";
 import AnkleJoinSpaceModal from "./anklejoints/AnkleJoinSpaceModal";
+import AnkleJointSurfaceModal from "./anklejoints/AnkleJointSurfaceModal";
+
+
 
 
 
@@ -64,6 +67,9 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
   const [showFootCongruencyModal, setShowFootCongruencyModal] = useState(false);
   const [isAnkleJointSpaceModalOpen, setIsAnkleJointSpaceModalOpen] = useState(false); // Изменено на булево значение
   const [ankleJointSide, setAnkleJointSide] = useState(null); // Добавлено состояние для стороны сустава
+  const [isAnkleJointSurfaceModalOpen, setIsAnkleJointSurfaceModalOpen] = useState(false);
+
+
 
 
 
@@ -371,6 +377,8 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
                   setSelectedShapeLevel={setSelectedShapeLevel}
                   textareaRef={textareaRef}
                   setIsAnkleJointSpaceModalOpen={setIsAnkleJointSpaceModalOpen}
+                  setIsAnkleJointSurfaceModalOpen={setIsAnkleJointSurfaceModalOpen}
+
                   setAnkleJointSide={setAnkleJointSide}
                 />
               )}
@@ -541,6 +549,14 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
               }}
               textareaRef={textareaRef}
               side={ankleJointSide}
+            />
+          )}
+
+          {isAnkleJointSurfaceModalOpen && (
+            <AnkleJointSurfaceModal
+              isOpen={isAnkleJointSurfaceModalOpen}
+              onClose={() => setIsAnkleJointSurfaceModalOpen(false)}
+              textareaRef={textareaRef}
             />
           )}
       </div>

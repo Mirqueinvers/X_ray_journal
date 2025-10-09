@@ -5,6 +5,10 @@ import AnkleCongruencySection from "./CongruencySection";
 import AnkleIntegritySection from "./IntegritySection";
 import AnkleParaarticularTissuesSection from "./ParaarticularTissuesSection";
 import AnkleJoinSpaceModal from "./AnkleJoinSpaceModal";
+import AnkleJointSurfaceModal from "./AnkleJointSurfaceModal";
+
+
+
 
 export default function AnkleResearchPlaques({
   expandedPlaque,
@@ -18,9 +22,12 @@ export default function AnkleResearchPlaques({
   selectedShapeLevel,
   setSelectedShapeLevel,
   setIsAnkleJointSpaceModalOpen,
-  setAnkleJointSide,
+  setIsAnkleJointSurfaceModalOpen,
   textareaRef,
 }) {
+
+
+
   const ankleJointPlaques = [
     "Суставные щели",
     "Суставные поверхности",
@@ -56,25 +63,12 @@ export default function AnkleResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (expandedPlaque === plaque) {
-                    setExpandedPlaque(null);
-                  } else {
-                    setExpandedPlaque(plaque);
-                  }
+                  setIsAnkleJointSurfaceModalOpen(true); // Открытие модального окна
                 }}
               >
                 <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
+                <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
               </div>
-
-              {expandedPlaque === plaque && (
-                <AnkleJointSurfaceSection
-                  textareaRef={textareaRef}
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
             </div>
           );
         }

@@ -1,19 +1,23 @@
 import React from "react";
 
-export default function CongruencySection({ textareaRef, setExpandedPlaque }) {
-  // Варианты конгруэнтности
-  const congruencyOptions = [
-    "не нарушена",
-    "нарушена в левом голеностопном суставе",
-    "нарушена в правом голеностопном суставе",
+export default function ParaarticularTissuesSection({ textareaRef, setExpandedPlaque }) {
+  // Варианты параартикулярных тканей
+  const paraarticularOptions = [
+    "Без изменений",
+    "Изменения",
   ];
 
   // Вставка текста в textarea
-  const insertCongruencyText = (option) => {
+  const insertParaarticularText = (option) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    const fullText = `Конгруэнтность суставных поверхностей ${option.toLowerCase()}.\n`;
+    let fullText = "";
+    if (option === "Без изменений") {
+      fullText = "Параартикулярные ткани не имеют рентгено-позитивных признаков изменений.\n";
+    } else if (option === "Изменения") {
+      fullText = "Определяются образования костной плотности в параартикулярных тканях.\n";
+    }
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -28,20 +32,20 @@ export default function CongruencySection({ textareaRef, setExpandedPlaque }) {
 
     const event = new Event("input", { bubbles: true });
     textarea.dispatchEvent(event);
-    
-    // Добавляем вызов для сворачивания плашки
+
+    // сворачиваем плашку
     setExpandedPlaque(null);
   };
 
   return (
     <div className="ml-6 mt-1 space-y-1">
-      {congruencyOptions.map((option, idx) => (
+      {paraarticularOptions.map((option, idx) => (
         <div
           key={idx}
           className="p-1 bg-gray-700 text-gray-300 text-xs hover:bg-gray-600 cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
-            insertCongruencyText(option);
+            insertParaarticularText(option);
           }}
         >
           {option}

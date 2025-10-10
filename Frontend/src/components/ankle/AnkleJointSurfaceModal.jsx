@@ -72,6 +72,11 @@ const generateDescriptionCompact = () => {
     }
   };
 
+  const addPosition = (pos, plural = false) => {
+    if (!pos || pos === "равномерно") return ""; // не добавляем фразу
+    return `, преимущественно в ${positionPhrase(pos, plural)} отдел${plural ? "ах" : "е"}`;
+  };
+
   // Если ничего не выбрано
   if (!leftOpts.length && !rightOpts.length) {
     return "Суставные поверхности голеностопных суставов не изменены, без особенностей.";
@@ -83,32 +88,35 @@ const generateDescriptionCompact = () => {
     const samePos = leftPos === rightPos;
 
     // Если только степень без позиции и одинаковая
-    if (sameDegree && !leftPos && !rightPos) {
+    if (sameDegree && (!leftPos && !rightPos)) {
       return `Суставные поверхности голеностопных суставов ${leftOpts[0]} склерозированы.`;
     }
 
     // Если одинаковая степень и позиция
     if (sameDegree && samePos) {
+      if (leftPos === "равномерно" || !leftPos) {
+        return `Суставные поверхности голеностопных суставов ${leftOpts[0]} склерозированы.`;
+      }
       return `Суставные поверхности голеностопных суставов ${leftOpts[0]} склерозированы, преимущественно в ${positionPhrase(leftPos, true)} отделах.`;
-    } 
-    // Если разная степень или позиция
-    else {
-      return `Суставная поверхность правого голеностопного сустава ${rightOpts[0]} склерозирована${rightPos ? `, преимущественно в ${positionPhrase(rightPos)} отделе` : ""}; левого ${leftOpts[0]} склерозирована${leftPos ? `, преимущественно в ${positionPhrase(leftPos)} отделе` : ""}.`;
     }
+
+    // Если разная степень или позиция
+    return `Суставная поверхность правого голеностопного сустава ${rightOpts[0]} склерозирована${addPosition(rightPos)}; левого ${leftOpts[0]} склерозирована${addPosition(leftPos)}.`;
   }
 
   // Если только левый сустав
   if (leftOpts.length) {
-    return `Суставная поверхность левого голеностопного сустава ${leftOpts[0]} склерозирована${leftPos ? `, преимущественно в ${positionPhrase(leftPos)} отделе` : ""}, правая без особенностей.`;
+    return `Суставная поверхность левого голеностопного сустава ${leftOpts[0]} склерозирована${addPosition(leftPos)}, правая без особенностей.`;
   }
 
   // Если только правый сустав
   if (rightOpts.length) {
-    return `Суставная поверхность правого голеностопного сустава ${rightOpts[0]} склерозирована${rightPos ? `, преимущественно в ${positionPhrase(rightPos)} отделе` : ""}, левая без особенностей.`;
+    return `Суставная поверхность правого голеностопного сустава ${rightOpts[0]} склерозирована${addPosition(rightPos)}, левая без особенностей.`;
   }
 
   return "Изменений не выявлено.";
 };
+
 
 
   return (

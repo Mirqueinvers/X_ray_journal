@@ -70,31 +70,45 @@ const generateDescriptionCompact = () => {
     }
   };
 
+  const addPosition = (pos, plural = false) => {
+    if (!pos || pos === "равномерно") return "";
+    return `, преимущественно в ${positionPhrase(pos, plural)} отдел${plural ? "ах" : "е"}`;
+  };
+
+  // Норма
   if (!leftOpts.length && !rightOpts.length) {
     return "Суставные щели голеностопных суставов сохранены, равномерные.";
   }
 
+  // Оба сустава выбраны
   if (leftOpts.length && rightOpts.length) {
     const sameDegree = leftOpts[0] === rightOpts[0];
     const samePos = leftPos === rightPos;
 
     if (sameDegree && samePos) {
-      return `Суставные щели голеностопных суставов ${leftOpts[0]} сужены, преимущественно в ${positionPhrase(leftPos, true)} отделах.`;
+      // одинаковая степень и позиция
+      if (!leftPos || leftPos === "равномерно") {
+        return `Суставные щели голеностопных суставов ${leftOpts[0]} сужены.`;
+      }
+      return `Суставные щели голеностопных суставов ${leftOpts[0]} сужены${addPosition(leftPos, true)}.`;
     } else {
-      return `Суставная щель правого голеностопного сустава ${rightOpts[0]} сужена, преимущественно в ${positionPhrase(rightPos)} отделе; левого ${leftOpts[0]} сужена, преимущественно в ${positionPhrase(leftPos)} отделе.`;
+      return `Суставная щель правого голеностопного сустава ${rightOpts[0]} сужена${addPosition(rightPos)}; левого ${leftOpts[0]} сужена${addPosition(leftPos)}.`;
     }
   }
 
+  // Только левый
   if (leftOpts.length) {
-    return `Суставная щель левого голеностопного сустава ${leftOpts[0]} сужена, преимущественно в ${positionPhrase(leftPos)} отделе, правого не изменена.`;
+    return `Суставная щель левого голеностопного сустава ${leftOpts[0]} сужена${addPosition(leftPos)}, правого не изменена.`;
   }
 
+  // Только правый
   if (rightOpts.length) {
-    return `Суставная щель правого голеностопного сустава ${rightOpts[0]} сужена, преимущественно в ${positionPhrase(rightPos)} отделе, левого не изменена.`;
+    return `Суставная щель правого голеностопного сустава ${rightOpts[0]} сужена${addPosition(rightPos)}, левого не изменена.`;
   }
 
   return "Изменений не выявлено.";
 };
+
 
 
 

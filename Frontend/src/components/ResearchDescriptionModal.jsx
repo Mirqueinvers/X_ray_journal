@@ -26,11 +26,16 @@ import FootJointSpaceModal from "./foot/FootJointSpaceModal";
 import FootJointSurfaceModal from "./foot/FootJointSurfaceModal";
 import FootOsteophytesModal from "./foot/FootOsteophytesModal";
 import FootCongruencyModal from "./foot/FootCongruencyModal";
-import AnkleResearchPlaques from "./anklejoints/AnkleResearchPlaques";
-import AnkleJoinSpaceModal from "./anklejoints/AnkleJoinSpaceModal";
-import AnkleJointSurfaceModal from "./anklejoints/AnkleJointSurfaceModal";
-
-
+import AnkleResearchPlaques from "./ankle/AnkleResearchPlaques";
+import AnkleJoinSpaceModal from "./ankle/AnkleJoinSpaceModal";
+import AnkleJointSurfaceModal from "./ankle/AnkleJointSurfaceModal";
+import AnkleOsteophytesModal from "./ankle/AnkleOsteophytesModal";
+import ElbowResearchPlaques from "./elbow/ElbowResearchPlaques";
+import ElbowJoinSpaceModal from "./elbow/ElbowJoinSpaceModal";
+import ElbowJointSurfaceModal from "./elbow/ElbowJointSurfaceModal";
+import ElbowOsteophytesModal from "./elbow/ElbowOsteophytesModal";
+import CalcaneusResearchPlaques from "./calcaneus/CalcaneusResearchPlaques";
+import CalcaneusOsteophytesModal from "./calcaneus/CalcaneusOsteophytesModal";
 
 
 
@@ -66,10 +71,12 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
   const [showFeetOsteophytesModal, setShowFeetOsteophytesModal] = useState(false);
   const [showFootCongruencyModal, setShowFootCongruencyModal] = useState(false);
   const [isAnkleJointSpaceModalOpen, setIsAnkleJointSpaceModalOpen] = useState(false); // Изменено на булево значение
-  const [ankleJointSide, setAnkleJointSide] = useState(null); // Добавлено состояние для стороны сустава
   const [isAnkleJointSurfaceModalOpen, setIsAnkleJointSurfaceModalOpen] = useState(false);
-
-
+  const [isAnkleOsteophytesModalOpen, setIsAnkleOsteophytesModalOpen] = useState(false);
+  const [isElbowJointSpaceModalOpen, setIsElbowJointSpaceModalOpen] = useState(false);
+  const [isElbowJointSurfaceModalOpen, setIsElbowJointSurfaceModalOpen] = useState(false);
+  const [isElbowOsteophytesModalOpen, setIsElbowOsteophytesModalOpen] = useState(false);
+  const [isCalcaneusOsteophytesModalOpen, setIsCalcaneusOsteophytesModalOpen] = useState(false);
 
 
 
@@ -378,8 +385,33 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
                   textareaRef={textareaRef}
                   setIsAnkleJointSpaceModalOpen={setIsAnkleJointSpaceModalOpen}
                   setIsAnkleJointSurfaceModalOpen={setIsAnkleJointSurfaceModalOpen}
+                  setIsAnkleOsteophytesModalOpen={setIsAnkleOsteophytesModalOpen}
+                />
+              )}
 
-                  setAnkleJointSide={setAnkleJointSide}
+              {selectedResearch && ["Рентгенография локтевых суставов", "Рентгенография левого локтевого сустава", "Рентгенография правого локтевого сустава"].includes(selectedResearch) && (
+                <ElbowResearchPlaques
+                  expandedPlaque={expandedPlaque}
+                  setExpandedPlaque={setExpandedPlaque}
+                  selectedSubItem={selectedSubItem}
+                  setSelectedSubItem={setSelectedSubItem}
+                  selectedNarrowingLevel={selectedNarrowingLevel}
+                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                  selectedChangeLevel={selectedChangeLevel}
+                  setSelectedChangeLevel={setSelectedChangeLevel}
+                  selectedShapeLevel={selectedShapeLevel}
+                  setSelectedShapeLevel={setSelectedShapeLevel}
+                  textareaRef={textareaRef}
+                  setIsElbowJointSpaceModalOpen={setIsElbowJointSpaceModalOpen}
+                  setIsElbowJointSurfaceModalOpen={setIsElbowJointSurfaceModalOpen}
+                  setIsElbowOsteophytesModalOpen={setIsElbowOsteophytesModalOpen}
+                />
+              )}
+
+              {selectedResearch && ["Рентгенография пяточных костей"].includes(selectedResearch) && (
+                <CalcaneusResearchPlaques
+                  setIsCalcaneusOsteophytesModalOpen={setIsCalcaneusOsteophytesModalOpen}
+                  textareaRef={textareaRef}
                 />
               )}
             </div>
@@ -545,10 +577,8 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
               isOpen={isAnkleJointSpaceModalOpen}
               onClose={() => {
                 setIsAnkleJointSpaceModalOpen(false);
-                setAnkleJointSide(null);
               }}
               textareaRef={textareaRef}
-              side={ankleJointSide}
             />
           )}
 
@@ -556,6 +586,46 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
             <AnkleJointSurfaceModal
               isOpen={isAnkleJointSurfaceModalOpen}
               onClose={() => setIsAnkleJointSurfaceModalOpen(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+
+          {isAnkleOsteophytesModalOpen && (
+            <AnkleOsteophytesModal
+              isOpen={isAnkleOsteophytesModalOpen}
+              onClose={() => setIsAnkleOsteophytesModalOpen(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+
+          {isElbowJointSpaceModalOpen && (
+            <ElbowJoinSpaceModal
+              isOpen={isElbowJointSpaceModalOpen}
+              onClose={() => setIsElbowJointSpaceModalOpen(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+
+          {isElbowJointSurfaceModalOpen && (
+            <ElbowJointSurfaceModal
+              isOpen={isElbowJointSurfaceModalOpen}
+              onClose={() => setIsElbowJointSurfaceModalOpen(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+
+          {isElbowOsteophytesModalOpen && (
+            <ElbowOsteophytesModal
+              isOpen={isElbowOsteophytesModalOpen}
+              onClose={() => setIsElbowOsteophytesModalOpen(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+
+          {isCalcaneusOsteophytesModalOpen && (
+            <CalcaneusOsteophytesModal
+              isOpen={isCalcaneusOsteophytesModalOpen}
+              onClose={() => setIsCalcaneusOsteophytesModalOpen(false)}
               textareaRef={textareaRef}
             />
           )}

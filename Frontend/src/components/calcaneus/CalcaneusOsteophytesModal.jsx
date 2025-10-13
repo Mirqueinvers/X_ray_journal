@@ -27,40 +27,52 @@ export default function CalcaneusOsteophytesModal({ isOpen, onClose, textareaRef
   };
 
   const generateDescription = () => {
-    const areas = [
-      { key: "rightPlantar", text: "На подошвенной поверхности правой пяточной кости, в области прикрепления плантарной связки, определяется остроконечный остеофит." },
-      { key: "rightPosterior", text: "На задней поверхности правой пяточной кости, в области прикрепления ахиллова сухожилия, определяется остроконечный остеофит." },
-      { key: "leftPlantar", text: "На подошвенной поверхности левой пяточной кости, в области прикрепления плантарной связки, определяется остроконечный остеофит." },
-      { key: "leftPosterior", text: "На задней поверхности левой пяточной кости, в области прикрепления ахиллова сухожилия, определяется остроконечный остеофит." },
-    ];
+  const baseText =
+    "Структура костей сохранена, контуры их ровные, чёткие, без признаков костно-деструктивной или костно-травматической патологии.";
 
-    const selected = areas.filter(a => selectedAreas[a.key]);
-    if (!selected.length) return "Остеофиты пяточных костей не выявлены.";
+  const areas = [
+    { key: "rightPlantar", text: "На подошвенной поверхности правой пяточной кости, в области прикрепления плантарной связки, определяется остроконечный остеофит." },
+    { key: "rightPosterior", text: "На задней поверхности правой пяточной кости, в области прикрепления ахиллова сухожилия, определяется остроконечный остеофит." },
+    { key: "leftPlantar", text: "На подошвенной поверхности левой пяточной кости, в области прикрепления плантарной связки, определяется остроконечный остеофит." },
+    { key: "leftPosterior", text: "На задней поверхности левой пяточной кости, в области прикрепления ахиллова сухожилия, определяется остроконечный остеофит." },
+  ];
 
-    const texts = [];
+  const selected = areas.filter((a) => selectedAreas[a.key]);
+  if (!selected.length)
+    return `${baseText}\nОстеофиты пяточных костей не выявлены.`;
 
-    const plantarBoth = selectedAreas.rightPlantar && selectedAreas.leftPlantar;
-    const posteriorBoth = selectedAreas.rightPosterior && selectedAreas.leftPosterior;
+  const texts = [];
 
-    if (plantarBoth) {
-      texts.push("На подошвенной поверхности пяточных костей, в области прикрепления плантарной связки, определяются остроконечные остеофиты.");
-    }
-    if (posteriorBoth) {
-      texts.push("На задней поверхности пяточных костей, в области прикрепления ахиллова сухожилия, определяются остроконечные остеофиты.");
-    }
+  const plantarBoth =
+    selectedAreas.rightPlantar && selectedAreas.leftPlantar;
+  const posteriorBoth =
+    selectedAreas.rightPosterior && selectedAreas.leftPosterior;
 
-    selected.forEach(area => {
-      if (
-        (area.key === "rightPlantar" && plantarBoth) ||
-        (area.key === "leftPlantar" && plantarBoth) ||
-        (area.key === "rightPosterior" && posteriorBoth) ||
-        (area.key === "leftPosterior" && posteriorBoth)
-      ) return; // пропускаем, уже добавлено
-      texts.push(area.text);
-    });
+  if (plantarBoth) {
+    texts.push(
+      "На подошвенной поверхности пяточных костей, в области прикрепления плантарной связки, определяются остроконечные остеофиты."
+    );
+  }
+  if (posteriorBoth) {
+    texts.push(
+      "На задней поверхности пяточных костей, в области прикрепления ахиллова сухожилия, определяются остроконечные остеофиты."
+    );
+  }
 
-    return texts.join("\n");
-  };
+  selected.forEach((area) => {
+    if (
+      (area.key === "rightPlantar" && plantarBoth) ||
+      (area.key === "leftPlantar" && plantarBoth) ||
+      (area.key === "rightPosterior" && posteriorBoth) ||
+      (area.key === "leftPosterior" && posteriorBoth)
+    )
+      return; // уже добавлено
+    texts.push(area.text);
+  });
+
+  return `${baseText}\n${texts.join("\n")}`;
+};
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 cursor-pointer">

@@ -20,24 +20,39 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleResearchSelect = (researchName, projection) => {
-    // Ищем полное исследование в данных
-    const fullResearch = researchCategories[1].items.find(item => item.name === researchName);
-    
-    if (projection) {
-      // Если выбрана проекция, вставляем текст в описание
-      const textToInsert = `${researchName} ${projection}\n\n`;
-      onInsertText(textToInsert, researchName); // Передаем полное название исследования
-      onClose();
-      onOpenDescriptionModal();
-    } else if (fullResearch) {
-      // Если только исследование, вставляем его и открываем модалку описания
-      onInsertText(`${fullResearch.name}\n\n`, fullResearch.name);
-      onResearchSelect(fullResearch.name);
-      onClose();
-      onOpenDescriptionModal();
+const handleResearchSelect = (researchName, projection) => {
+  // Ищем полное исследование в данных
+  const fullResearch = researchCategories[1].items.find(item => item.name === researchName);
+
+  if (projection) {
+    // Если выбрана проекция, вставляем текст в описание
+    let selectedResearchName = researchName;
+    let displayResearchName = researchName;
+
+    // Специальная обработка для плоскостопия
+    if (researchName === "Рентгенография стоп" && projection === "плоскостопие") {
+      displayResearchName = "Рентгенография стоп"; // Для вставки в текст
+      selectedResearchName = "Рентгенография стоп (плоскостопие)"; // Для плашки
     }
-  };
+
+    // Удаляем "(плоскостопие)" при вставке текста
+    const cleanName = displayResearchName.replace(/\s*\(плоскостопие\)/i, "");
+
+    const textToInsert = `${cleanName} ${projection}\n\n`;
+    onInsertText(textToInsert, cleanName);
+    onResearchSelect(selectedResearchName); // Для плашки оставляем полное название
+    onClose();
+    onOpenDescriptionModal();
+  } else if (fullResearch) {
+    // Если только исследование, вставляем его и открываем модалку описания
+    const cleanName = fullResearch.name.replace(/\s*\(плоскостопие\)/i, "");
+    onInsertText(`${cleanName}\n\n`, cleanName);
+    onResearchSelect(fullResearch.name);
+    onClose();
+    onOpenDescriptionModal();
+  }
+};
+
 
   return (
     <div

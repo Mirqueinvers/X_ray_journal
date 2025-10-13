@@ -36,8 +36,12 @@ import ElbowJointSurfaceModal from "./elbow/ElbowJointSurfaceModal";
 import ElbowOsteophytesModal from "./elbow/ElbowOsteophytesModal";
 import CalcaneusResearchPlaques from "./calcaneus/CalcaneusResearchPlaques";
 import CalcaneusOsteophytesModal from "./calcaneus/CalcaneusOsteophytesModal";
-
-
+import FlatfootResearchPlaques from "./flatfoot/FlatfootResearchPlaques";
+import FlatfootModal from "./flatfoot/FlatfootModal";
+import ShoulderResearchPlaques from "./shoulder/ShoulderResearchPlaques"; 
+import ShoulderJointSpaceModal from "./shoulder/ShoulderJointSpaceModal"; 
+import ShoulderJointSurfaceModal from "./shoulder/ShoulderJointSurfaceModal"; 
+//import ShoulderOsteophytesModal from "./shoulder/ShoulderOsteophytesModal"; 
 
 
 
@@ -77,8 +81,9 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
   const [isElbowJointSurfaceModalOpen, setIsElbowJointSurfaceModalOpen] = useState(false);
   const [isElbowOsteophytesModalOpen, setIsElbowOsteophytesModalOpen] = useState(false);
   const [isCalcaneusOsteophytesModalOpen, setIsCalcaneusOsteophytesModalOpen] = useState(false);
-
-
+  const [isFlatfootModalOpen, setIsFlatfootModalOpen] = useState(false);
+  const [isShoulderJointSpaceModalOpen, setIsShoulderJointSpaceModalOpen] = useState(false);
+  const [isShoulderJointSurfaceModalOpen, setIsShoulderJointSurfaceModalOpen] = useState(false);
 
 
   const textareaRef = useRef(null);
@@ -259,7 +264,7 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
               )}
 
               {/* Плашки для стопы */}
-              {selectedResearch && ["Рентгенография стоп", "Рентгенография левой стопы", "Рентгенография правой стопы"].includes(selectedResearch) && (
+              {selectedResearch && ["Рентгенография стоп", "Рентгенография левой стопы", "Рентгенография правой стопы"].includes(selectedResearch) && !description?.includes("плоскостопие") && (
                 <FeetResearchPlaques
                   expandedPlaque={expandedPlaque}
                   setExpandedPlaque={setExpandedPlaque}
@@ -408,9 +413,35 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
                 />
               )}
 
+              {selectedResearch && ["Рентгенография плечевых суставов", "Рентгенография левого плечевого сустава", "Рентгенография правого плечевого сустава"].includes(selectedResearch) && (
+                <ShoulderResearchPlaques
+                  expandedPlaque={expandedPlaque}
+                  setExpandedPlaque={setExpandedPlaque}
+                  selectedSubItem={selectedSubItem}
+                  setSelectedSubItem={setSelectedSubItem}
+                  selectedNarrowingLevel={selectedNarrowingLevel}
+                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                  selectedChangeLevel={selectedChangeLevel}
+                  setSelectedChangeLevel={setSelectedChangeLevel}
+                  selectedShapeLevel={selectedShapeLevel}
+                  setSelectedShapeLevel={setSelectedShapeLevel}
+                  textareaRef={textareaRef}
+                  setIsShoulderJointSpaceModalOpen={setIsShoulderJointSpaceModalOpen}
+                  setIsShoulderJointSurfaceModalOpen={setIsShoulderJointSurfaceModalOpen}
+                  //setIsShoulderOsteophytesModalOpen={setIsShoulderOsteophytesModalOpen}
+                />
+              )}
+
               {selectedResearch && ["Рентгенография пяточных костей"].includes(selectedResearch) && (
                 <CalcaneusResearchPlaques
                   setIsCalcaneusOsteophytesModalOpen={setIsCalcaneusOsteophytesModalOpen}
+                  textareaRef={textareaRef}
+                />
+              )}
+
+              {selectedResearch && ["Рентгенография стоп (плоскостопие)"].includes(selectedResearch) && (
+                <FlatfootResearchPlaques
+                  setIsFlatfootModalOpen={setIsFlatfootModalOpen}
                   textareaRef={textareaRef}
                 />
               )}
@@ -629,6 +660,41 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
               textareaRef={textareaRef}
             />
           )}
+
+          {isFlatfootModalOpen && (
+            <FlatfootModal
+              isOpen={isFlatfootModalOpen}
+              onClose={() => setIsFlatfootModalOpen(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+
+        
+          {isShoulderJointSpaceModalOpen && (
+            <ShoulderJointSpaceModal
+              isOpen={isShoulderJointSpaceModalOpen}
+              onClose={() => setIsShoulderJointSpaceModalOpen(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+
+          {isShoulderJointSurfaceModalOpen && (
+            <ShoulderJointSurfaceModal
+              isOpen={isShoulderJointSurfaceModalOpen}
+              onClose={() => setIsShoulderJointSurfaceModalOpen(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+{/*
+          {isShoulderOsteophytesModalOpen && (
+            <ShoulderOsteophytesModal
+              isOpen={isShoulderOsteophytesModalOpen}
+              onClose={() => setIsShoulderOsteophytesModalOpen(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+          */}
+         
       </div>
     </div>
   );

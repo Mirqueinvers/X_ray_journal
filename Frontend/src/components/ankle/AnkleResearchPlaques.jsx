@@ -8,18 +8,8 @@ import AnkleParaarticularTissuesSection from "../general/ParaarticularTissuesSec
 export default function AnkleResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  selectedSubItem,
-  setSelectedSubItem,
-  selectedNarrowingLevel,
-  setSelectedNarrowingLevel,
-  selectedChangeLevel,
-  setSelectedChangeLevel,
-  selectedShapeLevel,
-  setSelectedShapeLevel,
-  setIsAnkleJointSpaceModalOpen,
-  setIsAnkleJointSurfaceModalOpen,
-  setIsAnkleOsteophytesModalOpen,
   textareaRef,
+  setOpenModal,
 }) {
   const ankleJointPlaques = [
     "Суставные щели",
@@ -58,7 +48,7 @@ export default function AnkleResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsAnkleJointSpaceModalOpen(true);
+                  setOpenModal("AnkleJoinSpaceModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -75,7 +65,7 @@ export default function AnkleResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsAnkleJointSurfaceModalOpen(true);
+                  setOpenModal("AnkleJointSurfaceModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -92,7 +82,7 @@ export default function AnkleResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsAnkleOsteophytesModalOpen(true);
+                  setOpenModal("AnkleOsteophytesModal");
                 }}
               >
                 <span>{plaque}</span>

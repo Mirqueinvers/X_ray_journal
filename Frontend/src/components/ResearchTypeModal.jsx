@@ -75,10 +75,11 @@ const handleResearchSelect = (researchName, projection) => {
           <XMarkIcon className="h-6 w-6" />
         </button>
 
-        <div className="p-6 h-full">
-          <h2 className="text-xl font-bold text-yellow-200 mb-4 text-center">Выбор вида исследования</h2>
-          
-          {/* Поле поиска */}
+        <div className="p-6 h-full flex flex-col">
+          <h2 className="text-xl font-bold text-yellow-200 mb-4 text-center">
+            Выбор вида исследования
+          </h2>
+
           <div className="mb-4">
             <input
               type="text"
@@ -90,22 +91,16 @@ const handleResearchSelect = (researchName, projection) => {
             />
           </div>
 
-          {/* Список исследований */}
-          <div className="h-[500px] overflow-y-auto space-y-2">
+          {/* Список исследований с автопрокруткой */}
+          <div className="flex-1 overflow-y-auto space-y-2">
             {filteredItems.length > 0 ? (
               filteredItems.map((item, index) => {
                 const isExpanded = expandedItems[index] || false;
-
                 return (
                   <div key={index} onClick={(e) => e.stopPropagation()}>
                     <div
                       className="p-3 bg-gray-600 border-l-2 border-yellow-500 text-yellow-200 hover:bg-gray-500 cursor-pointer flex justify-between items-center"
-                      onClick={() => {
-                        if (!isExpanded) {
-                          // Если элемент не развернут, просто разворачиваем его
-                          toggleItem(index);
-                        }
-                      }}
+                      onClick={() => toggleItem(index)}
                     >
                       <span>{item.name}</span>
                       {isExpanded ? (
@@ -123,7 +118,6 @@ const handleResearchSelect = (researchName, projection) => {
                             className="p-2 bg-gray-700 text-gray-300 text-xs hover:bg-gray-600 cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
-                              // Передаем и название исследования, и проекцию
                               handleResearchSelect(item.name, subItem);
                             }}
                           >

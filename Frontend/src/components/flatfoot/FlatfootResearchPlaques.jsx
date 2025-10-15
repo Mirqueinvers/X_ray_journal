@@ -1,10 +1,9 @@
-import { useState } from "react";
+
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import FlatfootModal from "./FlatfootModal";
 
 export default function FlatfootResearchPlaques({
-  setIsFlatfootModalOpen,
   textareaRef,
+  setOpenModal,
 }) {
   const insertNormalText = () => {
     if (!textareaRef?.current) return;
@@ -27,7 +26,7 @@ export default function FlatfootResearchPlaques({
           className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
           onClick={(e) => {
             e.stopPropagation();
-            setIsFlatfootModalOpen(true);
+            setOpenModal("FlatfootModal");
           }}
         >
           <span>Плоскостопие</span>

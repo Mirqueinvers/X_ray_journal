@@ -1,32 +1,15 @@
 // Frontend/src/components/foot/FootResearchPlaques.jsx
-import { useState } from "react";
+
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import FootIntegritySection from "../general/IntegritySection";
 import FootParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
-import FootJointSpaceModal from "./FootJointSpaceModal";
-import FootJointSurfaceModal from "./FootJointSurfaceModal";
-import FootOsteophytesModal from "./FootOsteophytesModal";
-import FootCongruencyModal from "./FootCongruencyModal";
 
 
 export default function FeetResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  selectedSubItem,
-  setSelectedSubItem,
-  selectedNarrowingLevel,
-  setSelectedNarrowingLevel,
-  selectedChangeLevel,
-  setSelectedChangeLevel,
-  selectedShapeLevel,
-  setSelectedShapeLevel,
-  setIsFootJointSpaceModalOpen,
-  setIsFootJointSurfaceModalOpen,
-  showFeetOsteophytesModal, // Переименован с showOsteophytesModal
-  setShowFeetOsteophytesModal, // Переименован с setShowOsteophytesModal
-  showFootCongruencyModal,
-setShowFootCongruencyModal,
   textareaRef,
+  setOpenModal,
 }) {
   const feetJointPlaques = [
     "Суставные щели",
@@ -65,7 +48,7 @@ setShowFootCongruencyModal,
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowFeetOsteophytesModal(true);
+                  setOpenModal("FootOsteophytesModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -81,7 +64,7 @@ setShowFootCongruencyModal,
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsFootJointSpaceModalOpen(true);
+                  setOpenModal("FootJointSpaceModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -98,7 +81,7 @@ setShowFootCongruencyModal,
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsFootJointSurfaceModalOpen(true);
+                  setOpenModal("FootJointSurfaceModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -115,7 +98,7 @@ setShowFootCongruencyModal,
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowFootCongruencyModal(true);
+                  setOpenModal("FootCongruencyModal");
                 }}
               >
                 <span>{plaque}</span>

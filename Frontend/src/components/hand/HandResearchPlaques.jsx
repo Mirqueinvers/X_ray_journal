@@ -1,29 +1,15 @@
-import { useState } from "react";
+
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import HandJointSpaceModal from "./HandJointSpaceModal"; 
 import HandIntegritySection from "../general/IntegritySection";
 import HandParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
-import HandJointSurfaceModal from "./HandJointSurfaceModal";
-import HandOsteophytesModal from "./HandOsteophytesModal";
-import HandCongruencyModal from "./HandCongruencyModal";
+
 
 export default function HandResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  selectedSubItem,
-  setSelectedSubItem,
-  selectedNarrowingLevel,
-  setSelectedNarrowingLevel,
-  selectedChangeLevel,
-  setSelectedChangeLevel,
-  selectedShapeLevel,
-  setSelectedShapeLevel,
   textareaRef,
-  setIsHandJointSpaceModalOpen, 
-  setIsHandJointSurfaceModalOpen,
-  setShowHandOsteophytesModal,
-  setShowHandCongruencyModal,
-}) {
+  setOpenModal,
+  }) {
   const handJointPlaques = [
     "Суставные щели",
     "Суставные поверхности",
@@ -61,7 +47,7 @@ export default function HandResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowHandOsteophytesModal(true);
+                  setOpenModal("HandOsteophytesModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -77,7 +63,7 @@ export default function HandResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsHandJointSpaceModalOpen(true);
+                  setOpenModal("HandJointSpaceModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -94,7 +80,7 @@ export default function HandResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsHandJointSurfaceModalOpen(true);
+                  setOpenModal("HandJointSurfaceModal");
                 }}
               >
                 <span>{plaque}</span>

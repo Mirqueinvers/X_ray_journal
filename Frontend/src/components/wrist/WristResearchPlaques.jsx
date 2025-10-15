@@ -1,27 +1,14 @@
-import { useState } from "react";
+
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import WristCongruencySection from "../general/CongruencySection";
 import WristIntegritySection from "../general/IntegritySection";
 import WristParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
-import WristJoinSpaceModal from "./WristJoinSpaceModal";
-import WristJointSurfaceModal from "./WristJointSurfaceModal";
-import WristOsteophytesModal from "./WristOsteophytesModal";
 
 export default function AnkleResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  selectedSubItem,
-  setSelectedSubItem,
-  selectedNarrowingLevel,
-  setSelectedNarrowingLevel,
-  selectedChangeLevel,
-  setSelectedChangeLevel,
-  selectedShapeLevel,
-  setSelectedShapeLevel,
-  setIsWristJointSpaceModalOpen,
-  setIsWristJointSurfaceModalOpen,
-  setIsWristOsteophytesModalOpen,
   textareaRef,
+  setOpenModal,
 }) {
   const ankleJointPlaques = [
     "Суставные щели",
@@ -60,7 +47,7 @@ export default function AnkleResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsWristJointSpaceModalOpen(true);
+                  setOpenModal("WristJoinSpaceModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -77,7 +64,7 @@ export default function AnkleResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsWristJointSurfaceModalOpen(true);
+                  setOpenModal("WristJointSurfaceModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -94,7 +81,7 @@ export default function AnkleResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsWristOsteophytesModalOpen(true);
+                  setOpenModal("WristOsteophytesModal");
                 }}
               >
                 <span>{plaque}</span>

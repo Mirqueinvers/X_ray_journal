@@ -1,35 +1,18 @@
 // Frontend/src/components/hipjoints/HipResearchPlaques.jsx
-// Frontend/src/components/hipjoints/HipResearchPlaques.jsx
-import { useState } from "react";
+
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import HipJointSpaceModal from "./HipJointSpaceModal"; // Импортируем модальное окно суставных щей тазобедренных суставов
-import HipJointSurfaceModal from "./HipJointSurfaceModal";
 import HipCongruencySection from "../general/CongruencySection";
 import HipIntegritySection from "../general/IntegritySection";
 import HipParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
 import HipEndoprosthesisSection from "./EndoprosthesisSection";
-import HipOsteophytesModal from "./HipOsteophytesModal";
 import FlebolytesSection from "./FlebolytesSection";
-import PubicSymphysisModal from "./PubicSymphysisModal";
+
 
 export default function HipResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  selectedSubItem,
-  setSelectedSubItem,
-  selectedNarrowingLevel,
-  setSelectedNarrowingLevel,
-  selectedChangeLevel,
-  setSelectedChangeLevel,
-  selectedShapeLevel,
-  setSelectedShapeLevel,
-  showOsteophytesModal,
-  setShowOsteophytesModal,
   textareaRef,
-  setIsHipJointSpaceModalOpen, // Добавляем пропс для управления модальным окном
-  setIsHipJointSurfaceModalOpen,
-  setIsHipJointOsteophytesModalOpen,
-  setIsPubicSymphysisModalOpen,
+  setOpenModal,
 }) {
   const hipJointPlaques = [
     "Эндопротез",
@@ -53,7 +36,7 @@ export default function HipResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsHipJointOsteophytesModalOpen(true);
+                  setOpenModal("HipOsteophytesModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -80,7 +63,7 @@ export default function HipResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsPubicSymphysisModalOpen(true); // <-- ДОБАВИТЬ ЭТУ СТРОКУ
+                  setOpenModal("PubicSymphysisModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -218,7 +201,7 @@ export default function HipResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsHipJointSpaceModalOpen(true);
+                  setOpenModal("HipJointSpaceModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -236,7 +219,7 @@ export default function HipResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsHipJointSurfaceModalOpen(true);
+                  setOpenModal("HipJointSurfaceModal");
                 }}
               >
                 <span>{plaque}</span>

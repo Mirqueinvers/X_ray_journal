@@ -3,25 +3,14 @@ import { useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import LumbarIntegritySection from "../general/IntegritySection";
 import LumbarParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
-import SpineModal from "./SpineModal";
-import SpineCurvatureModal from "./SpineCurvatureModal";
 import ThoracicKyphosisSection from "./KyphosisSection";
-import IntervertebralDiscsModal from "./IntervertebralDiscsModal";
-import EndplatesModal from "./EndplatesModal";
-import OsteophytesModal from "./OsteophytesModal";
-import InstabilityModal from "./InstabilityModal";
 
 export default function ThoracicResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
   textareaRef,
+  setOpenModal,
 }) {
-  const [showSpineModal, setShowSpineModal] = useState(false);
-  const [showCurvatureModal, setShowCurvatureModal] = useState(false);
-  const [showDiscsModal, setShowDiscsModal] = useState(false);
-  const [showEndplatesModal, setShowEndplatesModal] = useState(false);
-  const [showOsteophytesModal, setShowOsteophytesModal] = useState(false);
-  const [showInstabilityModal, setShowInstabilityModal] = useState(false);
 
   const thoracicJointPlaques = [
     "Позвоночный столб",
@@ -45,7 +34,7 @@ export default function ThoracicResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowSpineModal(true);
+                  setOpenModal("SpineModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -61,7 +50,7 @@ export default function ThoracicResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowCurvatureModal(true);
+                  setOpenModal("SpineCurvatureModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -77,7 +66,7 @@ export default function ThoracicResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowDiscsModal(true);
+                  setOpenModal("SpineIntervertebralDiscsModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -93,7 +82,7 @@ export default function ThoracicResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowEndplatesModal(true);
+                  setOpenModal("SpineEndplatesModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -109,7 +98,7 @@ export default function ThoracicResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowOsteophytesModal(true);
+                  setOpenModal("SpineOsteophytesModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -126,7 +115,7 @@ export default function ThoracicResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowInstabilityModal(true);
+                  setOpenModal("SpineInstabilityModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -214,47 +203,7 @@ export default function ThoracicResearchPlaques({
         }
 
         return null;
-        })}
-
-        {showSpineModal && (
-            <SpineModal onClose={() => setShowSpineModal(false)} textareaRef={textareaRef} />
-        )}
-
-        {showCurvatureModal && (
-            <SpineCurvatureModal
-            onClose={() => setShowCurvatureModal(false)}
-            textareaRef={textareaRef}
-            />
-        )}
-
-        {showDiscsModal && (
-            <IntervertebralDiscsModal
-            onClose={() => setShowDiscsModal(false)}
-            textareaRef={textareaRef}
-            />
-        )}
-
-        {showEndplatesModal && (
-            <EndplatesModal
-            onClose={() => setShowEndplatesModal(false)}
-            textareaRef={textareaRef}
-            />
-        )}
-
-        {showOsteophytesModal && (
-            <OsteophytesModal
-            onClose={() => setShowOsteophytesModal(false)}
-            textareaRef={textareaRef}
-            />
-        )}
-
-        {/* Модалка Нестабильности */}
-        {showInstabilityModal && (
-            <InstabilityModal
-            onClose={() => setShowInstabilityModal(false)}
-            textareaRef={textareaRef}
-            />
-        )}
+        })}       
     </div>
   );
 }

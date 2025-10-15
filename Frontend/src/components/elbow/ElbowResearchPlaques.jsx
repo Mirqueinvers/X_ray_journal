@@ -1,27 +1,14 @@
-import { useState } from "react";
+
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import ElbowCongruencySection from "../general/CongruencySection";
 import ElbowIntegritySection from "../general/IntegritySection";
 import ElbowParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
-import ElbowJoinSpaceModal from "./ElbowJoinSpaceModal";
-import ElbowJointSurfaceModal from "./ElbowJointSurfaceModal";
-import ElbowOsteophytesModal from "./ElbowOsteophytesModal";
 
 export default function ElbowResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  selectedSubItem,
-  setSelectedSubItem,
-  selectedNarrowingLevel,
-  setSelectedNarrowingLevel,
-  selectedChangeLevel,
-  setSelectedChangeLevel,
-  selectedShapeLevel,
-  setSelectedShapeLevel,
-  setIsElbowJointSpaceModalOpen,
-  setIsElbowJointSurfaceModalOpen,
-  setIsElbowOsteophytesModalOpen,
   textareaRef,
+  setOpenModal,
 }) {
   const elbowJointPlaques = [
     "Суставные щели",
@@ -60,7 +47,7 @@ export default function ElbowResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsElbowJointSpaceModalOpen(true);
+                  setOpenModal("ElbowJoinSpaceModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -77,7 +64,7 @@ export default function ElbowResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsElbowJointSurfaceModalOpen(true);
+                  setOpenModal("ElbowJointSurfaceModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -94,7 +81,7 @@ export default function ElbowResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsElbowOsteophytesModalOpen(true);
+                  setOpenModal("ElbowOsteophytesModal");
                 }}
               >
                 <span>{plaque}</span>

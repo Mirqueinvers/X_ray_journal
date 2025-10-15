@@ -1,10 +1,6 @@
 
 // Frontend/src/components/KneeResearchPlaques.jsx
-import { useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import JointSpaceSection from "./JointSpaceModal"; // Это теперь наше модальное окно
-import JointSurfaceModal from "./JointSurfaceModal"; // 1. Импортируем модальное окно суставных поверхностей
-import OsteophytesModal from "./OsteophytesModal";
 import BumpsSection from "./BumpsSection";
 import CongruencySection from "../general/CongruencySection";
 import IntegritySection from "../general/IntegritySection";
@@ -16,17 +12,10 @@ export default function KneeResearchPlaques({
   setExpandedPlaque,
   selectedSubItem,
   setSelectedSubItem,
-  selectedNarrowingLevel,
-  setSelectedNarrowingLevel,
-  selectedChangeLevel,
-  setSelectedChangeLevel,
   selectedShapeLevel,
   setSelectedShapeLevel,
-  showOsteophytesModal,
-  setShowOsteophytesModal,
   textareaRef,
-  setIsJointSpaceModalOpen, // Добавляем пропс для управления модальным окном
-  setIsJointSurfaceModalOpen, // 2. Добавляем пропс для управления модальным окном суставных поверхностей
+  setOpenModal,
 }) {
   const kneeJointPlaques = [
     "Эндопротезирование",
@@ -49,7 +38,7 @@ export default function KneeResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowOsteophytesModal(true);
+                  setOpenModal("OsteophytesModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -222,7 +211,7 @@ export default function KneeResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsJointSpaceModalOpen(true);
+                  setOpenModal("JointSpaceSection");
                 }}
               >
                 <span>{plaque}</span>
@@ -240,7 +229,7 @@ export default function KneeResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsJointSurfaceModalOpen(true);
+                  setOpenModal("JointSurfaceModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -249,7 +238,7 @@ export default function KneeResearchPlaques({
             </div>
           );
         }
-        
+
       })}
     </div>
   );

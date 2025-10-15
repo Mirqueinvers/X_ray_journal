@@ -13,16 +13,6 @@ import ChestCageSection from "./ChestCageSection";
 export default function LungResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  selectedSubItem,
-  setSelectedSubItem,
-  selectedNarrowingLevel,
-  setSelectedNarrowingLevel,
-  selectedChangeLevel,
-  setSelectedChangeLevel,
-  selectedShapeLevel,
-  setSelectedShapeLevel,
-  showOsteophytesModal,
-  setShowOsteophytesModal,
   textareaRef,
 }) {
   const [showPatternModal, setShowPatternModal] = useState(false); // состояние модалки патологических теней
@@ -49,11 +39,6 @@ export default function LungResearchPlaques({
         ? current + (needsNewLine ? "\n" : "") + text
         : text;
     }
-  };
-
-  const handleOsteophytesClick = (e) => {
-    e.stopPropagation();
-    setShowOsteophytesModal(true);
   };
 
   return (

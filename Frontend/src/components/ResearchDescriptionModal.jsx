@@ -1,177 +1,80 @@
-
 import { useState, useRef, useEffect } from "react";
 import { XMarkIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
-import KneeResearchPlaques from "./knees/KneeResearchPlaques";
-import HipResearchPlaques from "./hipjoints/HipResearchPlaques";
-import FeetResearchPlaques from "./foot/FootResearchPlaques";
-import HandResearchPlaques from "./hand/HandResearchPlaques";
-import LumbarResearchPlaques from "./spine/LumbarResearchPlaques";
-import ThoracicResearchPlaques from "./spine/ThoracicResearchPlaques";
-import OsteophytesModal from "./knees/OsteophytesModal";
-import LumbarOsteophytesModal from "./spine/OsteophytesModal";
-import LungResearchPlaques from "./lungs/LungResearchPlaques";
-import ThoracicOsteophytesModal from "./spine/OsteophytesModal";
-import CervicalResearchPlaques from "./spine/CervicalResearchPlaques";
-import JointSpaceSection from "./knees/JointSpaceModal"; 
-import JointSurfaceModal from "./knees/JointSurfaceModal"; 
-import HipJointSpaceModal from "./hipjoints/HipJointSpaceModal";
-import HipJointSurfaceModal from "./hipjoints/HipJointSurfaceModal";
-import HipOsteophytesModal from "./hipjoints/HipOsteophytesModal";
-import PubicSymphysisModal from "./hipjoints/PubicSymphysisModal";
-import HandJointSpaceModal from "./hand/HandJointSpaceModal";
-import HandJointSurfaceModal from "./hand/HandJointSurfaceModal";
-import HandOsteophytesModal from "./hand/HandOsteophytesModal";
-import HandCongruencyModal from "./hand/HandCongruencyModal";
-import FootJointSpaceModal from "./foot/FootJointSpaceModal";
-import FootJointSurfaceModal from "./foot/FootJointSurfaceModal";
-import FootOsteophytesModal from "./foot/FootOsteophytesModal";
-import FootCongruencyModal from "./foot/FootCongruencyModal";
-import AnkleResearchPlaques from "./ankle/AnkleResearchPlaques";
-import AnkleJoinSpaceModal from "./ankle/AnkleJoinSpaceModal";
-import AnkleJointSurfaceModal from "./ankle/AnkleJointSurfaceModal";
-import AnkleOsteophytesModal from "./ankle/AnkleOsteophytesModal";
-import ElbowResearchPlaques from "./elbow/ElbowResearchPlaques";
-import ElbowJoinSpaceModal from "./elbow/ElbowJoinSpaceModal";
-import ElbowJointSurfaceModal from "./elbow/ElbowJointSurfaceModal";
-import ElbowOsteophytesModal from "./elbow/ElbowOsteophytesModal";
-import CalcaneusResearchPlaques from "./calcaneus/CalcaneusResearchPlaques";
-import CalcaneusOsteophytesModal from "./calcaneus/CalcaneusOsteophytesModal";
-import FlatfootResearchPlaques from "./flatfoot/FlatfootResearchPlaques";
-import FlatfootModal from "./flatfoot/FlatfootModal";
-import ShoulderResearchPlaques from "./shoulder/ShoulderResearchPlaques"; 
-import ShoulderJointSpaceModal from "./shoulder/ShoulderJointSpaceModal"; 
-import ShoulderJointSurfaceModal from "./shoulder/ShoulderJointSurfaceModal"; 
-import ShoulderOsteophytesModal from "./shoulder/ShoulderOsteophytesModal"; 
-import ShoulderAcromioclavicularModal from "./shoulder/ShoulderAcromioclavicularModal";
-import WristResearchPlaques from "./wrist/WristResearchPlaques";
-import WristJoinSpaceModal from "./wrist/WristJoinSpaceModal";
-import WristJointSurfaceModal from "./wrist/WristJointSurfaceModal";
-import WristOsteophytesModal from "./wrist/WristOsteophytesModal";
-import ParanasalResearchPlaques from "./paranasal/ParanasalResearchPlaques";
-import SinusesModal from "./paranasal/SinusesModal";
 
+import * as Modals from "./allModals";
+import * as ResearchPlaques from "./researchPlaques";
 
-
-export default function ResearchDescriptionModal({ onClose, description, selectedResearch, setTextareaRef }) {
+export default function ResearchDescriptionModal({
+  onClose,
+  description,
+  selectedResearch,
+  setTextareaRef
+}) {
   const [expandedPlaque, setExpandedPlaque] = useState(null);
   const [selectedSubItem, setSelectedSubItem] = useState(null);
   const [selectedNarrowingLevel, setSelectedNarrowingLevel] = useState(null);
   const [selectedChangeLevel, setSelectedChangeLevel] = useState(null);
   const [selectedShapeLevel, setSelectedShapeLevel] = useState(null);
-  const [showOsteophytesModal, setShowOsteophytesModal] = useState(false);
-  const [showHipOsteophytesModal, setShowHipOsteophytesModal] = useState(false);
-  const [showLumbarOsteophytesModal, setShowLumbarOsteophytesModal] = useState(false);
-  const [showThoracicOsteophytesModal, setShowThoracicOsteophytesModal] = useState(false);
-  const [showLungOsteophytesModal, setShowLungOsteophytesModal] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [isJointSpaceModalOpen, setIsJointSpaceModalOpen] = useState(false); // Состояние для модального окна суставных щелей
-  const [isJointSurfaceModalOpen, setIsJointSurfaceModalOpen] = useState(false); // Состояние для модального окна суставных поверхностей
-  const [isHipJointSpaceModalOpen, setIsHipJointSpaceModalOpen] = useState(false);
-  const [isHipJointSurfaceModalOpen, setIsHipJointSurfaceModalOpen] = useState(false);
-  const [isHipJointOsteophytesModalOpen, setIsHipJointOsteophytesModalOpen] = useState(false);
-  const [isPubicSymphysisModalOpen, setIsPubicSymphysisModalOpen] = useState(false);
-  const [isHandJointSpaceModalOpen, setIsHandJointSpaceModalOpen] = useState(false);
-  const [isHandJointSurfaceModalOpen, setIsHandJointSurfaceModalOpen] = useState(false);
-  const [showHandOsteophytesModal, setShowHandOsteophytesModal] = useState(false);
-  const [showHandCongruencyModal, setShowHandCongruencyModal] = useState(false);
-  const [isFootJointSpaceModalOpen, setIsFootJointSpaceModalOpen] = useState(false);
-  const [isFootJointSurfaceModalOpen, setIsFootJointSurfaceModalOpen] = useState(false);
-  const [showFeetOsteophytesModal, setShowFeetOsteophytesModal] = useState(false);
-  const [showFootCongruencyModal, setShowFootCongruencyModal] = useState(false);
-  const [isAnkleJointSpaceModalOpen, setIsAnkleJointSpaceModalOpen] = useState(false); // Изменено на булево значение
-  const [isAnkleJointSurfaceModalOpen, setIsAnkleJointSurfaceModalOpen] = useState(false);
-  const [isAnkleOsteophytesModalOpen, setIsAnkleOsteophytesModalOpen] = useState(false);
-  const [isElbowJointSpaceModalOpen, setIsElbowJointSpaceModalOpen] = useState(false);
-  const [isElbowJointSurfaceModalOpen, setIsElbowJointSurfaceModalOpen] = useState(false);
-  const [isElbowOsteophytesModalOpen, setIsElbowOsteophytesModalOpen] = useState(false);
-  const [isCalcaneusOsteophytesModalOpen, setIsCalcaneusOsteophytesModalOpen] = useState(false);
-  const [isFlatfootModalOpen, setIsFlatfootModalOpen] = useState(false);
-  const [isShoulderJointSpaceModalOpen, setIsShoulderJointSpaceModalOpen] = useState(false);
-  const [isShoulderJointSurfaceModalOpen, setIsShoulderJointSurfaceModalOpen] = useState(false);
-  const [isShoulderOsteophytesModalOpen, setIsShoulderOsteophytesModalOpen] = useState(false);
-  const [isShoulderAcromioclavicularModalOpen, setIsShoulderAcromioclavicularModalOpen] = useState(false);
-  const [isWristJointSpaceModalOpen, setIsWristJointSpaceModalOpen] = useState(false); // Изменено на булево значение
-  const [isWristJointSurfaceModalOpen, setIsWristJointSurfaceModalOpen] = useState(false);
-  const [isWristOsteophytesModalOpen, setIsWristOsteophytesModalOpen] = useState(false);
-  const [isSinusesModalOpen, setIsSinusesModalOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(null); 
 
   const textareaRef = useRef(null);
 
-  // Добавим отладочную информацию
   useEffect(() => {
-    console.log("ResearchDescriptionModal selectedResearch:", selectedResearch);
-  }, [selectedResearch]);
-
-  useEffect(() => {
-    // Передаем textareaRef родительскому компоненту
-    if (setTextareaRef) {
-      setTextareaRef(textareaRef.current);
-    }
+    if (setTextareaRef) setTextareaRef(textareaRef.current);
   }, [setTextareaRef]);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.code === "Space" || e.key === " ") {
-        e.stopPropagation();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown, true);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown, true);
-    };
-  }, []);
-
-  // Эффект для вставки текста при открытии модалки
-  useEffect(() => {
     if (description && textareaRef.current) {
       const textarea = textareaRef.current;
-      // Устанавливаем значение и фокусируемся на поле
       textarea.value = description;
       textarea.focus();
-      
-      // Перемещаем курсор в конец
-      const length = textarea.value.length;
-      textarea.setSelectionRange(length, length);
+      textarea.setSelectionRange(description.length, description.length);
     }
   }, [description]);
 
-  const insertTextToTextarea = (researchName, projection) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    const textToInsert = `${researchName} ${projection}\n\n`;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = textarea.value;
-
-    const newText = text.substring(0, start) + textToInsert + text.substring(end);
-    textarea.value = newText;
-    const newCursorPosition = start + textToInsert.length;
-    textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-    textarea.focus();
-
-    const event = new Event("input", { bubbles: true });
-    textarea.dispatchEvent(event);
-  };
-
   const copyToClipboard = () => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    const text = textarea.value;
-    const formattedText = `\n\n${text}\n`;
-    
-    navigator.clipboard.writeText(formattedText)
+    const text = textareaRef.current?.value || "";
+    navigator.clipboard
+      .writeText(`\n\n${text}\n`)
       .then(() => {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       })
-      .catch(err => {
-        console.error('Ошибка копирования:', err);
-      });
+      .catch(console.error);
   };
+
+  const researchMap = {
+    "Рентгенография коленных суставов": ResearchPlaques.KneeResearchPlaques,
+    "Рентгенография левого коленного сустава": ResearchPlaques.KneeResearchPlaques,
+    "Рентгенография правого коленного сустава": ResearchPlaques.KneeResearchPlaques,
+    "Рентгенография тазобедренных суставов": ResearchPlaques.HipResearchPlaques,
+    "Рентгенография левого тазобедренного сустава": ResearchPlaques.HipResearchPlaques,
+    "Рентгенография правого тазобедренного сустава": ResearchPlaques.HipResearchPlaques,
+    "Рентгенография стоп": ResearchPlaques.FeetResearchPlaques,
+    "Рентгенография левой стопы": ResearchPlaques.FeetResearchPlaques,
+    "Рентгенография правой стопы": ResearchPlaques.FeetResearchPlaques,
+    "Рентгенография стоп (плоскостопие)": ResearchPlaques.FlatfootResearchPlaques,
+    "Рентгенография кистей": ResearchPlaques.HandResearchPlaques,
+    "Рентгенография левой кисти": ResearchPlaques.HandResearchPlaques,
+    "Рентгенография правой кисти": ResearchPlaques.HandResearchPlaques,
+    "Рентгенография поясничного отдела позвоночника": ResearchPlaques.LumbarResearchPlaques,
+    "Рентгенография грудопоясничного отдела позвоночника": ResearchPlaques.LumbarResearchPlaques,
+    "Рентгенография грудного отдела позвоночника": ResearchPlaques.ThoracicResearchPlaques,
+    "Рентгенография шейного отдела позвоночника": ResearchPlaques.CervicalResearchPlaques,
+    "Рентгенография органов грудной клетки": ResearchPlaques.LungResearchPlaques,
+    "Рентгенография легких": ResearchPlaques.LungResearchPlaques,
+    "Рентгенография левого легкого": ResearchPlaques.LungResearchPlaques,
+    "Рентгенография правого легкого": ResearchPlaques.LungResearchPlaques,
+    "Рентгенография голеностопных суставов": ResearchPlaques.AnkleResearchPlaques,
+    "Рентгенография локтевых суставов": ResearchPlaques.ElbowResearchPlaques,
+    "Рентгенография плечевых суставов": ResearchPlaques.ShoulderResearchPlaques,
+    "Рентгенография лучезапястных суставов": ResearchPlaques.WristResearchPlaques,
+    "Рентгенография пяточных костей": ResearchPlaques.CalcaneusResearchPlaques,
+    "Рентгенография придаточных пазух носа": ResearchPlaques.ParanasalResearchPlaques
+  };
+
+  const ResearchComponent = researchMap[selectedResearch];
 
   return (
     <div
@@ -203,8 +106,6 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
               placeholder="Введите описание исследования..."
               defaultValue={description}
             />
-            
-            {/* Кнопка копирования */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -213,7 +114,9 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
               className="absolute top-2 right-2 p-1 bg-gray-700 border border-yellow-500 rounded text-yellow-200 hover:bg-gray-600 transition-colors"
               title="Копировать"
             >
-              <DocumentDuplicateIcon className={`h-5 w-5 ${copied ? 'text-green-400' : 'text-yellow-400'}`} />
+              <DocumentDuplicateIcon
+                className={`h-5 w-5 ${copied ? "text-green-400" : "text-yellow-400"}`}
+              />
             </button>
           </div>
 
@@ -224,559 +127,38 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
 
           {/* Правая часть с плашками */}
           <div className="w-1/3 pl-4">
-            <div className="space-y-4">
-              {/* Плашки для коленного сустава */}
-              {selectedResearch && ["Рентгенография коленных суставов", "Рентгенoграфия левого коленного сустава", "Рентгенография правого коленного сустава"].includes(selectedResearch) && (
-                <KneeResearchPlaques
-                  expandedPlaque={expandedPlaque}
-                  setExpandedPlaque={setExpandedPlaque}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedNarrowingLevel={selectedNarrowingLevel}
-                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                  selectedChangeLevel={selectedChangeLevel}
-                  setSelectedChangeLevel={setSelectedChangeLevel}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  showOsteophytesModal={showOsteophytesModal}
-                  setShowOsteophytesModal={setShowOsteophytesModal}
-                  textareaRef={textareaRef}
-                  setIsJointSpaceModalOpen={setIsJointSpaceModalOpen} // Передаем сеттер для модального окна суставных щелей
-                  setIsJointSurfaceModalOpen={setIsJointSurfaceModalOpen} // Передаем сеттер для модального окна суставных поверхностей
-                />
-              )}
-
-              {/* Плашки для тазобедренного сустава */}
-              {selectedResearch && ["Рентгенография тазобедренных суставов", "Рентгенoграфия левого тазобедренного сустава", "Рентгенография правого тазобедренного сустава"].includes(selectedResearch) && (
-                <HipResearchPlaques
-                  expandedPlaque={expandedPlaque}
-                  setExpandedPlaque={setExpandedPlaque}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedNarrowingLevel={selectedNarrowingLevel}
-                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                  selectedChangeLevel={selectedChangeLevel}
-                  setSelectedChangeLevel={setSelectedChangeLevel}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  showOsteophytesModal={showHipOsteophytesModal}
-                  setShowOsteophytesModal={setShowHipOsteophytesModal}
-                  textareaRef={textareaRef}
-                  setIsHipJointSpaceModalOpen={setIsHipJointSpaceModalOpen}
-                  setIsHipJointSurfaceModalOpen={setIsHipJointSurfaceModalOpen}
-                  setIsHipJointOsteophytesModalOpen={setIsHipJointOsteophytesModalOpen}
-                  setIsPubicSymphysisModalOpen={setIsPubicSymphysisModalOpen}
-
-
-
-                />
-              )}
-
-              {/* Плашки для стопы */}
-              {selectedResearch && ["Рентгенография стоп", "Рентгенография левой стопы", "Рентгенография правой стопы"].includes(selectedResearch) && !description?.includes("плоскостопие") && (
-                <FeetResearchPlaques
-                  expandedPlaque={expandedPlaque}
-                  setExpandedPlaque={setExpandedPlaque}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedNarrowingLevel={selectedNarrowingLevel}
-                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                  selectedChangeLevel={selectedChangeLevel}
-                  setSelectedChangeLevel={setSelectedChangeLevel}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  showFeetOsteophytesModal={showFeetOsteophytesModal} // Переименован с showOsteophytesModal
-                  setShowFeetOsteophytesModal={setShowFeetOsteophytesModal} // Переименован с setShowOsteophytesModal
-                  textareaRef={textareaRef}
-                  setIsFootJointSpaceModalOpen={setIsFootJointSpaceModalOpen}
-                  setIsFootJointSurfaceModalOpen={setIsFootJointSurfaceModalOpen}
-                  showFootCongruencyModal={showFootCongruencyModal}
-                  setShowFootCongruencyModal={setShowFootCongruencyModal}
-
-                />
-              )}
-
-              {/* Плашки для кисти */}
-              {selectedResearch && ["Рентгенография кистей", "Рентгенография левой кисти", "Рентгенография правой кисти"].includes(selectedResearch) && (
-                <HandResearchPlaques
-                  expandedPlaque={expandedPlaque}
-                  setExpandedPlaque={setExpandedPlaque}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedNarrowingLevel={selectedNarrowingLevel}
-                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                  selectedChangeLevel={selectedChangeLevel}
-                  setSelectedChangeLevel={setSelectedChangeLevel}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  textareaRef={textareaRef}
-                  setIsHandJointSpaceModalOpen={setIsHandJointSpaceModalOpen}
-                  setIsHandJointSurfaceModalOpen={setIsHandJointSurfaceModalOpen}
-                  setShowHandOsteophytesModal={setShowHandOsteophytesModal}
-                  setShowHandCongruencyModal={setShowHandCongruencyModal} // Добавить этот пропс
-
-
-                />
-              )}
-
-              {/* Плашки для поясницы */}
-              {selectedResearch && ["Рентгенография поясничного отдела позвоночника", "Рентгенография грудопоясничного отдела позвоночника"].includes(selectedResearch) && (
-                <LumbarResearchPlaques
-                  expandedPlaque={expandedPlaque}
-                  setExpandedPlaque={setExpandedPlaque}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedNarrowingLevel={selectedNarrowingLevel}
-                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                  selectedChangeLevel={selectedChangeLevel}
-                  setSelectedChangeLevel={setSelectedChangeLevel}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  showOsteophytesModal={showLumbarOsteophytesModal}
-                  setShowOsteophytesModal={setShowLumbarOsteophytesModal}
-                  textareaRef={textareaRef}
-                />
-              )}
-
-              {/* Плашки для грудного отдела */}
-              {selectedResearch && ["Рентгенография грудного отдела позвоночника"].includes(selectedResearch) && (
-                <ThoracicResearchPlaques
-                  expandedPlaque={expandedPlaque}
-                  setExpandedPlaque={setExpandedPlaque}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedNarrowingLevel={selectedNarrowingLevel}
-                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                  selectedChangeLevel={selectedChangeLevel}
-                  setSelectedChangeLevel={setSelectedChangeLevel}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  showOsteophytesModal={showThoracicOsteophytesModal}
-                  setShowOsteophytesModal={setShowThoracicOsteophytesModal}
-                  textareaRef={textareaRef}
-                />
-              )}
-
-              {/* Плашки для шейного отдела позвоночника */}
-              {selectedResearch && ["Рентгенография шейного отдела позвоночника"].includes(selectedResearch) && (
-                <CervicalResearchPlaques
-                  expandedPlaque={expandedPlaque}
-                  setExpandedPlaque={setExpandedPlaque}
-                  textareaRef={textareaRef}
-                />
-              )}
-
-               {/* Плашки для легких */}
-              {selectedResearch && ["Рентгенография органов грудной клетки", "Рентгенография легких", "Рентгенография левого легкого", "Рентгенография правого легкого"].includes(selectedResearch) && (
-                <LungResearchPlaques
-                  expandedPlaque={expandedPlaque}
-                  setExpandedPlaque={setExpandedPlaque}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedNarrowingLevel={selectedNarrowingLevel}
-                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                  selectedChangeLevel={selectedChangeLevel}
-                  setSelectedChangeLevel={setSelectedChangeLevel}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  showOsteophytesModal={showLungOsteophytesModal}
-                  setShowOsteophytesModal={setShowLungOsteophytesModal}
-                  textareaRef={textareaRef}
-                />
-              )}
-              {selectedResearch && ["Рентгенография голеностопных суставов", "Рентгенография левого голеностопного сустава", "Рентгенография правого голеностопного сустава"].includes(selectedResearch) && (
-                <AnkleResearchPlaques
-                  expandedPlaque={expandedPlaque}
-                  setExpandedPlaque={setExpandedPlaque}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedNarrowingLevel={selectedNarrowingLevel}
-                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                  selectedChangeLevel={selectedChangeLevel}
-                  setSelectedChangeLevel={setSelectedChangeLevel}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  textareaRef={textareaRef}
-                  setIsAnkleJointSpaceModalOpen={setIsAnkleJointSpaceModalOpen}
-                  setIsAnkleJointSurfaceModalOpen={setIsAnkleJointSurfaceModalOpen}
-                  setIsAnkleOsteophytesModalOpen={setIsAnkleOsteophytesModalOpen}
-                />
-              )}
-
-              {selectedResearch && ["Рентгенография локтевых суставов", "Рентгенография левого локтевого сустава", "Рентгенография правого локтевого сустава"].includes(selectedResearch) && (
-                <ElbowResearchPlaques
-                  expandedPlaque={expandedPlaque}
-                  setExpandedPlaque={setExpandedPlaque}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedNarrowingLevel={selectedNarrowingLevel}
-                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                  selectedChangeLevel={selectedChangeLevel}
-                  setSelectedChangeLevel={setSelectedChangeLevel}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  textareaRef={textareaRef}
-                  setIsElbowJointSpaceModalOpen={setIsElbowJointSpaceModalOpen}
-                  setIsElbowJointSurfaceModalOpen={setIsElbowJointSurfaceModalOpen}
-                  setIsElbowOsteophytesModalOpen={setIsElbowOsteophytesModalOpen}
-                />
-              )}
-
-              {selectedResearch && ["Рентгенография плечевых суставов", "Рентгенография левого плечевого сустава", "Рентгенография правого плечевого сустава"].includes(selectedResearch) && (
-                <ShoulderResearchPlaques
-                  expandedPlaque={expandedPlaque}
-                  setExpandedPlaque={setExpandedPlaque}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedNarrowingLevel={selectedNarrowingLevel}
-                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                  selectedChangeLevel={selectedChangeLevel}
-                  setSelectedChangeLevel={setSelectedChangeLevel}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  textareaRef={textareaRef}
-                  setIsShoulderJointSpaceModalOpen={setIsShoulderJointSpaceModalOpen}
-                  setIsShoulderJointSurfaceModalOpen={setIsShoulderJointSurfaceModalOpen}
-                  setIsShoulderOsteophytesModalOpen={setIsShoulderOsteophytesModalOpen}
-                  setIsShoulderAcromioclavicularModalOpen={setIsShoulderAcromioclavicularModalOpen}
-                  
-                />
-              )}
-
-              {selectedResearch && ["Рентгенография лучезапястных суставов", "Рентгенография левого лучезапястного сустава", "Рентгенография правого лучезапястного сустава"].includes(selectedResearch) && (
-                <WristResearchPlaques
-                  expandedPlaque={expandedPlaque}
-                  setExpandedPlaque={setExpandedPlaque}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  selectedNarrowingLevel={selectedNarrowingLevel}
-                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                  selectedChangeLevel={selectedChangeLevel}
-                  setSelectedChangeLevel={setSelectedChangeLevel}
-                  selectedShapeLevel={selectedShapeLevel}
-                  setSelectedShapeLevel={setSelectedShapeLevel}
-                  textareaRef={textareaRef}
-                  setIsWristJointSpaceModalOpen={setIsWristJointSpaceModalOpen}
-                  setIsWristJointSurfaceModalOpen={setIsWristJointSurfaceModalOpen}
-                  setIsWristOsteophytesModalOpen={setIsWristOsteophytesModalOpen}
-                />
-              )}
-
-              {selectedResearch && ["Рентгенография придаточных пазух носа"].includes(selectedResearch) && (
-                <ParanasalResearchPlaques
-                  expandedPlaque={expandedPlaque}
-                  setExpandedPlaque={setExpandedPlaque}
-                  selectedSubItem={selectedSubItem}
-                  setSelectedSubItem={setSelectedSubItem}
-                  setIsSinusesModalOpen={setIsSinusesModalOpen}
-                  textareaRef={textareaRef}
-                />
-              )}
-
-              {selectedResearch && ["Рентгенография пяточных костей"].includes(selectedResearch) && (
-                <CalcaneusResearchPlaques
-                  setIsCalcaneusOsteophytesModalOpen={setIsCalcaneusOsteophytesModalOpen}
-                  textareaRef={textareaRef}
-                />
-              )}
-
-              {selectedResearch && ["Рентгенография стоп (плоскостопие)"].includes(selectedResearch) && (
-                <FlatfootResearchPlaques
-                  setIsFlatfootModalOpen={setIsFlatfootModalOpen}
-                  textareaRef={textareaRef}
-                />
-              )}
-            </div>
+            {ResearchComponent && (
+              <ResearchComponent
+                expandedPlaque={expandedPlaque}
+                setExpandedPlaque={setExpandedPlaque}
+                selectedSubItem={selectedSubItem}
+                setSelectedSubItem={setSelectedSubItem}
+                selectedNarrowingLevel={selectedNarrowingLevel}
+                setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                selectedChangeLevel={selectedChangeLevel}
+                setSelectedChangeLevel={setSelectedChangeLevel}
+                selectedShapeLevel={selectedShapeLevel}
+                setSelectedShapeLevel={setSelectedShapeLevel}
+                textareaRef={textareaRef}
+                setOpenModal={setOpenModal} 
+              />
+            )}
           </div>
         </div>
 
-        {/* Модалки остеофитов */}
-        {showOsteophytesModal && (
-          <OsteophytesModal
-            onClose={() => setShowOsteophytesModal(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {showHipOsteophytesModal && (
-          <HipOsteophytesModal
-            onClose={() => setShowHipOsteophytesModal(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {showHandOsteophytesModal && (
-          <HandOsteophytesModal
-            onClose={() => setShowHandOsteophytesModal(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {showLumbarOsteophytesModal && (
-          <LumbarOsteophytesModal
-            onClose={() => setShowLumbarOsteophytesModal(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {showThoracicOsteophytesModal && (
-          <ThoracicOsteophytesModal
-            onClose={() => setShowThoracicOsteophytesModal(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {showLungOsteophytesModal && (
-          <LungOsteophytesModal
-            onClose={() => setShowLungOsteophytesModal(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {/* Модальное окно суставных щелей */}
-        <JointSpaceSection
-          isOpen={isJointSpaceModalOpen}
-          onClose={() => setIsJointSpaceModalOpen(false)}
-          textareaRef={textareaRef}
-        />
-
-        {/* Модальное окно суставных поверхностей */}
-        <JointSurfaceModal
-          isOpen={isJointSurfaceModalOpen}
-          onClose={() => setIsJointSurfaceModalOpen(false)}
-          textareaRef={textareaRef}
-        />
-        
-        {/* Добавляем модальное окно в JSX */}
-        {isHipJointSpaceModalOpen && (
-          <HipJointSpaceModal
-            isOpen={isHipJointSpaceModalOpen}
-            onClose={() => setIsHipJointSpaceModalOpen(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {isHipJointSurfaceModalOpen && (
-          <HipJointSurfaceModal
-            isOpen={isHipJointSurfaceModalOpen}
-            onClose={() => setIsHipJointSurfaceModalOpen(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {isHipJointOsteophytesModalOpen && (
-          <HipOsteophytesModal
-            isOpen={isHipJointOsteophytesModalOpen}
-            onClose={() => setIsHipJointOsteophytesModalOpen(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {isPubicSymphysisModalOpen && (
-          <PubicSymphysisModal
-            isOpen={isPubicSymphysisModalOpen}
-            onClose={() => setIsPubicSymphysisModalOpen(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {isHandJointSpaceModalOpen && (
-          <HandJointSpaceModal
-            isOpen={isHandJointSpaceModalOpen}
-            onClose={() => setIsHandJointSpaceModalOpen(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {isHandJointSurfaceModalOpen && (
-          <HandJointSurfaceModal
-            isOpen={isHandJointSurfaceModalOpen}
-            onClose={() => setIsHandJointSurfaceModalOpen(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {showHandOsteophytesModal && (
-          <HandOsteophytesModal
-            isOpen={showHandOsteophytesModal} // Добавлен пропс isOpen
-            onClose={() => setShowHandOsteophytesModal(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {showHandCongruencyModal && (
-          <HandCongruencyModal
-            isOpen={showHandCongruencyModal}
-            onClose={() => setShowHandCongruencyModal(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-        {isFootJointSpaceModalOpen && (
-          <FootJointSpaceModal
-            isOpen={isFootJointSpaceModalOpen}
-            onClose={() => setIsFootJointSpaceModalOpen(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-       
-        {isFootJointSurfaceModalOpen && (
-          <FootJointSurfaceModal
-            isOpen={isFootJointSurfaceModalOpen}
-            onClose={() => setIsFootJointSurfaceModalOpen(false)}
-            textareaRef={textareaRef}
-          />
-        )}
-
-          {showFeetOsteophytesModal && (
-            <FootOsteophytesModal
-              isOpen={showFeetOsteophytesModal} // Добавлен пропс isOpen
-              onClose={() => setShowFeetOsteophytesModal(false)}
+        {/* Динамический рендер модалки */}
+        {(() => {
+          if (!openModal) return null;
+          const ModalComponent = Modals[openModal];
+          if (!ModalComponent) return null;
+          return (
+            <ModalComponent
+              isOpen={true}
+              onClose={() => setOpenModal(null)}
               textareaRef={textareaRef}
             />
-          )}
-
-          {showFootCongruencyModal && (
-            <FootCongruencyModal
-              isOpen={showFootCongruencyModal}
-              onClose={() => setShowFootCongruencyModal(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-
-          {isAnkleJointSpaceModalOpen && (
-            <AnkleJoinSpaceModal
-              isOpen={isAnkleJointSpaceModalOpen}
-              onClose={() => {
-                setIsAnkleJointSpaceModalOpen(false);
-              }}
-              textareaRef={textareaRef}
-            />
-          )}
-
-          {isAnkleJointSurfaceModalOpen && (
-            <AnkleJointSurfaceModal
-              isOpen={isAnkleJointSurfaceModalOpen}
-              onClose={() => setIsAnkleJointSurfaceModalOpen(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-
-          {isAnkleOsteophytesModalOpen && (
-            <AnkleOsteophytesModal
-              isOpen={isAnkleOsteophytesModalOpen}
-              onClose={() => setIsAnkleOsteophytesModalOpen(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-
-          {isElbowJointSpaceModalOpen && (
-            <ElbowJoinSpaceModal
-              isOpen={isElbowJointSpaceModalOpen}
-              onClose={() => setIsElbowJointSpaceModalOpen(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-
-          {isElbowJointSurfaceModalOpen && (
-            <ElbowJointSurfaceModal
-              isOpen={isElbowJointSurfaceModalOpen}
-              onClose={() => setIsElbowJointSurfaceModalOpen(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-
-          {isElbowOsteophytesModalOpen && (
-            <ElbowOsteophytesModal
-              isOpen={isElbowOsteophytesModalOpen}
-              onClose={() => setIsElbowOsteophytesModalOpen(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-
-          {isCalcaneusOsteophytesModalOpen && (
-            <CalcaneusOsteophytesModal
-              isOpen={isCalcaneusOsteophytesModalOpen}
-              onClose={() => setIsCalcaneusOsteophytesModalOpen(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-
-          {isFlatfootModalOpen && (
-            <FlatfootModal
-              isOpen={isFlatfootModalOpen}
-              onClose={() => setIsFlatfootModalOpen(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-
-        
-          {isShoulderJointSpaceModalOpen && (
-            <ShoulderJointSpaceModal
-              isOpen={isShoulderJointSpaceModalOpen}
-              onClose={() => setIsShoulderJointSpaceModalOpen(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-
-          {isShoulderJointSurfaceModalOpen && (
-            <ShoulderJointSurfaceModal
-              isOpen={isShoulderJointSurfaceModalOpen}
-              onClose={() => setIsShoulderJointSurfaceModalOpen(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-
-          {isShoulderOsteophytesModalOpen && (
-            <ShoulderOsteophytesModal
-              isOpen={isShoulderOsteophytesModalOpen}
-              onClose={() => setIsShoulderOsteophytesModalOpen(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-
-          {isShoulderAcromioclavicularModalOpen && (
-            <ShoulderAcromioclavicularModal
-              isOpen={isShoulderAcromioclavicularModalOpen}
-              onClose={() => setIsShoulderAcromioclavicularModalOpen(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-          
-          {isWristJointSpaceModalOpen && (
-            <WristJoinSpaceModal
-              isOpen={isWristJointSpaceModalOpen}
-              onClose={() => {
-                setIsWristJointSpaceModalOpen(false);
-              }}
-              textareaRef={textareaRef}
-            />
-          )}
-
-          {isWristJointSurfaceModalOpen && (
-            <WristJointSurfaceModal
-              isOpen={isWristJointSurfaceModalOpen}
-              onClose={() => setIsWristJointSurfaceModalOpen(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-
-          {isWristOsteophytesModalOpen && (
-            <WristOsteophytesModal
-              isOpen={isWristOsteophytesModalOpen}
-              onClose={() => setIsWristOsteophytesModalOpen(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-
-          {isSinusesModalOpen && (
-            <SinusesModal
-              isOpen={isSinusesModalOpen}
-              onClose={() => setIsSinusesModalOpen(false)}
-              textareaRef={textareaRef}
-            />
-          )}
-
+          );
+        })()}
 
       </div>
     </div>

@@ -1,9 +1,8 @@
-import { useState } from "react";
+
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import CalcaneusOsteophytesModal from "./CalcaneusOsteophytesModal";
 
 export default function CalcaneusResearchPlaques({
-  setIsCalcaneusOsteophytesModalOpen,
+  setOpenModal,
   textareaRef,
 }) {
   const insertNormalText = () => {
@@ -35,7 +34,7 @@ export default function CalcaneusResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsCalcaneusOsteophytesModalOpen(true);
+                  setOpenModal("CalcaneusOsteophytesModal");
                 }}
               >
                 <span>{plaque}</span>

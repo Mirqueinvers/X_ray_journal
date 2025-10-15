@@ -1,16 +1,13 @@
-import { useState } from "react";
+
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-//import SinusesModal from "./SinusesModal";
 import NasalPassagesSection from "./NasalPassagesSection";
 import NasalSeptumSection from "./NasalSeptumSection";
 
 export default function ParanasalResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  selectedSubItem,
-  setSelectedSubItem,
-  setIsSinusesModalOpen,
   textareaRef,
+  setOpenModal,
 }) {
   const paranasalPlaques = [
     "Пазухи",
@@ -44,7 +41,7 @@ export default function ParanasalResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsSinusesModalOpen(true);
+                  setOpenModal("SinusesModal");
                 }}
               >
                 <span>{plaque}</span>

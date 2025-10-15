@@ -8,51 +8,39 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
 
   const researchCategories = researchData.researchCategories;
 
-  const toggleItem = (index) => {
+  const toggleItem = (name) => {
     setExpandedItems((prev) => ({
       ...prev,
-      [index]: prev[index] === true ? false : true,
+      [name]: !prev[name],
     }));
   };
 
-  // Фильтрация исследований по поиску
-  const filteredItems = researchCategories[1].items.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleResearchClick = (researchName, projection) => {
+    const fullResearch = researchCategories[1].items.find(item => item.name === researchName);
 
-const handleResearchSelect = (researchName, projection) => {
-  // Ищем полное исследование в данных
-  const fullResearch = researchCategories[1].items.find(item => item.name === researchName);
+    if (projection) {
+      let selectedResearchName = researchName;
+      let displayResearchName = researchName;
 
-  if (projection) {
-    // Если выбрана проекция, вставляем текст в описание
-    let selectedResearchName = researchName;
-    let displayResearchName = researchName;
+      if (researchName === "Рентгенография стоп" && projection === "плоскостопие") {
+        displayResearchName = "Рентгенография стоп";
+        selectedResearchName = "Рентгенография стоп (плоскостопие)";
+      }
 
-    // Специальная обработка для плоскостопия
-    if (researchName === "Рентгенография стоп" && projection === "плоскостопие") {
-      displayResearchName = "Рентгенография стоп"; // Для вставки в текст
-      selectedResearchName = "Рентгенография стоп (плоскостопие)"; // Для плашки
+      const cleanName = displayResearchName.replace(/\s*\(плоскостопие\)/i, "");
+      const textToInsert = `${cleanName} ${projection}\n\n`;
+      onInsertText(textToInsert, cleanName);
+      onResearchSelect(selectedResearchName);
+      onClose();
+      onOpenDescriptionModal();
+    } else if (fullResearch) {
+      const cleanName = fullResearch.name.replace(/\s*\(плоскостопие\)/i, "");
+      onInsertText(`${cleanName}\n\n`, cleanName);
+      onResearchSelect(fullResearch.name);
+      onClose();
+      onOpenDescriptionModal();
     }
-
-    // Удаляем "(плоскостопие)" при вставке текста
-    const cleanName = displayResearchName.replace(/\s*\(плоскостопие\)/i, "");
-
-    const textToInsert = `${cleanName} ${projection}\n\n`;
-    onInsertText(textToInsert, cleanName);
-    onResearchSelect(selectedResearchName); // Для плашки оставляем полное название
-    onClose();
-    onOpenDescriptionModal();
-  } else if (fullResearch) {
-    // Если только исследование, вставляем его и открываем модалку описания
-    const cleanName = fullResearch.name.replace(/\s*\(плоскостопие\)/i, "");
-    onInsertText(`${cleanName}\n\n`, cleanName);
-    onResearchSelect(fullResearch.name);
-    onClose();
-    onOpenDescriptionModal();
-  }
-};
-
+  };
 
   return (
     <div
@@ -60,80 +48,70 @@ const handleResearchSelect = (researchName, projection) => {
       onClick={onClose}
     >
       <div
-        className="bg-gray-800 rounded-lg shadow-xl w-[350mm] h-[148.5mm] relative overflow-hidden"
+        className="bg-gray-800 rounded-lg shadow-xl w-[350mm] h-[148.5mm] relative overflow-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Кнопка закрытия */}
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onClose();
-          }}
+          onClick={onClose}
           className="absolute top-4 right-4 text-yellow-400 hover:text-yellow-200 z-10"
           title="Закрыть"
         >
           <XMarkIcon className="h-6 w-6" />
         </button>
 
-        <div className="p-6 h-full flex flex-col">
-          <h2 className="text-xl font-bold text-yellow-200 mb-4 text-center">
-            Выбор вида исследования
-          </h2>
+        <div className="p-6">
+          <h2 className="text-xl font-bold text-yellow-200 mb-4 text-center">Выбор вида исследования</h2>
 
-          <div className="mb-4">
-            <input
-              type="text"
-              placeholder="Поиск исследования..."
-              className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onClick={(e) => e.stopPropagation()}
-            />
-          </div>
+          <input
+            type="text"
+            placeholder="Поиск исследования..."
+            className="w-full p-2 mb-4 bg-gray-700 border border-yellow-500 rounded text-yellow-200 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+          />
 
-          {/* Список исследований с автопрокруткой */}
-          <div className="flex-1 overflow-y-auto space-y-2">
-            {filteredItems.length > 0 ? (
-              filteredItems.map((item, index) => {
-                const isExpanded = expandedItems[index] || false;
+          <div className="grid grid-cols-3 gap-2">
+            {researchCategories[1].items
+              .filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+              .map((item, index) => {
+                const isExpanded = expandedItems[item.name] || false;
+
                 return (
-                  <div key={index} onClick={(e) => e.stopPropagation()}>
-                    <div
-                      className="p-3 bg-gray-600 border-l-2 border-yellow-500 text-yellow-200 hover:bg-gray-500 cursor-pointer flex justify-between items-center"
-                      onClick={() => toggleItem(index)}
-                    >
-                      <span>{item.name}</span>
-                      {isExpanded ? (
-                        <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                      ) : (
-                        <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-                      )}
-                    </div>
+                  <div key={index} className="relative">
+                    {/* Кнопка исследования */}
+<button
+  className="w-full bg-gray-700 text-yellow-200 py-1 px-2 text-sm rounded flex items-center hover:bg-gray-600 break-words"
+  onClick={() => toggleItem(item.name)}
+>
+  <span className="flex-1 text-left">{item.name}</span>
+  {item.subItems?.length > 0 && (
+    isExpanded ? <ChevronDownIcon className="h-4 w-4 ml-1" /> :
+    <ChevronRightIcon className="h-4 w-4 ml-1" />
+  )}
+</button>
 
-                    {isExpanded && (
-                      <div className="ml-6 mt-1 space-y-1">
+
+                    {/* Подсписок проекций */}
+                    {isExpanded && item.subItems && (
+                      <div className="absolute left-0 mt-1 bg-gray-700 rounded shadow-lg z-20 w-48 p-1 flex flex-col gap-1">
                         {item.subItems.map((subItem, subIndex) => (
-                          <div
+                          <button
                             key={subIndex}
-                            className="p-2 bg-gray-700 text-gray-300 text-xs hover:bg-gray-600 cursor-pointer"
+                            className="bg-gray-600 text-gray-200 py-1 px-2 rounded text-xs text-left hover:bg-gray-500"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleResearchSelect(item.name, subItem);
+                              handleResearchClick(item.name, subItem);
                             }}
                           >
                             {subItem}
-                          </div>
+                          </button>
                         ))}
                       </div>
                     )}
                   </div>
                 );
-              })
-            ) : (
-              <div className="p-4 text-gray-400 text-sm text-center">
-                Ничего не найдено
-              </div>
-            )}
+              })}
           </div>
         </div>
       </div>

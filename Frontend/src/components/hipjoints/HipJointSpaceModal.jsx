@@ -153,7 +153,7 @@ export default function HipJointSpaceModal({ isOpen, onClose, textareaRef }) {
 
     if (descriptions.length === 0) return "Суставные щели тазобедренных суставов равномерной высоты";
 
-    return descriptions.join(", ");
+    return descriptions.join(", ") + ".";
   };
 
   if (!isOpen) return null;

@@ -6,9 +6,9 @@ import JointSpaceSection from "./JointSpaceModal"; // Это теперь наш
 import JointSurfaceModal from "./JointSurfaceModal"; // 1. Импортируем модальное окно суставных поверхностей
 import OsteophytesModal from "./OsteophytesModal";
 import BumpsSection from "./BumpsSection";
-import CongruencySection from "./CongruencySection";
-import IntegritySection from "./IntegritySection";
-import ParaarticularTissuesSection from "./ParaarticularTissuesSection";
+import CongruencySection from "../general/CongruencySection";
+import IntegritySection from "../general/IntegritySection";
+import ParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
 import EndoprosthesisSection from "./EndoprosthesisSection"; // Импортируем секцию эндопротезирования
 
 export default function KneeResearchPlaques({
@@ -249,38 +249,7 @@ export default function KneeResearchPlaques({
             </div>
           );
         }
-
-        // Остальные пункты (в данном случае "Суставные поверхности") оставляем без изменений
-        const isExpanded = expandedPlaque === plaque;
-        return (
-          <div key={index} onClick={(e) => e.stopPropagation()}>
-            <div
-              className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer flex justify-between items-center"
-              onClick={(e) => {
-                e.stopPropagation();
-                setExpandedPlaque(isExpanded ? null : plaque);
-              }}
-            >
-              <span>{plaque}</span>
-              {isExpanded ? (
-                <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-              ) : (
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-              )}
-            </div>
-
-            {isExpanded && plaque === "Суставные поверхности" && (
-              <JointSurfaceSection
-                textareaRef={textareaRef}
-                selectedSubItem={selectedSubItem}
-                setSelectedSubItem={setSelectedSubItem}
-                selectedChangeLevel={selectedChangeLevel}
-                setSelectedChangeLevel={setSelectedChangeLevel}
-                setExpandedPlaque={setExpandedPlaque}
-              />
-            )}
-          </div>
-        );
+        
       })}
     </div>
   );

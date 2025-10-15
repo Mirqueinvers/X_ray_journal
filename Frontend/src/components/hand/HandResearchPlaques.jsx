@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import HandJointSpaceModal from "./HandJointSpaceModal"; 
-import HandIntegritySection from "./IntegritySection";
-import HandParaarticularTissuesSection from "./ParaarticularTissuesSection";
+import HandIntegritySection from "../general/IntegritySection";
+import HandParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
 import HandJointSurfaceModal from "./HandJointSurfaceModal";
 import HandOsteophytesModal from "./HandOsteophytesModal";
 import HandCongruencyModal from "./HandCongruencyModal";

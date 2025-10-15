@@ -17,7 +17,7 @@ export default function BumpsSection({ textareaRef, setExpandedPlaque }) {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    const fullText = `Бугорки межмыщелковых возвышений ${shape}.\n`;
+    const fullText = `Бугорки межмыщелковых возвышений ${shape}.`;
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;

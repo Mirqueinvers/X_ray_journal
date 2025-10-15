@@ -55,12 +55,12 @@ export default function InstabilityModal({ onClose, textareaRef }) {
     let insertText = "";
 
     if (mode === "Норма") {
-      insertText = "Соотношение задних отделов тел позвонков не изменено.\n";
+      insertText = "Соотношение задних отделов тел позвонков не изменено.";
     } else {
       if (!selectedDirection || !selectedMagnitude || selectedVertebrae.length === 0) return;
       const segs = buildSegments(selectedVertebrae);
       const firstVertebra = selectedVertebrae[0];
-      insertText = `Определяется нестабильность позвонков в сегменте ${segs.join(", ")} за счет смещения ${firstVertebra.toUpperCase()} ${selectedDirection.toLowerCase()} на величину ${selectedMagnitude}.\n`;
+      insertText = `Определяется нестабильность позвонков в сегменте ${segs.join(", ")} за счет смещения ${firstVertebra.toUpperCase()} ${selectedDirection.toLowerCase()} на величину ${selectedMagnitude}.`;
     }
 
     const textarea = textareaRef.current;

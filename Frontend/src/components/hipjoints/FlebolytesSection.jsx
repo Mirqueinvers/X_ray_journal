@@ -5,7 +5,7 @@ export default function FlebolytesSection({ textareaRef }) {
   const insertText = () => {
     if (textareaRef?.current) {
       const textarea = textareaRef.current;
-      const textToInsert = "\nВ проекции полости малого таза определяются единичные тени флеболитов.\n";
+      const textToInsert = "\nВ проекции полости малого таза определяются единичные тени флеболитов.";
       
       const current = textarea.value;
       textarea.value = current ? current + textToInsert : textToInsert;

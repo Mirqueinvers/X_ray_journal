@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import ElbowCongruencySection from "./CongruencySection";
-import ElbowIntegritySection from "./IntegritySection";
-import ElbowParaarticularTissuesSection from "./ParaarticularTissuesSection";
+import ElbowCongruencySection from "../general/CongruencySection";
+import ElbowIntegritySection from "../general/IntegritySection";
+import ElbowParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
 import ElbowJoinSpaceModal from "./ElbowJoinSpaceModal";
 import ElbowJointSurfaceModal from "./ElbowJointSurfaceModal";
 import ElbowOsteophytesModal from "./ElbowOsteophytesModal";

@@ -1,23 +1,21 @@
 import React from "react";
 
-export default function ParaarticularTissuesSection({ textareaRef, setExpandedPlaque }) {
-  // Варианты параартикулярных тканей
-  const paraarticularOptions = [
-    "Без изменений",
-    "Изменения",
+export default function NasalPassagesSection({ textareaRef, setExpandedPlaque }) {
+  // Варианты состояния носовых ходов
+  const nasalPassagesOptions = [
+    "свободны",
+    "сужены",
+    "отечные",
+    "содержат патологическое содержимое",
+    "ушные ходы без особенностей",
   ];
 
   // Вставка текста в textarea
-  const insertParaarticularText = (option) => {
+  const insertNasalPassagesText = (option) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    let fullText = "";
-    if (option === "Без изменений") {
-      fullText = "Параартикулярные ткани не имеют рентгено-позитивных признаков изменений.";
-    } else if (option === "Изменения") {
-      fullText = "Определяются образования костной плотности в параартикулярных тканях.";
-    }
+    const fullText = `\nНосовые ходы ${option.toLowerCase()}.`;
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -32,20 +30,20 @@ export default function ParaarticularTissuesSection({ textareaRef, setExpandedPl
 
     const event = new Event("input", { bubbles: true });
     textarea.dispatchEvent(event);
-
-    // сворачиваем плашку
+    
+    // Добавляем вызов для сворачивания плашки
     setExpandedPlaque(null);
   };
 
   return (
     <div className="ml-6 mt-1 space-y-1">
-      {paraarticularOptions.map((option, idx) => (
+      {nasalPassagesOptions.map((option, idx) => (
         <div
           key={idx}
           className="p-1 bg-gray-700 text-gray-300 text-xs hover:bg-gray-600 cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
-            insertParaarticularText(option);
+            insertNasalPassagesText(option);
           }}
         >
           {option}

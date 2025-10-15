@@ -1,19 +1,23 @@
 import React from "react";
 
-export default function CongruencySection({ textareaRef, setExpandedPlaque }) {
-  // Варианты конгруэнтности
-  const congruencyOptions = [
-    "не нарушена",
-    "нарушена в левом коленном суставе",
-    "нарушена в правом коленном суставе",
+export default function NasalSeptumSection({ textareaRef, setExpandedPlaque }) {
+  // Варианты состояния носовой перегородки
+  const nasalSeptumOptions = [
+    "Не искривлена",
+    "Искривлена влево",
+    "Искривлена вправо",
+    "S-образно искривлена",
+    "Искривлена в костном отделе",
+    "Искривлена в хрящевом отделе",
+    "Гипертрофия носовых раковин",
   ];
 
   // Вставка текста в textarea
-  const insertCongruencyText = (option) => {
+  const insertNasalSeptumText = (option) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    const fullText = `Конгруэнтность суставных поверхностей ${option.toLowerCase()}.\n`;
+    const fullText = `\nНосовая перегородка ${option.toLowerCase()}.`;
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
@@ -35,13 +39,13 @@ export default function CongruencySection({ textareaRef, setExpandedPlaque }) {
 
   return (
     <div className="ml-6 mt-1 space-y-1">
-      {congruencyOptions.map((option, idx) => (
+      {nasalSeptumOptions.map((option, idx) => (
         <div
           key={idx}
           className="p-1 bg-gray-700 text-gray-300 text-xs hover:bg-gray-600 cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
-            insertCongruencyText(option);
+            insertNasalSeptumText(option);
           }}
         >
           {option}

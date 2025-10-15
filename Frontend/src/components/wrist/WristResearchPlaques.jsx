@@ -1,15 +1,13 @@
-// Frontend/src/components/foot/FootResearchPlaques.jsx
 import { useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import FootIntegritySection from "../general/IntegritySection";
-import FootParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
-import FootJointSpaceModal from "./FootJointSpaceModal";
-import FootJointSurfaceModal from "./FootJointSurfaceModal";
-import FootOsteophytesModal from "./FootOsteophytesModal";
-import FootCongruencyModal from "./FootCongruencyModal";
+import WristCongruencySection from "../general/CongruencySection";
+import WristIntegritySection from "../general/IntegritySection";
+import WristParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
+import WristJoinSpaceModal from "./WristJoinSpaceModal";
+import WristJointSurfaceModal from "./WristJointSurfaceModal";
+import WristOsteophytesModal from "./WristOsteophytesModal";
 
-
-export default function FeetResearchPlaques({
+export default function AnkleResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
   selectedSubItem,
@@ -20,15 +18,12 @@ export default function FeetResearchPlaques({
   setSelectedChangeLevel,
   selectedShapeLevel,
   setSelectedShapeLevel,
-  setIsFootJointSpaceModalOpen,
-  setIsFootJointSurfaceModalOpen,
-  showFeetOsteophytesModal, // Переименован с showOsteophytesModal
-  setShowFeetOsteophytesModal, // Переименован с setShowOsteophytesModal
-  showFootCongruencyModal,
-setShowFootCongruencyModal,
+  setIsWristJointSpaceModalOpen,
+  setIsWristJointSurfaceModalOpen,
+  setIsWristOsteophytesModalOpen,
   textareaRef,
 }) {
-  const feetJointPlaques = [
+  const ankleJointPlaques = [
     "Суставные щели",
     "Суставные поверхности",
     "Остеофиты",
@@ -44,7 +39,7 @@ setShowFootCongruencyModal,
     const end = textarea.selectionEnd;
     const textBefore = textarea.value.substring(0, start);
     const textAfter = textarea.value.substring(end);
-    const normalText = `Суставные щели мелких суставов стоп сохранены, равномерные.
+    const normalText = `Суставные щели луче-запястных суставов сохранены, равномерные.
 Суставные поверхности ровные, чёткие, без признаков деформации.
 Конгруэнтность суставных поверхностей не нарушена.
 Костно-травматических и костно-деструктивных изменений не выявлено.
@@ -57,23 +52,7 @@ setShowFootCongruencyModal,
 
   return (
     <div className="mt-4 space-y-2">
-      {feetJointPlaques.map((plaque, index) => {
-        if (plaque === "Остеофиты") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowFeetOsteophytesModal(true);
-                }}
-              >
-                <span>{plaque}</span>
-              </div>
-            </div>
-          );
-        }
-
+      {ankleJointPlaques.map((plaque, index) => {
         if (plaque === "Суставные щели") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>
@@ -81,16 +60,16 @@ setShowFootCongruencyModal,
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsFootJointSpaceModalOpen(true);
+                  setIsWristJointSpaceModalOpen(true);
                 }}
               >
                 <span>{plaque}</span>
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
+                <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
               </div>
             </div>
           );
         }
-
+        
         if (plaque === "Суставные поверхности") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>
@@ -98,11 +77,28 @@ setShowFootCongruencyModal,
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsFootJointSurfaceModalOpen(true);
+                  setIsWristJointSurfaceModalOpen(true);
                 }}
               >
                 <span>{plaque}</span>
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
+                <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
+              </div>
+            </div>
+          );
+        }
+
+        if (plaque === "Остеофиты") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsWristOsteophytesModalOpen(true);
+                }}
+              >
+                <span>{plaque}</span>
+                <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
               </div>
             </div>
           );
@@ -115,12 +111,25 @@ setShowFootCongruencyModal,
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowFootCongruencyModal(true);
+                  if (expandedPlaque === plaque) {
+                    setExpandedPlaque(null);
+                  } else {
+                    setExpandedPlaque(plaque);
+                  }
                 }}
               >
                 <span>{plaque}</span>
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
+                {expandedPlaque === plaque && (
+                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
+                )}
               </div>
+
+              {expandedPlaque === plaque && (
+                <WristCongruencySection
+                  textareaRef={textareaRef}
+                  setExpandedPlaque={setExpandedPlaque}
+                />
+              )}
             </div>
           );
         }
@@ -146,7 +155,7 @@ setShowFootCongruencyModal,
               </div>
 
               {expandedPlaque === plaque && (
-                <FootIntegritySection
+                <WristIntegritySection
                   textareaRef={textareaRef}
                   setExpandedPlaque={setExpandedPlaque}
                 />
@@ -157,7 +166,7 @@ setShowFootCongruencyModal,
 
         if (plaque === "Параартикулярные ткани") {
           return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
+            <div key="index" onClick={(e) => e.stopPropagation()}>
               <div
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
@@ -176,7 +185,7 @@ setShowFootCongruencyModal,
               </div>
 
               {expandedPlaque === plaque && (
-                <FootParaarticularTissuesSection
+                <WristParaarticularTissuesSection
                   textareaRef={textareaRef}
                   setExpandedPlaque={setExpandedPlaque}
                 />
@@ -184,6 +193,8 @@ setShowFootCongruencyModal,
             </div>
           );
         }
+
+        return null;
       })}
 
       {/* Плашка "Норма" внизу с отступом */}

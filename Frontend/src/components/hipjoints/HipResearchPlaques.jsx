@@ -4,9 +4,9 @@ import { useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import HipJointSpaceModal from "./HipJointSpaceModal"; // Импортируем модальное окно суставных щей тазобедренных суставов
 import HipJointSurfaceModal from "./HipJointSurfaceModal";
-import HipCongruencySection from "./CongruencySection";
-import HipIntegritySection from "./IntegritySection";
-import HipParaarticularTissuesSection from "./ParaarticularTissuesSection";
+import HipCongruencySection from "../general/CongruencySection";
+import HipIntegritySection from "../general/IntegritySection";
+import HipParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
 import HipEndoprosthesisSection from "./EndoprosthesisSection";
 import HipOsteophytesModal from "./HipOsteophytesModal";
 import FlebolytesSection from "./FlebolytesSection";

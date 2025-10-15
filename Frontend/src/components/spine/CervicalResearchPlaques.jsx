@@ -1,8 +1,8 @@
 // Frontend/src/components/spine/CervicalResearchPlaques.jsx
 import { useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import LumbarIntegritySection from "./IntegritySection";
-import LumbarParaarticularTissuesSection from "./ParaarticularTissuesSection";
+import LumbarIntegritySection from "../general/IntegritySection";
+import LumbarParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
 import SpineModal from "./SpineModal";
 import SpineCurvatureModal from "./SpineCurvatureModal";
 import LumbarLordosisSection from "./LordosisSection";

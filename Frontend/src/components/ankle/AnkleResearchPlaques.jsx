@@ -1,11 +1,9 @@
-import { useState } from "react";
+
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import AnkleCongruencySection from "./CongruencySection";
-import AnkleIntegritySection from "./IntegritySection";
-import AnkleParaarticularTissuesSection from "./ParaarticularTissuesSection";
-import AnkleJoinSpaceModal from "./AnkleJoinSpaceModal";
-import AnkleJointSurfaceModal from "./AnkleJointSurfaceModal";
-import AnkleOsteophytesModal from "./AnkleOsteophytesModal";
+import AnkleCongruencySection from "../general/CongruencySection";
+import AnkleIntegritySection from "../general/IntegritySection";
+import AnkleParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
+
 
 export default function AnkleResearchPlaques({
   expandedPlaque,

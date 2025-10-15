@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-export default function ElbowJoinSpaceModal({ onClose, textareaRef }) {
+export default function AnkleJointSurfaceModal({ isOpen, onClose, textareaRef }) {
+  if (!isOpen) return null;
+
   const [selectedSides, setSelectedSides] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState({
     left: [],
@@ -18,7 +20,7 @@ export default function ElbowJoinSpaceModal({ onClose, textareaRef }) {
   const insertTextToTextarea = (text) => {
     if (textareaRef?.current) {
       const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + text : text;
+      textareaRef.current.value = current ? current + "\n" + text : text;
       textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
     }
   };
@@ -38,7 +40,7 @@ export default function ElbowJoinSpaceModal({ onClose, textareaRef }) {
       const currentOptions = prev[side];
       const newOptions = currentOptions.includes(option)
         ? currentOptions.filter((opt) => opt !== option)
-        : [option]; // только одна степень
+        : [option];
       if (newOptions.length > 0) setIsNormal(false);
       return {
         ...prev,
@@ -71,13 +73,13 @@ const generateDescriptionCompact = () => {
   };
 
   const addPosition = (pos, plural = false) => {
-    if (!pos || pos === "равномерно") return ""; // не добавляем ничего
+    if (!pos || pos === "равномерно") return ""; // не добавляем фразу
     return `, преимущественно в ${positionPhrase(pos, plural)} отдел${plural ? "ах" : "е"}`;
   };
 
   // Если ничего не выбрано
   if (!leftOpts.length && !rightOpts.length) {
-    return "Суставные щели локтевых суставов сохранены, равномерные.";
+    return "Суставные поверхности луче-запястных суставов не изменены, без особенностей.";
   }
 
   // Если выбраны оба сустава
@@ -85,32 +87,35 @@ const generateDescriptionCompact = () => {
     const sameDegree = leftOpts[0] === rightOpts[0];
     const samePos = leftPos === rightPos;
 
-    if (sameDegree && samePos) {
-      // одинаковая степень и позиция
-      if (!leftPos || leftPos === "равномерно") {
-        return `Суставные щели локтевых суставов ${leftOpts[0]} сужены.`;
-      }
-      return `Суставные щели локтевых суставов ${leftOpts[0]} сужены${addPosition(leftPos, true)}.`;
-    } else {
-      return `Суставная щель правого локтевого сустава ${rightOpts[0]} сужена${addPosition(rightPos)}; левого ${leftOpts[0]} сужена${addPosition(leftPos)}.`;
+    // Если только степень без позиции и одинаковая
+    if (sameDegree && (!leftPos && !rightPos)) {
+      return `Суставные поверхности луче-запястных суставов ${leftOpts[0]} склерозированы.`;
     }
+
+    // Если одинаковая степень и позиция
+    if (sameDegree && samePos) {
+      if (leftPos === "равномерно" || !leftPos) {
+        return `Суставные поверхности луче-запястных суставов ${leftOpts[0]} склерозированы.`;
+      }
+      return `Суставные поверхности луче-запястных суставов ${leftOpts[0]} склерозированы, преимущественно в ${positionPhrase(leftPos, true)} отделах.`;
+    }
+
+    // Если разная степень или позиция
+    return `Суставная поверхность правого луче-запястного сустава ${rightOpts[0]} склерозирована${addPosition(rightPos)}; левого ${leftOpts[0]} склерозирована${addPosition(leftPos)}.`;
   }
 
   // Если только левый сустав
   if (leftOpts.length) {
-    return `Суставная щель левого локтевого сустава ${leftOpts[0]} сужена${addPosition(leftPos)}, правого не изменена.`;
+    return `Суставная поверхность левого луче-запястного сустава ${leftOpts[0]} склерозирована${addPosition(leftPos)}, правая без особенностей.`;
   }
 
   // Если только правый сустав
   if (rightOpts.length) {
-    return `Суставная щель правого локтевого сустава ${rightOpts[0]} сужена${addPosition(rightPos)}, левого не изменена.`;
+    return `Суставная поверхность правого луче-запястного сустава ${rightOpts[0]} склерозирована${addPosition(rightPos)}, левая без особенностей.`;
   }
 
   return "Изменений не выявлено.";
 };
-
-
-
 
 
 
@@ -152,21 +157,21 @@ const generateDescriptionCompact = () => {
         <div
           className="w-full h-full relative"
           style={{
-            backgroundImage: `url(/images/elbow-right.png), url(/images/elbow-left.png)`,
+            backgroundImage: `url(/images/wrist-right.png), url(/images/wrist-left.png)`,
             backgroundSize: "contain",
-            backgroundPosition: "30% 95%, 70% 95%",
+            backgroundPosition: "20% 95%, 80% 95%",
             backgroundRepeat: "no-repeat",
             backgroundColor: "#374151",
           }}
         >
           {/* Правый сустав */}
           <div
-            className={`absolute top-[44%] transform -translate-y-1/2 w-40 h-20 border-2 ${
+            className={`absolute top-[40%] transform -translate-y-1/2 w-40 h-20 border-2 ${
               selectedSides.includes("right")
                 ? "bg-yellow-200/30 border-yellow-400"
                 : "border-yellow-500 bg-transparent"
             } rounded-lg cursor-pointer transition-all duration-200`}
-            style={{ left: "29.5%" }}
+            style={{ left: "26%" }}
             onClick={(e) => {
               e.stopPropagation();
               toggleSide("right");
@@ -175,21 +180,21 @@ const generateDescriptionCompact = () => {
 
           {/* Левый сустав */}
           <div
-            className={`absolute top-[44%] transform -translate-y-1/2 w-40 h-20 border-2 ${
+            className={`absolute top-[40%] transform -translate-y-1/2 w-40 h-20 border-2 ${
               selectedSides.includes("left")
                 ? "bg-yellow-200/30 border-yellow-400"
                 : "border-yellow-500 bg-transparent"
             } rounded-lg cursor-pointer transition-all duration-200`}
-            style={{ left: "58.5%" }}
+            style={{ left: "62%" }}
             onClick={(e) => {
               e.stopPropagation();
               toggleSide("left");
             }}
           ></div>
 
-          {/* Опции сужения + положение */}
+          {/* Опции изменения + положение */}
           {selectedSides.includes("right") && (
-            <div className="absolute top-[40%] transform -translate-y-1/2 ml-[11%] flex space-x-2">
+            <div className="absolute top-[40%] transform -translate-y-1/2 ml-[8%] flex space-x-2">
               <div className="w-28 space-y-2">
                 {positionOptions.map((pos, index) => (
                   <div
@@ -230,7 +235,7 @@ const generateDescriptionCompact = () => {
           )}
 
           {selectedSides.includes("left") && (
-            <div className="absolute top-[40%] transform -translate-y-1/2 ml-[71.5%] flex space-x-2">
+            <div className="absolute top-[40%] transform -translate-y-1/2 ml-[74.5%] flex space-x-2">
               <div className="w-28 space-y-2">
                 {sideOptions.map((option, index) => (
                   <div
@@ -276,7 +281,7 @@ const generateDescriptionCompact = () => {
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
             onClick={() => {
-              insertTextToTextarea(generateDescriptionCompact()); // ← используем новую функцию
+              insertTextToTextarea(generateDescriptionCompact());
               onClose();
             }}
           >

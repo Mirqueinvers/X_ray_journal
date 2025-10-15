@@ -81,10 +81,12 @@ const insertSelected = () => {
     return `В ${seg} определяется ${typeText} тень${intensityText ? ` ${intensityText} интенсивности` : ""}${contourFormatted ? `, ${contourFormatted}` : ""}${structureFormatted ? `, ${structureFormatted}` : ""}.`;
   });
 
-  const current = textarea.value;
-  textarea.value = current + (current.length > 0 ? " " : "") + parts.join(" ");
-  textarea.dispatchEvent(new Event("input", { bubbles: true }));
-  textarea.focus();
+const current = textarea.value;
+const newText = parts.join(" "); // не трогаем пробелы внутри частей
+textarea.value = current + newText; // просто конкатенация без добавления пробела
+textarea.dispatchEvent(new Event("input", { bubbles: true }));
+textarea.focus();
+
 };
 
 

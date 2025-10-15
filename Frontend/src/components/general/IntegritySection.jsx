@@ -13,7 +13,7 @@ export default function IntegritySection({ textareaRef, setExpandedPlaque }) {
     if (!textarea) return;
 
     if (option === "Не нарушена") {
-      const fullText = "Костно-травматических и костно-деструктивных изменений не выявлено.\n";
+      const fullText = "\nКостно-травматических и костно-деструктивных изменений не выявлено.";
       
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;

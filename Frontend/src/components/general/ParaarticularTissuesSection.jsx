@@ -14,9 +14,9 @@ export default function ParaarticularTissuesSection({ textareaRef, setExpandedPl
 
     let fullText = "";
     if (option === "Без изменений") {
-      fullText = "Параартикулярные ткани не имеют рентгено-позитивных признаков изменений.\n";
+      fullText = "\nПараартикулярные ткани не имеют рентгено-позитивных признаков изменений.";
     } else if (option === "Изменения") {
-      fullText = "Определяются образования костной плотности в параартикулярных тканях.\n";
+      fullText = "\nОпределяются образования костной плотности в параартикулярных тканях.";
     }
 
     const start = textarea.selectionStart;

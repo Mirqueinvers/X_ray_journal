@@ -2,11 +2,11 @@ import { useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import ShoulderJointSpaceModal from "./ShoulderJointSpaceModal";
 import ShoulderJointSurfaceModal from "./ShoulderJointSurfaceModal";
-//import ShoulderAcromioclavicularSection from "./ShoulderAcromioclavicularSection";
-//import ShoulderCongruencySection from "./CongruencySection";
-//import ShoulderIntegritySection from "./IntegritySection";
-//import ShoulderParaarticularTissuesSection from "./ParaarticularTissuesSection";
-//import ShoulderOsteophytesModal from "./ShoulderOsteophytesModal";
+import ShoulderAcromioclavicularModal from "./ShoulderAcromioclavicularModal";
+import ShoulderCongruencySection from "../general/CongruencySection";
+import ShoulderIntegritySection from "../general/IntegritySection";
+import ShoulderParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
+import ShoulderOsteophytesModal from "./ShoulderOsteophytesModal";
 
 export default function ShoulderResearchPlaques({
   expandedPlaque,
@@ -24,7 +24,8 @@ export default function ShoulderResearchPlaques({
   textareaRef,
   setIsShoulderJointSpaceModalOpen,
   setIsShoulderJointSurfaceModalOpen,
-  //setIsShoulderOsteophytesModalOpen,
+  setIsShoulderOsteophytesModalOpen,
+  setIsShoulderAcromioclavicularModalOpen,
 }) {
   const shoulderJointPlaques = [
     "Суставные щели",
@@ -64,25 +65,12 @@ export default function ShoulderResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (expandedPlaque === plaque) {
-                    setExpandedPlaque(null);
-                  } else {
-                    setExpandedPlaque(plaque);
-                  }
+                  setIsShoulderAcromioclavicularModalOpen(true);
                 }}
               >
                 <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
+                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
               </div>
-
-              {expandedPlaque === plaque && (
-                <ShoulderAcromioclavicularSection
-                  textareaRef={textareaRef}
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
             </div>
           );
         }

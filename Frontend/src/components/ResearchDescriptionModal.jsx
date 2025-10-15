@@ -12,8 +12,8 @@ import LumbarOsteophytesModal from "./spine/OsteophytesModal";
 import LungResearchPlaques from "./lungs/LungResearchPlaques";
 import ThoracicOsteophytesModal from "./spine/OsteophytesModal";
 import CervicalResearchPlaques from "./spine/CervicalResearchPlaques";
-import JointSpaceSection from "./knees/JointSpaceModal"; // Импортируем модальное окно суставных щелей
-import JointSurfaceModal from "./knees/JointSurfaceModal"; // Импортируем модальное окно суставных поверхностей
+import JointSpaceSection from "./knees/JointSpaceModal"; 
+import JointSurfaceModal from "./knees/JointSurfaceModal"; 
 import HipJointSpaceModal from "./hipjoints/HipJointSpaceModal";
 import HipJointSurfaceModal from "./hipjoints/HipJointSurfaceModal";
 import HipOsteophytesModal from "./hipjoints/HipOsteophytesModal";
@@ -41,10 +41,14 @@ import FlatfootModal from "./flatfoot/FlatfootModal";
 import ShoulderResearchPlaques from "./shoulder/ShoulderResearchPlaques"; 
 import ShoulderJointSpaceModal from "./shoulder/ShoulderJointSpaceModal"; 
 import ShoulderJointSurfaceModal from "./shoulder/ShoulderJointSurfaceModal"; 
-//import ShoulderOsteophytesModal from "./shoulder/ShoulderOsteophytesModal"; 
-
-
-
+import ShoulderOsteophytesModal from "./shoulder/ShoulderOsteophytesModal"; 
+import ShoulderAcromioclavicularModal from "./shoulder/ShoulderAcromioclavicularModal";
+import WristResearchPlaques from "./wrist/WristResearchPlaques";
+import WristJoinSpaceModal from "./wrist/WristJoinSpaceModal";
+import WristJointSurfaceModal from "./wrist/WristJointSurfaceModal";
+import WristOsteophytesModal from "./wrist/WristOsteophytesModal";
+import ParanasalResearchPlaques from "./paranasal/ParanasalResearchPlaques";
+import SinusesModal from "./paranasal/SinusesModal";
 
 
 
@@ -84,7 +88,12 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
   const [isFlatfootModalOpen, setIsFlatfootModalOpen] = useState(false);
   const [isShoulderJointSpaceModalOpen, setIsShoulderJointSpaceModalOpen] = useState(false);
   const [isShoulderJointSurfaceModalOpen, setIsShoulderJointSurfaceModalOpen] = useState(false);
-
+  const [isShoulderOsteophytesModalOpen, setIsShoulderOsteophytesModalOpen] = useState(false);
+  const [isShoulderAcromioclavicularModalOpen, setIsShoulderAcromioclavicularModalOpen] = useState(false);
+  const [isWristJointSpaceModalOpen, setIsWristJointSpaceModalOpen] = useState(false); // Изменено на булево значение
+  const [isWristJointSurfaceModalOpen, setIsWristJointSurfaceModalOpen] = useState(false);
+  const [isWristOsteophytesModalOpen, setIsWristOsteophytesModalOpen] = useState(false);
+  const [isSinusesModalOpen, setIsSinusesModalOpen] = useState(false);
 
   const textareaRef = useRef(null);
 
@@ -428,7 +437,39 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
                   textareaRef={textareaRef}
                   setIsShoulderJointSpaceModalOpen={setIsShoulderJointSpaceModalOpen}
                   setIsShoulderJointSurfaceModalOpen={setIsShoulderJointSurfaceModalOpen}
-                  //setIsShoulderOsteophytesModalOpen={setIsShoulderOsteophytesModalOpen}
+                  setIsShoulderOsteophytesModalOpen={setIsShoulderOsteophytesModalOpen}
+                  setIsShoulderAcromioclavicularModalOpen={setIsShoulderAcromioclavicularModalOpen}
+                  
+                />
+              )}
+
+              {selectedResearch && ["Рентгенография лучезапястных суставов", "Рентгенография левого лучезапястного сустава", "Рентгенография правого лучезапястного сустава"].includes(selectedResearch) && (
+                <WristResearchPlaques
+                  expandedPlaque={expandedPlaque}
+                  setExpandedPlaque={setExpandedPlaque}
+                  selectedSubItem={selectedSubItem}
+                  setSelectedSubItem={setSelectedSubItem}
+                  selectedNarrowingLevel={selectedNarrowingLevel}
+                  setSelectedNarrowingLevel={setSelectedNarrowingLevel}
+                  selectedChangeLevel={selectedChangeLevel}
+                  setSelectedChangeLevel={setSelectedChangeLevel}
+                  selectedShapeLevel={selectedShapeLevel}
+                  setSelectedShapeLevel={setSelectedShapeLevel}
+                  textareaRef={textareaRef}
+                  setIsWristJointSpaceModalOpen={setIsWristJointSpaceModalOpen}
+                  setIsWristJointSurfaceModalOpen={setIsWristJointSurfaceModalOpen}
+                  setIsWristOsteophytesModalOpen={setIsWristOsteophytesModalOpen}
+                />
+              )}
+
+              {selectedResearch && ["Рентгенография придаточных пазух носа"].includes(selectedResearch) && (
+                <ParanasalResearchPlaques
+                  expandedPlaque={expandedPlaque}
+                  setExpandedPlaque={setExpandedPlaque}
+                  selectedSubItem={selectedSubItem}
+                  setSelectedSubItem={setSelectedSubItem}
+                  setIsSinusesModalOpen={setIsSinusesModalOpen}
+                  textareaRef={textareaRef}
                 />
               )}
 
@@ -685,7 +726,7 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
               textareaRef={textareaRef}
             />
           )}
-{/*
+
           {isShoulderOsteophytesModalOpen && (
             <ShoulderOsteophytesModal
               isOpen={isShoulderOsteophytesModalOpen}
@@ -693,8 +734,50 @@ export default function ResearchDescriptionModal({ onClose, description, selecte
               textareaRef={textareaRef}
             />
           )}
-          */}
-         
+
+          {isShoulderAcromioclavicularModalOpen && (
+            <ShoulderAcromioclavicularModal
+              isOpen={isShoulderAcromioclavicularModalOpen}
+              onClose={() => setIsShoulderAcromioclavicularModalOpen(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+          
+          {isWristJointSpaceModalOpen && (
+            <WristJoinSpaceModal
+              isOpen={isWristJointSpaceModalOpen}
+              onClose={() => {
+                setIsWristJointSpaceModalOpen(false);
+              }}
+              textareaRef={textareaRef}
+            />
+          )}
+
+          {isWristJointSurfaceModalOpen && (
+            <WristJointSurfaceModal
+              isOpen={isWristJointSurfaceModalOpen}
+              onClose={() => setIsWristJointSurfaceModalOpen(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+
+          {isWristOsteophytesModalOpen && (
+            <WristOsteophytesModal
+              isOpen={isWristOsteophytesModalOpen}
+              onClose={() => setIsWristOsteophytesModalOpen(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+
+          {isSinusesModalOpen && (
+            <SinusesModal
+              isOpen={isSinusesModalOpen}
+              onClose={() => setIsSinusesModalOpen(false)}
+              textareaRef={textareaRef}
+            />
+          )}
+
+
       </div>
     </div>
   );

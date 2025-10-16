@@ -97,7 +97,7 @@ export default function HandResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowHandCongruencyModal(true);
+                  setOpenModal("HandCongruencyModal");
                 }}
               >
                 <span>{plaque}</span>

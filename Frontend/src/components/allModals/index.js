@@ -59,6 +59,8 @@ import SpineModal from "../spine/SpineModal";
 // Пазухи носа
 import SinusesModal from "../paranasal/SinusesModal";
 
+import RibsModal from "../lungs/RibsModal";
+
 // Экспортируем объектом
 export {
   OsteophytesModal,
@@ -98,4 +100,5 @@ export {
   SpineCurvatureModal,
   SpineModal,
   SinusesModal,
+  RibsModal,
 };

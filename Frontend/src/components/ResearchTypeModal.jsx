@@ -27,9 +27,20 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
         selectedResearchName = "Рентгенография стоп (плоскостопие)";
       }
 
-      const cleanName = displayResearchName.replace(/\s*\(плоскостопие\)/i, "");
-      const textToInsert = `${cleanName} ${projection}\n\n`;
-      onInsertText(textToInsert, cleanName);
+      // Добавляем обработку для Рентгенографии грудной клетки
+      let textToInsert = "";
+      if (researchName === "Рентгенография грудной клетки") {
+        if (projection === "правой половины" || projection === "левой половины") {
+          textToInsert = `Рентгенография ${projection} грудной клетки в прямой проекции.\n\n`;
+        } else {
+          textToInsert = `${researchName} ${projection}\n\n`;
+        }
+      } else {
+        const cleanName = displayResearchName.replace(/\s*\(плоскостопие\)/i, "");
+        textToInsert = `${cleanName} ${projection}\n\n`;
+      }
+      
+      onInsertText(textToInsert, researchName);
       onResearchSelect(selectedResearchName);
       onClose();
       onOpenDescriptionModal();
@@ -80,17 +91,16 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
                 return (
                   <div key={index} className="relative">
                     {/* Кнопка исследования */}
-<button
-  className="w-full bg-gray-700 text-yellow-200 py-1 px-2 text-sm rounded flex items-center hover:bg-gray-600 break-words"
-  onClick={() => toggleItem(item.name)}
->
-  <span className="flex-1 text-left">{item.name}</span>
-  {item.subItems?.length > 0 && (
-    isExpanded ? <ChevronDownIcon className="h-4 w-4 ml-1" /> :
-    <ChevronRightIcon className="h-4 w-4 ml-1" />
-  )}
-</button>
-
+                    <button
+                      className="w-full bg-gray-700 text-yellow-200 py-1 px-2 text-sm rounded flex items-center hover:bg-gray-600 break-words"
+                      onClick={() => toggleItem(item.name)}
+                    >
+                      <span className="flex-1 text-left">{item.name}</span>
+                      {item.subItems?.length > 0 && (
+                        isExpanded ? <ChevronDownIcon className="h-4 w-4 ml-1" /> :
+                        <ChevronRightIcon className="h-4 w-4 ml-1" />
+                      )}
+                    </button>
 
                     {/* Подсписок проекций */}
                     {isExpanded && item.subItems && (

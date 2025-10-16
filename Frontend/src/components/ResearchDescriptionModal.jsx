@@ -71,7 +71,9 @@ export default function ResearchDescriptionModal({
     "Рентгенография плечевых суставов": ResearchPlaques.ShoulderResearchPlaques,
     "Рентгенография лучезапястных суставов": ResearchPlaques.WristResearchPlaques,
     "Рентгенография пяточных костей": ResearchPlaques.CalcaneusResearchPlaques,
-    "Рентгенография придаточных пазух носа": ResearchPlaques.ParanasalResearchPlaques
+    "Рентгенография придаточных пазух носа": ResearchPlaques.ParanasalResearchPlaques,
+    "Рентгенография грудной клетки": ResearchPlaques.ChestResearchPlaques
+
   };
 
   const ResearchComponent = researchMap[selectedResearch];

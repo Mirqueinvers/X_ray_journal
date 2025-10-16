@@ -57,117 +57,133 @@ export default function SinusesModal({ isOpen, onClose, textareaRef }) {
   };
 
   const generateDescription = () => {
-    const texts = [];
+  const texts = [];
 
-    const normalizeFrontal = (vals) => ({
-      mucosa: vals.mucosa || "не изменена",
-      fluid: vals.fluid || "не определяется",
-      pneumatization: vals.pneumatization || "не изменена",
-      contour: vals.contour || "четкий",
-      development: vals.development || "",
-    });
+  const normalizeFrontal = (vals) => ({
+    mucosa: vals.mucosa || "не изменена",
+    fluid: vals.fluid || "не определяется",
+    pneumatization: vals.pneumatization || "не изменена",
+    contour: vals.contour || "четкий",
+    development: vals.development || "",
+  });
 
-    const normalizeMaxillary = (vals) => ({
-      mucosa: vals.mucosa || "не изменена",
-      fluid: vals.fluid || "не определяется",
-      pneumatization: vals.pneumatization || "не изменена",
-      contour: vals.contour || "четкий",
-      cyst: vals.cyst || "",
-    });
+  const normalizeMaxillary = (vals) => ({
+    mucosa: vals.mucosa || "не изменена",
+    fluid: vals.fluid || "не определяется",
+    pneumatization: vals.pneumatization || "не изменена",
+    contour: vals.contour || "четкий",
+    cyst: vals.cyst || "",
+  });
 
-    const leftFrontal = normalizeFrontal(selectedOptions.leftFrontal);
-    const rightFrontal = normalizeFrontal(selectedOptions.rightFrontal);
-    const leftMax = normalizeMaxillary(selectedOptions.leftMaxillary);
-    const rightMax = normalizeMaxillary(selectedOptions.rightMaxillary);
+  const leftFrontal = normalizeFrontal(selectedOptions.leftFrontal);
+  const rightFrontal = normalizeFrontal(selectedOptions.rightFrontal);
+  const leftMax = normalizeMaxillary(selectedOptions.leftMaxillary);
+  const rightMax = normalizeMaxillary(selectedOptions.rightMaxillary);
 
-    const checkIsNormalFrontal = (vals) => (
-      vals.mucosa === "не изменена" &&
-      vals.fluid === "не определяется" &&
-      vals.pneumatization === "не изменена" &&
-      vals.contour === "четкий"
+  const checkIsNormalFrontal = (vals) =>
+    vals.mucosa === "не изменена" &&
+    vals.fluid === "не определяется" &&
+    vals.pneumatization === "не изменена" &&
+    vals.contour === "четкий";
+
+  const leftNormal = checkIsNormalFrontal(leftFrontal);
+  const rightNormal = checkIsNormalFrontal(rightFrontal);
+
+  // --- Лобные пазухи ---
+  if (leftNormal && rightNormal) {
+    texts.push(
+      "Лобные пазухи прозрачные, их контуры четкие ровные, слизистая не утолщена, пневматизация не изменена, патологических теней в проекции пазух не визуализируется."
     );
-
-    const leftNormal = checkIsNormalFrontal(leftFrontal);
-    const rightNormal = checkIsNormalFrontal(rightFrontal);
-
-    // --- Лобные пазухи ---
-    if (leftNormal && rightNormal) {
-      texts.push(
-        "Лобные пазухи прозрачные, их контуры четкие ровные, слизистая не утолщена, пневматизация не изменена, патологических теней в проекции пазух не визуализируется."
-      );
-    } else {
-      if (leftNormal)
-        texts.push("Левая лобная пазуха без патологии.");
-      else if (Object.values(leftFrontal).some(Boolean)) {
-        const parts = [];
-        if (leftFrontal.mucosa !== "не изменена") parts.push(`слизистая ${leftFrontal.mucosa}`);
-        if (leftFrontal.fluid !== "не определяется") parts.push(`содержимое: ${leftFrontal.fluid}`);
-        if (leftFrontal.pneumatization !== "не изменена") parts.push(`пневматизация ${leftFrontal.pneumatization}`);
-        if (leftFrontal.contour !== "четкий") parts.push(`контур ${leftFrontal.contour}`);
-        if (parts.length > 0)
-          texts.push(`Левая лобная пазуха: ${parts.join(", ")}.`);
-      }
-
-      if (rightNormal)
-        texts.push("Правая лобная пазуха без патологии.");
-      else if (Object.values(rightFrontal).some(Boolean)) {
-        const parts = [];
-        if (rightFrontal.mucosa !== "не изменена") parts.push(`слизистая ${rightFrontal.mucosa}`);
-        if (rightFrontal.fluid !== "не определяется") parts.push(`содержимое: ${rightFrontal.fluid}`);
-        if (rightFrontal.pneumatization !== "не изменена") parts.push(`пневматизация ${rightFrontal.pneumatization}`);
-        if (rightFrontal.contour !== "четкий") parts.push(`контур ${rightFrontal.contour}`);
-        if (parts.length > 0)
-          texts.push(`Правая лобная пазуха: ${parts.join(", ")}.`);
-      }
-    }
-
-    // --- Гайморовы пазухи ---
-    const makeMaxillaryText = (side, vals) => {
-      const name = side === "left" ? "Левая гайморова пазуха" : "Правая гайморова пазуха";
+  } else {
+    if (leftNormal)
+      texts.push("Левая лобная пазуха без патологии.");
+    else if (Object.values(leftFrontal).some(Boolean)) {
       const parts = [];
+      if (leftFrontal.mucosa !== "не изменена") parts.push(`слизистая ${leftFrontal.mucosa}`);
 
-      if (vals.mucosa !== "не изменена") parts.push(`слизистая ${vals.mucosa}`);
-
-      if (vals.fluid === "экссудат")
+      if (leftFrontal.fluid === "экссудат")
         parts.push("определяется гомогенное затемнение с горизонтальным уровнем");
-      else if (vals.fluid !== "не определяется" && vals.fluid)
-        parts.push(`содержимое: ${vals.fluid}`);
+      else if (leftFrontal.fluid !== "не определяется" && leftFrontal.fluid)
+        parts.push(`содержимое: ${leftFrontal.fluid}`);
 
-      if (vals.pneumatization !== "не изменена") parts.push(`пневматизация ${vals.pneumatization}`);
-      if (vals.contour !== "четкий") parts.push(`контур ${vals.contour}`);
-
-      if (vals.cyst === "определяется")
-        parts.push("в проекции пазухи определяется однородная округлая тень с четким контуром");
-
-      if (parts.length > 0) return `${name}: ${parts.join(", ")}.`;
-      return `${name} без патологии.`;
-    };
-
-    const leftMaxNormal = leftMax.mucosa === "не изменена" &&
-      leftMax.fluid === "не определяется" &&
-      leftMax.pneumatization === "не изменена" &&
-      leftMax.contour === "четкий" &&
-      leftMax.cyst === "";
-
-    const rightMaxNormal = rightMax.mucosa === "не изменена" &&
-      rightMax.fluid === "не определяется" &&
-      rightMax.pneumatization === "не изменена" &&
-      rightMax.contour === "четкий" &&
-      rightMax.cyst === "";
-
-    if (leftMaxNormal && rightMaxNormal) {
-      texts.push(
-        "Гайморовы пазухи прозрачные, их контуры четкие ровные, слизистая не утолщена, пневматизация не изменена, патологических теней в проекции пазух не визуализируется."
-      );
-    } else {
-      texts.push(makeMaxillaryText("left", leftMax));
-      texts.push(makeMaxillaryText("right", rightMax));
+      if (leftFrontal.pneumatization !== "не изменена")
+        parts.push(`пневматизация ${leftFrontal.pneumatization}`);
+      if (leftFrontal.contour !== "четкий")
+        parts.push(`контур ${leftFrontal.contour}`);
+      if (parts.length > 0)
+        texts.push(`Левая лобная пазуха: ${parts.join(", ")}.`);
     }
 
-    if (texts.length === 0) return "Околоносовые пазухи без патологии.";
+    if (rightNormal)
+      texts.push("Правая лобная пазуха без патологии.");
+    else if (Object.values(rightFrontal).some(Boolean)) {
+      const parts = [];
+      if (rightFrontal.mucosa !== "не изменена") parts.push(`слизистая ${rightFrontal.mucosa}`);
 
-    return texts.join("\n");
+      if (rightFrontal.fluid === "экссудат")
+        parts.push("определяется гомогенное затемнение с горизонтальным уровнем");
+      else if (rightFrontal.fluid !== "не определяется" && rightFrontal.fluid)
+        parts.push(`содержимое: ${rightFrontal.fluid}`);
+
+      if (rightFrontal.pneumatization !== "не изменена")
+        parts.push(`пневматизация ${rightFrontal.pneumatization}`);
+      if (rightFrontal.contour !== "четкий")
+        parts.push(`контур ${rightFrontal.contour}`);
+      if (parts.length > 0)
+        texts.push(`Правая лобная пазуха: ${parts.join(", ")}.`);
+    }
+  }
+
+  // --- Гайморовы пазухи ---
+  const makeMaxillaryText = (side, vals) => {
+    const name = side === "left" ? "Левая гайморова пазуха" : "Правая гайморова пазуха";
+    const parts = [];
+
+    if (vals.mucosa !== "не изменена") parts.push(`слизистая ${vals.mucosa}`);
+
+    if (vals.fluid === "экссудат")
+      parts.push("определяется гомогенное затемнение с горизонтальным уровнем");
+    else if (vals.fluid !== "не определяется" && vals.fluid)
+      parts.push(`содержимое: ${vals.fluid}`);
+
+    if (vals.pneumatization !== "не изменена") parts.push(`пневматизация ${vals.pneumatization}`);
+    if (vals.contour !== "четкий") parts.push(`контур ${vals.contour}`);
+
+    if (vals.cyst === "определяется")
+      parts.push("в проекции пазухи определяется однородная округлая тень с четким контуром");
+
+    if (parts.length > 0) return `${name}: ${parts.join(", ")}.`;
+    return `${name} без патологии.`;
   };
+
+  const leftMaxNormal =
+    leftMax.mucosa === "не изменена" &&
+    leftMax.fluid === "не определяется" &&
+    leftMax.pneumatization === "не изменена" &&
+    leftMax.contour === "четкий" &&
+    leftMax.cyst === "";
+
+  const rightMaxNormal =
+    rightMax.mucosa === "не изменена" &&
+    rightMax.fluid === "не определяется" &&
+    rightMax.pneumatization === "не изменена" &&
+    rightMax.contour === "четкий" &&
+    rightMax.cyst === "";
+
+  if (leftMaxNormal && rightMaxNormal) {
+    texts.push(
+      "Гайморовы пазухи прозрачные, их контуры четкие ровные, слизистая не утолщена, пневматизация не изменена, патологических теней в проекции пазух не визуализируется."
+    );
+  } else {
+    texts.push(makeMaxillaryText("left", leftMax));
+    texts.push(makeMaxillaryText("right", rightMax));
+  }
+
+  if (texts.length === 0) return "Околоносовые пазухи без патологии.";
+
+  return texts.join("\n");
+};
+
 
   if (!isOpen) return null;
 

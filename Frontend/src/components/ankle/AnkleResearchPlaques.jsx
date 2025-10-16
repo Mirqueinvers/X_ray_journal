@@ -154,7 +154,7 @@ export default function AnkleResearchPlaques({
 
         if (plaque === "Параартикулярные ткани") {
           return (
-            <div key="index" onClick={(e) => e.stopPropagation()}>
+            <div key={index} onClick={(e) => e.stopPropagation()}>
               <div
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {

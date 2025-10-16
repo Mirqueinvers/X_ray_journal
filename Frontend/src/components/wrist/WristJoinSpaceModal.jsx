@@ -18,7 +18,7 @@ export default function AnkleJoinSpaceModal({ onClose, textareaRef }) {
   const insertTextToTextarea = (text) => {
     if (textareaRef?.current) {
       const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
+      textareaRef.current.value = current ? current + text : text;
       textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
     }
   };

@@ -27,6 +27,8 @@ import FlatfootResearchPlaques from "../flatfoot/FlatfootResearchPlaques";
 // Paranasal
 import ParanasalResearchPlaques from "../paranasal/ParanasalResearchPlaques";
 
+import ChestResearchPlaques from "../lungs/ChestResearchPlaques";
+
 export {
   KneeResearchPlaques,
   HipResearchPlaques,
@@ -42,5 +44,6 @@ export {
   WristResearchPlaques,
   CalcaneusResearchPlaques,
   FlatfootResearchPlaques,
-  ParanasalResearchPlaques
+  ParanasalResearchPlaques,
+  ChestResearchPlaques,
 };

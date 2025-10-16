@@ -44,11 +44,11 @@ export default function JointSpaceSection({ isOpen, onClose, textareaRef }) {
 
   // Зоны
     const zones = [
-      { key: "rightLateral", name: "Правый латеральный", position: { top: "200px", left: "30%" } },
-      { key: "rightMedial", name: "Правый медиальный", position: { top: "200px", left: "40%" } },
+      { key: "rightLateral", name: "Правый латеральный", position: { top: "28%", left: "22%" } },
+      { key: "rightMedial", name: "Правый медиальный", position: { top: "28%", left: "36%" } },
       
-      { key: "leftMedial", name: "Левый медиальный", position: { top: "200px", left: "60%" } },
-      { key: "leftLateral", name: "Левый латеральный", position: { top: "200px", left: "70%" } },
+      { key: "leftMedial", name: "Левый медиальный", position: { top: "28%", left: "56.5%" } },
+      { key: "leftLateral", name: "Левый латеральный", position: { top: "28%", left: "70.5%" } },
     ];
 
 
@@ -81,7 +81,7 @@ export default function JointSpaceSection({ isOpen, onClose, textareaRef }) {
   const insertTextToTextarea = (text) => {
     if (textareaRef?.current) {
       const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
+      textareaRef.current.value = current ? current + text : text;
       textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
     }
   };
@@ -115,7 +115,7 @@ const generateDescription = () => {
   if (leftDegree && rightDegree && leftDegree === rightDegree) {
     const partText = part === "медиальном" ? "медиальных" : "латеральных";
 descriptions.push(
-  `Суставные щели коленных суставов ${narrowingMapPlural[narrowingMapSingle[leftDegree]]} в ${partText} отделах.`
+  `Суставные щели коленных суставов ${narrowingMapPlural[narrowingMapSingle[leftDegree]]} в ${partText} отделах`
 );
     usedParts.add(part); // отмечаем, что отдел уже обработан
   }
@@ -160,7 +160,7 @@ descriptions.push(
 
   if (descriptions.length === 0) return "Суставные щели равномерной высоты";
 
-  return descriptions.join(", ");
+  return descriptions.join(", ") + ".";
 };
 
 
@@ -213,10 +213,11 @@ descriptions.push(
         <div
           className="w-full h-full relative"
           style={{
-            backgroundImage: `url(/images/knees-front.jpg)`,
+            backgroundImage: `url(/images/knee-right.png), url(/images/knee-left.png)`,
             backgroundSize: "contain",
-            backgroundPosition: "center",
+            backgroundPosition: "10% 95%, 90% 95%",
             backgroundRepeat: "no-repeat",
+            backgroundColor: "#374151",
           }}
         >
           {zones.map((zone) => (

@@ -27,12 +27,13 @@ export default function JointSurfaceModal({ isOpen, onClose, textareaRef }) {
     "резкие изменения",
   ];
 
-  const zones = [
-    { key: "rightLateral", name: "Правая латеральная", position: { top: "200px", left: "30%" } },
-    { key: "rightMedial", name: "Правая медиальная", position: { top: "200px", left: "40%" } },
-    { key: "leftMedial", name: "Левая медиальная", position: { top: "200px", left: "60%" } },
-    { key: "leftLateral", name: "Левая латеральная", position: { top: "200px", left: "70%" } },
-  ];
+    const zones = [
+      { key: "rightLateral", name: "Правый латеральный", position: { top: "28%", left: "22%" } },
+      { key: "rightMedial", name: "Правый медиальный", position: { top: "28%", left: "36%" } },
+      
+      { key: "leftMedial", name: "Левый медиальный", position: { top: "28%", left: "56.5%" } },
+      { key: "leftLateral", name: "Левый латеральный", position: { top: "28%", left: "70.5%" } },
+    ];
 
 const toggleZoneOption = (zoneKey, option) => {
   setSelectedOptions((prev) => {
@@ -109,9 +110,9 @@ const generateDescription = () => {
 
   if (!isOpen) return null;
 
-const isOptionSelected = (zoneKey, option) => {
-  return selectedOptions[zoneKey]?.[0] === option;
-};
+  const isOptionSelected = (zoneKey, option) => {
+    return selectedOptions[zoneKey]?.[0] === option;
+  };
 
   const hasAnySelection = (zoneKey) => selectedOptions[zoneKey]?.length > 0;
 
@@ -129,10 +130,11 @@ const isOptionSelected = (zoneKey, option) => {
         </button>
 
         <div className="w-full h-full relative" style={{
-          backgroundImage: `url(/images/knees-front.jpg)`,
-          backgroundSize: "contain",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
+            backgroundImage: `url(/images/knee-right.png), url(/images/knee-left.png)`,
+            backgroundSize: "contain",
+            backgroundPosition: "10% 95%, 90% 95%",
+            backgroundRepeat: "no-repeat",
+            backgroundColor: "#374151",
         }}>
           {zones.map((zone) => (
             <div

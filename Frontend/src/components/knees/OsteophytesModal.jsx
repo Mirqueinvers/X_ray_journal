@@ -5,14 +5,14 @@ export default function OsteophytesModal({ onClose, textareaRef }) {
   const [selected, setSelected] = useState([]);
 
   const osteophytes = [
-    { id: 1, text: "латеральной поверхности левой бедренной кости", pos: { top: "15%", right: "10%" } },
-    { id: 2, text: "медиальной поверхности левой бедренной кости", pos: { top: "15%", right: "30%" } },
-    { id: 3, text: "медиальной поверхности левой большеберцовой кости", pos: { bottom: "15%", right: "30%" } },
-    { id: 4, text: "латеральной поверхности левой большеберцовой кости", pos: { bottom: "15%", right: "10%" } },
-    { id: 5, text: "латеральной поверхности правой бедренной кости", pos: { top: "15%", left: "10%" } },
-    { id: 6, text: "медиальной поверхности правой бедренной кости", pos: { top: "15%", left: "30%" } },
-    { id: 7, text: "медиальной поверхности правой большеберцовой кости", pos: { bottom: "15%", left: "30%" } },
-    { id: 8, text: "латеральной поверхности правой большеберцовой кости", pos: { bottom: "15%", left: "10%" } },
+    { id: 1, text: "латеральной поверхности левой бедренной кости", pos: { top: "30%", right: "22%" } },
+    { id: 2, text: "медиальной поверхности левой бедренной кости", pos: { top: "30%", right: "35%" } },
+    { id: 3, text: "медиальной поверхности левой большеберцовой кости", pos: { bottom: "50%", right: "35%" } },
+    { id: 4, text: "латеральной поверхности левой большеберцовой кости", pos: { bottom: "50%", right: "22%" } },
+    { id: 5, text: "латеральной поверхности правой бедренной кости", pos: { top: "30%", left: "22%" } },
+    { id: 6, text: "медиальной поверхности правой бедренной кости", pos: { top: "30%", left: "35%" } },
+    { id: 7, text: "медиальной поверхности правой большеберцовой кости", pos: { bottom: "50%", left: "35%" } },
+    { id: 8, text: "латеральной поверхности правой большеберцовой кости", pos: { bottom: "50%", left: "22%" } },
   ];
 
   const toggleSelect = (text) => {
@@ -138,15 +138,13 @@ export default function OsteophytesModal({ onClose, textareaRef }) {
     onClose();
   };
 
-
-
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
       onClick={onClose}
     >
       <div
-        className="relative w-[800px] h-[600px] bg-gray-900 rounded-lg overflow-hidden shadow-xl"
+        className="relative w-[350mm] h-[148.5mm] bg-gray-800 rounded-lg overflow-hidden shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -156,31 +154,35 @@ export default function OsteophytesModal({ onClose, textareaRef }) {
           <XMarkIcon className="h-6 w-6" />
         </button>
 
-        <img
-          src="/images/knee-xray.jpg"
-          alt="Картинка коленного сустава"
-          className="w-full h-full object-cover"
-        />
+        {/* Заменяем картинку на фон с двумя коленями */}
+        <div className="w-full h-full relative" style={{
+            backgroundImage: `url(/images/knee-right.png), url(/images/knee-left.png)`,
+            backgroundSize: "contain",
+            backgroundPosition: "10% 95%, 90% 95%",
+            backgroundRepeat: "no-repeat",
+            backgroundColor: "#374151",
+        }}>
 
-        {osteophytes.map(({ id, text, pos }) => (
+          {osteophytes.map(({ id, text, pos }) => (
+            <button
+              key={id}
+              onClick={() => toggleSelect(text)}
+              className={`absolute w-28 h-12 border rounded bg-black/40 border-yellow-400 text-yellow-200 hover:bg-yellow-400/30 ${
+                selected.includes(text) ? "bg-yellow-400/50" : ""
+              }`}
+              style={pos}
+            >
+              {id}
+            </button>
+          ))}
+
           <button
-            key={id}
-            onClick={() => toggleSelect(text)}
-            className={`absolute w-28 h-12 border rounded bg-black/40 border-yellow-400 text-yellow-200 hover:bg-yellow-400/30 ${
-              selected.includes(text) ? "bg-yellow-400/50" : ""
-            }`}
-            style={pos}
+            onClick={insertSelected}
+            className="absolute bottom-4 right-4 px-6 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-300"
           >
-            {id} {/* <-- вместо обрезанного текста теперь выводим id */}
+            Добавить
           </button>
-        ))}
-
-        <button
-          onClick={insertSelected}
-          className="absolute bottom-4 right-4 px-6 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-300"
-        >
-          Добавить
-        </button>
+        </div>
       </div>
     </div>
   );

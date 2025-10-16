@@ -12,7 +12,7 @@ export default function FootJointSurfaceModal({ isOpen, onClose, textareaRef }) 
     rightPIP2: {}, rightPIP3: {}, rightPIP4: {}, rightPIP5: {},
     rightDIP2: {}, rightDIP3: {}, rightDIP4: {}, rightDIP5: {},
     rightIP1: {},
-    rightAnkle: {},
+    
 
     // Левая стопа
     leftTmt1: {}, leftTmt2: {}, leftTmt3: {}, leftTmt4: {}, leftTmt5: {},
@@ -20,7 +20,7 @@ export default function FootJointSurfaceModal({ isOpen, onClose, textareaRef }) 
     leftPIP2: {}, leftPIP3: {}, leftPIP4: {}, leftPIP5: {},
     leftDIP2: {}, leftDIP3: {}, leftDIP4: {}, leftDIP5: {},
     leftIP1: {},
-    leftAnkle: {},
+    
   });
 
   const rightJoints = [
@@ -47,7 +47,7 @@ export default function FootJointSurfaceModal({ isOpen, onClose, textareaRef }) 
     { key: "rightDIP5", label: "V", top: "78%", left: "29.3%" },
 
     { key: "rightIP1", label: "I", top: "86%", left: "42%" },
-    { key: "rightAnkle", label: "ГЗС", top: "5%", left: "28%" },
+    
   ];
 
   // левые зеркально
@@ -62,9 +62,6 @@ export default function FootJointSurfaceModal({ isOpen, onClose, textareaRef }) 
         left: `${100 - leftNum}%`, // зеркально
       };
     });
-
-  // голеностопы вручную
-  leftJoints.push({ key: "leftAnkle", label: "ГЗС", top: "5%", left: "72%" });
 
   const jointMap = [...rightJoints, ...leftJoints];
 

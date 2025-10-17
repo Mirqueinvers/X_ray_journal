@@ -9,7 +9,9 @@ export default function HandResearchPlaques({
   setExpandedPlaque,
   textareaRef,
   setOpenModal,
+  insertTextToTextarea,
   }) {
+
   const handJointPlaques = [
     "Суставные щели",
     "Суставные поверхности",
@@ -17,29 +19,37 @@ export default function HandResearchPlaques({
     "Конгруэнтность",
     "Целостность",
     "Параартикулярные ткани",
+    "Норма",
   ];
-
-  const insertNormalText = () => {
-    if (!textareaRef?.current) return;
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const textBefore = textarea.value.substring(0, start);
-    const textAfter = textarea.value.substring(end);
-    const normalText = `Суставные щели мелких суставов кистей сохранены, равномерные.
-Суставные поверхности ровные, чёткие, без признаков деформации.
-Конгруэнтность суставных поверхностей не нарушена.
-Костно-травматических и костно-деструктивных изменений не выявлено.
-Параартикулярные ткани не имеют рентгено-позитивных признаков изменений.`;
-    textarea.value = textBefore + normalText + textAfter;
-    const cursorPos = start + normalText.length;
-    textarea.selectionStart = textarea.selectionEnd = cursorPos;
-    textarea.dispatchEvent(new Event("input", { bubbles: true }));
-  };
 
   return (
     <div className="mt-4 space-y-2">
       {handJointPlaques.map((plaque, index) => {
+
+        if (plaque === "Норма") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  insertTextToTextarea(                    
+                    [
+                      "Суставные щели мелких суставов кистей сохранены, равномерные.",
+                      "Суставные поверхности ровные, чёткие, без признаков деформации.",
+                      "Конгруэнтность суставных поверхностей не нарушена.",
+                      "Костно-травматических и костно-деструктивных изменений не выявлено.",
+                      "Параартикулярные ткани не имеют рентгено-позитивных признаков изменений.",
+                    ].join("\n"),
+                  );
+                }}
+              >
+                <span>{plaque}</span>
+              </div>
+            </div>
+          );
+        }
+
         if (plaque === "Остеофиты") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>
@@ -167,16 +177,6 @@ export default function HandResearchPlaques({
           );
         }
       })}
-
-      {/* Плашка "Норма" внизу с отступом */}
-<div className="h-20"></div>
-<div
-  className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-  onClick={insertNormalText}
->
-  <span>Норма</span>
-</div>
-
     </div>
   );
 }

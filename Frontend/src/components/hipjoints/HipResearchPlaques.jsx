@@ -13,7 +13,9 @@ export default function HipResearchPlaques({
   setExpandedPlaque,
   textareaRef,
   setOpenModal,
+  insertTextToTextarea,
 }) {
+
   const hipJointPlaques = [
     "Эндопротез",
     "Суставные щели",
@@ -24,11 +26,37 @@ export default function HipResearchPlaques({
     "Конгруэнтность",
     "Целостность",
     "Параартикулярные ткани",
+    "Норма",
   ];
 
   return (
     <div className="mt-4 space-y-2">
       {hipJointPlaques.map((plaque, index) => {
+
+        if (plaque === "Норма") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  insertTextToTextarea(                    
+                    [
+                      "Суставные щели тазобедренных суставов сохранены, равномерные.",
+                      "Суставные поверхности ровные, чёткие, без признаков деформации.",
+                      "Конгруэнтность суставных поверхностей не нарушена.",
+                      "Костно-травматических и костно-деструктивных изменений не выявлено.",
+                      "Параартикулярные ткани не имеют рентгено-позитивных признаков изменений.",
+                    ].join("\n"),
+                  );
+                }}
+              >
+                <span>{plaque}</span>
+              </div>
+            </div>
+          );
+        }
+
         if (plaque === "Остеофиты") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>

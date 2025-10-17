@@ -10,6 +10,7 @@ export default function LumbarResearchPlaques({
   setExpandedPlaque,
   textareaRef,
   setOpenModal,
+  insertTextToTextarea,
 }) {
 
   const lumbarJointPlaques = [
@@ -22,11 +23,37 @@ export default function LumbarResearchPlaques({
     "Нестабильность", 
     "Целостность",
     "Параартикулярные ткани",
+    "Норма",
   ];
 
   return (
     <div className="mt-4 space-y-2">
       {lumbarJointPlaques.map((plaque, index) => {
+
+        if (plaque === "Норма") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  insertTextToTextarea(                    
+                    [
+                      "Высота пространств межпозвонковых дисков не изменена.",
+                      "Замыкательные пластинки ровные, чёткие, склеротических и деструктивных изменений не выявлено.",
+                      "Соотношение задних отделов тел позвонков не изменено.",
+                      "Костно-травматических и костно-деструктивных изменений не выявлено.",
+                      "Параартикулярные ткани не имеют рентгено-позитивных признаков изменений.",
+                    ].join("\n"),
+                  );
+                }}
+              >
+                <span>{plaque}</span>
+              </div>
+            </div>
+          );
+        }
+
         if (plaque === "Позвоночный столб") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>

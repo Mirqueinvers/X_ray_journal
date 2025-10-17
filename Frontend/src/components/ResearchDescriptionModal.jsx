@@ -16,7 +16,7 @@ export default function ResearchDescriptionModal({
   const [selectedChangeLevel, setSelectedChangeLevel] = useState(null);
   const [selectedShapeLevel, setSelectedShapeLevel] = useState(null);
   const [copied, setCopied] = useState(false);
-  const [openModal, setOpenModal] = useState(null); 
+  const [openModal, setOpenModal] = useState(null);
 
   const textareaRef = useRef(null);
 
@@ -42,6 +42,24 @@ export default function ResearchDescriptionModal({
         setTimeout(() => setCopied(false), 2000);
       })
       .catch(console.error);
+  };
+
+  const insertTextToTextarea = (textToInsert) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+
+    const newText = text.substring(0, start) + textToInsert + text.substring(end);
+    textarea.value = newText;
+    const newCursorPosition = start + textToInsert.length;
+    textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+    textarea.focus();
+
+    const event = new Event("input", { bubbles: true });
+    textarea.dispatchEvent(event);
   };
 
   const researchMap = {
@@ -143,6 +161,7 @@ export default function ResearchDescriptionModal({
                 setSelectedShapeLevel={setSelectedShapeLevel}
                 textareaRef={textareaRef}
                 setOpenModal={setOpenModal} 
+                insertTextToTextarea={insertTextToTextarea}
               />
             )}
           </div>

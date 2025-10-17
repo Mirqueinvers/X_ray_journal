@@ -27,7 +27,6 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
         selectedResearchName = "Рентгенография стоп (плоскостопие)";
       }
 
-      // Добавляем обработку для Рентгенографии грудной клетки
       let textToInsert = "";
       if (researchName === "Рентгенография грудной клетки") {
         if (projection === "правой половины" || projection === "левой половины") {
@@ -39,7 +38,7 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
         const cleanName = displayResearchName.replace(/\s*\(плоскостопие\)/i, "");
         textToInsert = `${cleanName} ${projection}\n\n`;
       }
-      
+
       onInsertText(textToInsert, researchName);
       onResearchSelect(selectedResearchName);
       onClose();
@@ -52,6 +51,7 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
       onOpenDescriptionModal();
     }
   };
+
 
   return (
     <div

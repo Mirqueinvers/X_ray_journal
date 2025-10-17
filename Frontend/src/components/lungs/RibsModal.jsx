@@ -104,26 +104,6 @@ const insertSelected = () => {
 
         {/* Левое и правое */}
         <div className="flex gap-8 mb-6">
-          {/* Левое */}
-          <div>
-            <h3 className="text-yellow-400 mb-2">Левые рёбра</h3>
-            <div className="grid grid-cols-6 gap-2">
-              {ribsLeft.map((rib) => (
-                <button
-                  key={`L-${rib}`}
-                  onClick={() => toggleRib("L", rib)}
-                  className={`px-3 py-2 border rounded text-sm ${
-                    selectedRibs.includes(`L-${rib}`)
-                      ? "bg-yellow-500 text-black border-yellow-400"
-                      : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
-                  }`}
-                >
-                  {rib}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Правое */}
           <div>
             <h3 className="text-yellow-400 mb-2">Правые рёбра</h3>
@@ -134,6 +114,26 @@ const insertSelected = () => {
                   onClick={() => toggleRib("R", rib)}
                   className={`px-3 py-2 border rounded text-sm ${
                     selectedRibs.includes(`R-${rib}`)
+                      ? "bg-yellow-500 text-black border-yellow-400"
+                      : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
+                  }`}
+                >
+                  {rib}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Левое */}
+          <div>
+            <h3 className="text-yellow-400 mb-2">Левые рёбра</h3>
+            <div className="grid grid-cols-6 gap-2">
+              {ribsLeft.map((rib) => (
+                <button
+                  key={`L-${rib}`}
+                  onClick={() => toggleRib("L", rib)}
+                  className={`px-3 py-2 border rounded text-sm ${
+                    selectedRibs.includes(`L-${rib}`)
                       ? "bg-yellow-500 text-black border-yellow-400"
                       : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
                   }`}

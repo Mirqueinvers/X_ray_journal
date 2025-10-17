@@ -14,11 +14,11 @@ export default function LungResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
   textareaRef,
+  insertTextToTextarea,
 }) {
   const [showPatternModal, setShowPatternModal] = useState(false); // состояние модалки патологических теней
   const [showRibsModal, setShowRibsModal] = useState(false); // состояние модалки для ребер
-  const lungJointPlaques = [
-    "Норма",
+  const lungJointPlaques = [   
     "Без патологических теней",
     "Патологические тени",
     "Сосудистый рисунок",
@@ -28,18 +28,8 @@ export default function LungResearchPlaques({
     "Средостение",
     "Сердце",
     "Грудная клетка",
+    "Норма",
   ];
-
-  const insertTextToTextarea = (text, plaque) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      const needsNewLine = !(plaque === "Норма" || plaque === "Без патологических теней");
-
-      textareaRef.current.value = current
-        ? current + (needsNewLine ? "\n" : "") + text
-        : text;
-    }
-  };
 
   return (
     <div className="mt-4 h-[500px] overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-yellow-500 scrollbar-track-gray-800">

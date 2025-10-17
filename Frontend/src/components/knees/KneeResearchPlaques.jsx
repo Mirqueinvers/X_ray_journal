@@ -5,7 +5,7 @@ import BumpsSection from "./BumpsSection";
 import CongruencySection from "../general/CongruencySection";
 import IntegritySection from "../general/IntegritySection";
 import ParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
-import EndoprosthesisSection from "./EndoprosthesisSection"; // Импортируем секцию эндопротезирования
+import EndoprosthesisSection from "./EndoprosthesisSection";
 
 export default function KneeResearchPlaques({
   expandedPlaque,
@@ -16,6 +16,7 @@ export default function KneeResearchPlaques({
   setSelectedShapeLevel,
   textareaRef,
   setOpenModal,
+  insertTextToTextarea,
 }) {
   const kneeJointPlaques = [
     "Эндопротезирование",
@@ -26,11 +27,40 @@ export default function KneeResearchPlaques({
     "Конгруэнтность",
     "Целостность",
     "Параартикулярные ткани",
+    "Норма",
   ];
 
   return (
     <div className="mt-4 space-y-2">
       {kneeJointPlaques.map((plaque, index) => {
+
+        if (plaque === "Норма") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  insertTextToTextarea(
+                    
+                    [
+                      "",
+                      "Суставные щели голеностопных суставов сохранены, равномерные.",
+                      "Суставные поверхности ровные, чёткие, без признаков деформации.",
+                      "Бугорки межмыщелковых возвышений не изменены.",
+                      "Конгруэнтность суставных поверхностей не нарушена.",
+                      "Костно-травматических и костно-деструктивных изменений не выявлено.",
+                      "Параартикулярные ткани не имеют рентгено-позитивных признаков изменений.",
+                    ].join("\n"),
+                  );
+                }}
+              >
+                <span>{plaque}</span>
+              </div>
+            </div>
+          );
+        }
+
         if (plaque === "Остеофиты") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>

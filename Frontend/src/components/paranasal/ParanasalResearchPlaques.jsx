@@ -8,32 +8,41 @@ export default function ParanasalResearchPlaques({
   setExpandedPlaque,
   textareaRef,
   setOpenModal,
+  insertTextToTextarea,
 }) {
   const paranasalPlaques = [
     "Пазухи",
     "Носовые ходы",
     "Носовая перегородка",
+    "Норма",
   ];
-
-  const insertNormalText = () => {
-    if (!textareaRef?.current) return;
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const textBefore = textarea.value.substring(0, start);
-    const textAfter = textarea.value.substring(end);
-    const normalText = `Лобные и гайморовы пазухи прозрачные, их контуры четкие ровные, слизистая не утолщена, пневматизация не изменена, патологических теней в проекции пазух не визуализируется.
-Носовые ходы свободны.
-Носовая перегородка не искривлена.`;
-    textarea.value = textBefore + normalText + textAfter;
-    const cursorPos = start + normalText.length;
-    textarea.selectionStart = textarea.selectionEnd = cursorPos;
-    textarea.dispatchEvent(new Event("input", { bubbles: true }));
-  };
 
   return (
     <div className="mt-4 space-y-2">
       {paranasalPlaques.map((plaque, index) => {
+
+        if (plaque === "Норма") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  insertTextToTextarea(                    
+                    [
+                      "Лобные и гайморовы пазухи прозрачные, их контуры четкие ровные, слизистая не утолщена, пневматизация не изменена, патологических теней в проекции пазух не визуализируется.",
+                      "Носовые ходы свободны.",
+                      "Носовая перегородка не искривлена.",
+                    ].join("\n"),
+                  );
+                }}
+              >
+                <span>{plaque}</span>
+              </div>
+            </div>
+          );
+        }
+
         if (plaque === "Пазухи") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>
@@ -113,15 +122,6 @@ export default function ParanasalResearchPlaques({
 
         return null;
       })}
-
-      {/* Плашка "Норма" внизу с отступом */}
-      <div className="h-20"></div>
-      <div
-        className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-        onClick={insertNormalText}
-      >
-        <span>Норма</span>
-      </div>
     </div>
   );
 }

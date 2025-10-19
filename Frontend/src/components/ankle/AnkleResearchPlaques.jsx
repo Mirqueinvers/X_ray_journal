@@ -20,6 +20,7 @@ export default function AnkleResearchPlaques({
     "Целостность",
     "Параартикулярные ткани",
     "Норма",
+    "Диагноз",
   ];
 
   return (
@@ -187,6 +188,23 @@ export default function AnkleResearchPlaques({
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
+            </div>
+          );
+        }
+
+        if (plaque === "Диагноз") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenModal("AnkleDiagnosisModal");
+                }}
+              >
+                <span>{plaque}</span>
+                <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
+              </div>
             </div>
           );
         }

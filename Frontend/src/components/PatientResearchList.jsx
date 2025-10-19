@@ -1,7 +1,8 @@
-import { PencilIcon, TrashIcon, DocumentDuplicateIcon, CheckCircleIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, TrashIcon, DocumentDuplicateIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { useState, useEffect } from 'react';
 import ResearchTypeModal from './ResearchTypeModal';
 import ResearchDescriptionModal from './ResearchDescriptionModal';
+import ResearchViewModal from './ResearchViewModal';
 
 export default function PatientResearchList({ patientId, researches, onEdit, onDelete, onIssue }) {
   const [issuedResearchIds, setIssuedResearchIds] = useState([]);
@@ -11,23 +12,21 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
   const [currentDescription, setCurrentDescription] = useState("");
   const [insertedText, setInsertedText] = useState("");
   const [textareaRef, setTextareaRef] = useState(null);
-  
-  // Инициализируем состояние на основе данных с сервера
+  const [selectedResearchId, setSelectedResearchId] = useState(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedDescription, setSelectedDescription] = useState("");
+
   useEffect(() => {
     const issuedIds = researches?.filter(r => r.issued_on_hands).map(r => r.id) || [];
     setIssuedResearchIds(issuedIds);
   }, [researches]);
-  
+
   if (!researches || researches.length === 0) return null;
 
-  console.log(`--- Рендер PatientResearchList для patientId=${patientId}`);
-  console.log('Исходные исследования:', researches);
-
-  // Функция для выдачи снимков
   const handleIssue = (researchId) => {
-    const isCurrentlyIssued = issuedResearchIds.includes(researchId) || 
-                             researches.find(r => r.id === researchId)?.issued_on_hands;
-    
+    const isCurrentlyIssued = issuedResearchIds.includes(researchId) ||
+      researches.find(r => r.id === researchId)?.issued_on_hands;
+
     if (isCurrentlyIssued) {
       handleCancelIssue(researchId);
     } else {
@@ -36,145 +35,136 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
     }
   };
 
-  // Функция для отмены выдачи
   const handleCancelIssue = (researchId) => {
     setIssuedResearchIds(prev => prev.filter(id => id !== researchId));
     onIssue?.(researchId, true);
   };
 
-  // Открыть модальное окно выбора типа исследования
   const openTypeModal = (ref) => {
     setTextareaRef(ref);
     setIsTypeModalOpen(true);
   };
 
-  // Закрыть модальное окно выбора типа исследования
-  const closeTypeModal = () => {
-    setIsTypeModalOpen(false);
-  };
-
-  // Обработчик выбора типа исследования
+  const closeTypeModal = () => setIsTypeModalOpen(false);
   const handleResearchTypeSelect = (researchName) => {
     setSelectedResearch(researchName);
     setCurrentDescription("");
   };
 
-  // Обработчик открытия модалки описания
-  const handleOpenDescriptionModal = () => {
-    setIsDescriptionModalOpen(true);
-  };
-
-  // Обработчик вставки текста в описание
+  const handleOpenDescriptionModal = () => setIsDescriptionModalOpen(true);
   const handleInsertText = (text, researchName) => {
     setInsertedText(text);
-    setSelectedResearch(researchName); // Устанавливаем selectedResearch
+    setSelectedResearch(researchName);
   };
+  const closeDescriptionModal = () => setIsDescriptionModalOpen(false);
 
-  // Открыть модальное окно описания
-  const openDescriptionModal = () => {
-    setIsDescriptionModalOpen(true);
-  };
-
-  // Закрыть модальное окно описания
-  const closeDescriptionModal = () => {
-    setIsDescriptionModalOpen(false);
+  // Функция для обработки клика по кнопке "Описание"
+  const handleDescriptionClick = (research) => {
+    setSelectedResearchId(research.id);
+    
+    // Проверяем, есть ли описание в данных исследования
+    // Убедитесь, что research.description приходит с бэкенда
+    console.log('Research data:', research); // Добавьте это для отладки
+    
+    if (research.description && research.description.trim() !== "") {
+      // Есть описание — открываем модалку просмотра
+      setSelectedDescription(research.description);
+      setIsViewModalOpen(true);
+    } else {
+      // Нет описания — открываем модалку выбора типа исследования
+      openTypeModal();
+    }
   };
 
   return (
     <div className="mt-3 flex flex-row gap-2 overflow-x-auto">
       {researches.map(r => {
         const isIssued = issuedResearchIds.includes(r.id) || r.issued_on_hands;
-        
-        console.log('--- Исследование id=', r.id);
-        console.log('Все поля исследования:', r);
 
         return (
           <div
             key={r.id}
-            className="relative border-2 border-yellow-500 rounded-md p-2 bg-gray-800 text-yellow-200 text-sm min-w-[200px] flex-shrink-0"
+            className="relative border-2 border-yellow-500 rounded-md bg-gray-800 text-yellow-200 text-sm min-w-[200px] flex-shrink-0"
           >
-            {/* Иконка описания в левом верхнем углу */}
-            <div className="absolute top-1 left-1">
+            {/* Блок кнопок сверху */}
+            <div className="relative flex gap-1 p-1 bg-gray-800 rounded-t-md">
+              {/* Разорванный бордер снизу */}
+              <span className="absolute left-2 right-2 bottom-0 border-b border-yellow-500"></span>
+
               <button
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  openTypeModal();
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDescriptionClick(r);
                 }}
-                className="h-4 w-4 text-yellow-400 cursor-pointer hover:text-yellow-300"
+                className="px-2 py-0.5 rounded border border-yellow-500 text-yellow-400 hover:text-yellow-300 hover:border-yellow-300 text-xs self-start transition-colors"
                 title="Описание исследования"
               >
-                <InformationCircleIcon />
+                Описание
               </button>
-            </div>
 
-            {/* Кнопки редактирования, удаления и выдачи */}
-            <div className="absolute top-1 right-1 flex gap-1">
               <PencilIcon
-                className="h-4 w-4 text-yellow-400 cursor-pointer hover:text-yellow-300"
+                className="h-5 w-5 ml-14 text-yellow-400 cursor-pointer hover:text-yellow-300"
                 onClick={(e) => { e.stopPropagation(); onEdit?.(r); }}
                 title="Редактировать"
               />
               <TrashIcon
-                className="h-4 w-4 text-red-500 cursor-pointer hover:text-red-700"
+                className="h-5 w-5 text-red-500 cursor-pointer hover:text-red-700"
                 onClick={(e) => { e.stopPropagation(); onDelete?.(r.id); }}
                 title="Удалить"
               />
               <button
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  handleIssue(r.id);
-                }}
-                className={`h-4 w-4 cursor-pointer ${
-                  isIssued 
-                    ? 'text-green-500 hover:text-green-300' 
-                    : 'text-blue-500 hover:text-blue-300'
-                }`}
+                onClick={(e) => { e.stopPropagation(); handleIssue(r.id); }}
+                className={`h-5 w-5 cursor-pointer ${isIssued ? 'text-green-500 hover:text-green-300' : 'text-blue-500 hover:text-blue-300'}`}
                 title={isIssued ? "Отменить выдачу" : "Выдать снимки"}
               >
-                {isIssued ? (
-                  <CheckCircleIcon />
-                ) : (
-                  <DocumentDuplicateIcon />
-                )}
+                {isIssued ? <CheckCircleIcon /> : <DocumentDuplicateIcon />}
               </button>
             </div>
 
-            {/* Основные данные исследования */}
-            <div className="mt-3"><strong>Диагноз:</strong> {r.dsnapr}</div>
-            <div><strong>Область:</strong> {r.research_region}</div>
-            <div><strong>Тип:</strong> {r.research_type}</div>
-            <div><strong>Кассета:</strong> {r.cassete_size}</div>
-            <div><strong>Исследований:</strong> {r.numb_of_proc}</div>
-            <div><strong>Доза:</strong> {r.dose} мЗв</div>
-            <div><strong>Направил:</strong> {r.sent}</div>
-            
-            {/* Блок статуса без разделительной полосы */}
-            {isIssued && (
-              <div className="mt-2 text-green-400">
-                <strong>Статус:</strong> Снимки выданы на руки
-              </div>
-            )}
+            {/* Основное содержимое исследования */}
+            <div className="p-2">
+              <div><strong>Диагноз:</strong> {r.dsnapr}</div>
+              <div><strong>Область:</strong> {r.research_region}</div>
+              <div><strong>Тип:</strong> {r.research_type}</div>
+              <div><strong>Кассета:</strong> {r.cassete_size}</div>
+              <div><strong>Исследований:</strong> {r.numb_of_proc}</div>
+              <div><strong>Доза:</strong> {r.dose} мЗв</div>
+              <div><strong>Направил:</strong> {r.sent}</div>
+              {isIssued && (
+                <div className="mt-2 text-green-400">
+                  <strong>Статус:</strong> Снимки выданы на руки
+                </div>
+              )}
+            </div>
           </div>
         );
       })}
-      
-      {/* Модальное окно выбора типа исследования */}
+
+      {/* Модальные окна */}
       {isTypeModalOpen && (
-        <ResearchTypeModal 
-          onClose={closeTypeModal} 
+        <ResearchTypeModal
+          onClose={closeTypeModal}
           onResearchSelect={handleResearchTypeSelect}
           onInsertText={handleInsertText}
           onOpenDescriptionModal={handleOpenDescriptionModal}
         />
       )}
-
-      {/* Модальное окно описания исследования */}
+      
       {isDescriptionModalOpen && (
-        <ResearchDescriptionModal 
-          onClose={closeDescriptionModal} 
+        <ResearchDescriptionModal
+          onClose={closeDescriptionModal}
           selectedResearch={selectedResearch}
           description={insertedText}
+          researchId={selectedResearchId}
           setTextareaRef={setTextareaRef}
+        />
+      )}
+
+      {isViewModalOpen && (
+        <ResearchViewModal
+          onClose={() => setIsViewModalOpen(false)}
+          researchId={selectedResearchId}
+          description={selectedDescription}
         />
       )}
     </div>

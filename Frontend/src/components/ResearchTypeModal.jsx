@@ -30,7 +30,7 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
       let textToInsert = "";
       if (researchName === "Рентгенография грудной клетки") {
         if (projection === "правой половины" || projection === "левой половины") {
-          textToInsert = `Рентгенография ${projection} грудной клетки в прямой проекции.\n\n`;
+          textToInsert = `Рентгенография ${projection} грудной клетки в прямой проекции.\n`;
         } else {
           textToInsert = `${researchName} ${projection}\n\n`;
         }

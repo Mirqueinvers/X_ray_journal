@@ -22,6 +22,7 @@ export default function CervicalResearchPlaques({
     "Целостность",
     "Параартикулярные ткани",
     "Норма",
+    "Диагноз",
   ];
 
   return (
@@ -181,6 +182,24 @@ export default function CervicalResearchPlaques({
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
+            </div>
+          );
+        }
+
+        if (plaque === "Диагноз") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenModal("SpineDiagnosisModal:cervical");
+                  // Передаем параметр отдела
+                  // Нужно будет обновить родительский компонент для передачи spineRegion
+                }}
+              >
+                <span>{plaque}</span>
+              </div>
             </div>
           );
         }

@@ -81,7 +81,8 @@ app.get('/api/patients-by-visit-date', (req, res) => {
       p.id AS patient_id, p.full_name, p.birth_date, p.adress,
       v.id AS visit_id, v.visit_date,
       r.id AS research_id, r.dsnapr, r.research_region, r.research_type,
-      r.cassete_size, r.numb_of_proc, r.dose, r.sent, r.issued_on_hands
+      r.cassete_size, r.numb_of_proc, r.dose, r.sent, r.issued_on_hands,
+      r.description 
     FROM patients p
     JOIN visits v ON p.id = v.patient_id
     LEFT JOIN research r ON v.id = r.visit_id
@@ -103,7 +104,8 @@ app.get('/api/patients-by-visit-date', (req, res) => {
         patient_id, full_name, birth_date, adress,
         visit_id, visit_date,
         research_id, dsnapr, research_region,
-        research_type, cassete_size, numb_of_proc, dose, sent, issued_on_hands
+        research_type, cassete_size, numb_of_proc, dose, sent, issued_on_hands,
+        description  // ← получаем description из строки БД
       } = row;
 
       if (!patientsMap.has(patient_id)) {
@@ -128,7 +130,8 @@ app.get('/api/patients-by-visit-date', (req, res) => {
           numb_of_proc,
           dose,
           sent,
-          issued_on_hands: issued_on_hands == 1  // Преобразуем в boolean
+          issued_on_hands: issued_on_hands == 1,  // Преобразуем в boolean
+          description: description || ""  // ← добавляем description в объект исследования
         });
       }
     });
@@ -244,10 +247,11 @@ app.get('/api/patient/:id/researches', (req, res) => {
 
       console.log('rows из MySQL:', rows); // вывод из MySQL
 
-      // Преобразуем поле issued_on_hands в boolean
+      // Преобразуем поле issued_on_hands в boolean и добавляем description
       const researches = rows.map(r => ({
         ...r,
-        issued_on_hands: r.issued_on_hands == 1  // двойное равно проверяет '1' и 1
+        issued_on_hands: r.issued_on_hands == 1,  // двойное равно проверяет '1' и 1
+        description: r.description || ""  // ← добавляем description
       }));
 
       console.log('researches после преобразования:', researches);
@@ -724,6 +728,42 @@ app.put('/api/research/:id/issue', (req, res) => {
     res.json({ success: true, message: 'Статус выдачи обновлён' });
   });
 });
+
+// 💾 Сохранить описание исследования
+// POST /api/save-research-description
+app.post('/api/save-research-description', (req, res) => {
+  const { research_id, description } = req.body;
+
+  if (!research_id) return res.status(400).json({ success: false, error: "Не указан research_id" });
+
+  const sql = "UPDATE research SET description = ? WHERE id = ?";
+  db.query(sql, [description || "", research_id], (err) => {
+    if (err) {
+      console.error("Ошибка сохранения описания:", err);
+      return res.status(500).json({ success: false, error: err.message });
+    }
+    res.json({ success: true });
+  });
+});
+
+// просмотр описания
+// GET /api/get-research-description?research_id=...
+app.get('/api/get-research-description', (req, res) => {
+  const { research_id } = req.query;
+  if (!research_id) return res.status(400).json({ success: false, error: "Не указан research_id" });
+
+  const sql = "SELECT description FROM research WHERE id = ?";
+  db.query(sql, [research_id], (err, results) => {
+    if (err) {
+      console.error("Ошибка получения описания:", err);
+      return res.status(500).json({ success: false, error: err.message });
+    }
+    res.json({ success: true, description: results[0]?.description || "" });
+  });
+});
+
+
+
 
 
 

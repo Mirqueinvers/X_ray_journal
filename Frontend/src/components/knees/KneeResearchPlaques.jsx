@@ -28,6 +28,7 @@ export default function KneeResearchPlaques({
     "Целостность",
     "Параартикулярные ткани",
     "Норма",
+    "Диагноз",
   ];
 
   return (
@@ -44,7 +45,6 @@ export default function KneeResearchPlaques({
                   insertTextToTextarea(
                     
                     [
-                      "",
                       "Суставные щели голеностопных суставов сохранены, равномерные.",
                       "Суставные поверхности ровные, чёткие, без признаков деформации.",
                       "Бугорки межмыщелковых возвышений не изменены.",
@@ -264,6 +264,22 @@ export default function KneeResearchPlaques({
               >
                 <span>{plaque}</span>
                 <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
+              </div>
+            </div>
+          );
+        }
+
+        if (plaque === "Диагноз") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenModal("KneeDiagnosisModal");
+                }}
+              >
+                <span>{plaque}</span>
               </div>
             </div>
           );

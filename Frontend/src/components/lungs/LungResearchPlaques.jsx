@@ -1,7 +1,6 @@
 // Frontend/src/components/lungs/LungResearchPlaques.jsx
 import { useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import LungPatternModal from "./LungPatternModal";
 import VesselsSection from "./VesselsSection";
 import HilaSection from "./HilaSection";
 import SinusSection from "./SinusSection";
@@ -14,10 +13,9 @@ export default function LungResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
   textareaRef,
+  setOpenModal,
   insertTextToTextarea,
 }) {
-  const [showPatternModal, setShowPatternModal] = useState(false); // состояние модалки патологических теней
-  const [showRibsModal, setShowRibsModal] = useState(false); // состояние модалки для ребер
   const lungJointPlaques = [   
     "Без патологических теней",
     "Патологические тени",
@@ -62,7 +60,6 @@ export default function LungResearchPlaques({
           );
         }
 
-
         if (plaque === "Без патологических теней") {
           return (
             <div key={index} onClick={(e) => e.stopPropagation()}>
@@ -89,7 +86,7 @@ export default function LungResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowPatternModal(true); // открываем модалку
+                  setOpenModal("LungPatternModal");
                 }}
               >
                 <span>{plaque}</span>
@@ -282,22 +279,6 @@ export default function LungResearchPlaques({
 
         return null;
       })}
-
-      {/* Модалка для патологических теней */}
-      {showPatternModal && (
-        <LungPatternModal
-          onClose={() => setShowPatternModal(false)}
-          textareaRef={textareaRef}
-        />
-      )}
-
-      {/* Модалка для ребер */}
-      {showRibsModal && (
-        <RibsModal
-          onClose={() => setShowRibsModal(false)}
-          textareaRef={textareaRef}
-        />
-      )}
     </div>
   );
 }

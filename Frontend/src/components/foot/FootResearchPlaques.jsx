@@ -21,6 +21,7 @@ export default function FeetResearchPlaques({
     "Целостность",
     "Параартикулярные ткани",
     "Норма",
+    "Диагноз",
   ];
 
   return (
@@ -174,6 +175,23 @@ export default function FeetResearchPlaques({
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
+            </div>
+          );
+        }
+
+        if (plaque === "Диагноз") {
+          return (
+            <div key={index} onClick={(e) => e.stopPropagation()}>
+              <div
+                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenModal("FootDiagnosisModal");
+                }}
+              >
+                <span>{plaque}</span>
+                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
+              </div>
             </div>
           );
         }

@@ -78,7 +78,7 @@ export default function FootJointSurfaceModal({ isOpen, onClose, textareaRef }) 
     });
   };
 
-  const generateFootDescription = () => {
+const generateFootDescription = () => {
   const footNamesGenitive = { right: "правой", left: "левой" }; // для голеностопа
   const footNames = { right: "правой", left: "левой" }; // для остальных суставов
 
@@ -89,6 +89,15 @@ export default function FootJointSurfaceModal({ isOpen, onClose, textareaRef }) 
     Tmt: { plural: "предплюсне-плюсневых суставах", single: "предплюсне-плюсневом суставе" },
     IP: { plural: "межфаланговых суставах I пальца", single: "межфаланговом суставе I пальца" },
     Ankle: { plural: "голеностопных суставах", single: "голеностопном суставе" },
+  };
+
+  const jointGroupsBothFeet = {
+    Mtp: "плюснефаланговых суставов",
+    PIP: "проксимальных межфаланговых суставов",
+    DIP: "дистальных межфаланговых суставов",
+    Tmt: "предплюсне-плюсневых суставов",
+    IP: "межфаланговых суставов I пальца",
+    Ankle: "голеностопных суставов",
   };
 
   const romanToNum = { I: 1, II: 2, III: 3, IV: 4, V: 5 };
@@ -133,7 +142,7 @@ export default function FootJointSurfaceModal({ isOpen, onClose, textareaRef }) 
     });
   });
 
-  // Проверяем, есть ли голеностоп отдельно
+  // Голеностоп обрабатываем отдельно
   const ankleParts = [];
   const degreeOrder = ["незначительно", "умеренно", "выраженно"];
   degreeOrder.forEach(deg => {
@@ -143,38 +152,43 @@ export default function FootJointSurfaceModal({ isOpen, onClose, textareaRef }) 
     Object.entries(feet).forEach(([foot, types]) => {
       if (types.Ankle) {
         ankleParts.push(
-          `суставные поверхности ${footNamesGenitive[foot]} голеностопного сустава ${deg}`
+          `суставная щель ${footNamesGenitive[foot]} голеностопного сустава ${deg} сужена`
         );
         delete types.Ankle; // чтобы не дублировать в общем блоке
       }
     });
   });
 
-  // Формируем остальное описание
   const degreeParts = [];
   degreeOrder.forEach(deg => {
     const feet = degreeGroups[deg];
     if (!feet) return;
 
-    const footParts = [];
-    Object.entries(feet).forEach(([foot, types]) => {
-      const typeParts = [];
-      Object.entries(types).forEach(([type, labels]) => {
-        const joint = jointGroups[type];
-        const fingers = compressFingers(labels);
+    // --- Сценарий 1: одинаковые суставы на обеих стопах ---
+    Object.keys(jointGroups).forEach(type => {
+      if (!feet.right?.[type] || !feet.left?.[type]) return;
+      const rightLabels = feet.right[type].sort();
+      const leftLabels = feet.left[type].sort();
 
-        if (type === "IP") {
-          typeParts.push(`${joint.single} ${footNames[foot]} стопы`);
-        } else {
-          typeParts.push(`${fingers} ${labels.length > 1 ? joint.plural : joint.single} ${footNames[foot]} стопы`);
-        }
-      });
-      if (typeParts.length) footParts.push(typeParts.join(", "));
+      if (JSON.stringify(rightLabels) === JSON.stringify(leftLabels)) {
+        const fingers = compressFingers(rightLabels);
+        const jointName = jointGroupsBothFeet[type]; // <- множественная форма для обеих стоп
+        degreeParts.push(`${fingers} ${jointName} ${deg} сужены`);
+        delete feet.right[type];
+        delete feet.left[type];
+      }
     });
 
-    if (footParts.length) {
-      degreeParts.push(`${deg} склерозированы в ${footParts.join(", ")}`);
-    }
+    // --- Сценарий 2: разные суставы / степени ---
+    Object.entries(feet).forEach(([foot, types]) => {
+      Object.entries(types).forEach(([type, labels]) => {
+        if (!labels || !labels.length) return;
+        const joint = jointGroups[type];
+        const fingers = compressFingers(labels);
+        const jointName = type === "IP" ? joint.single : joint.single;
+        degreeParts.push(`${deg} сужены в ${fingers} ${jointName} ${footNames[foot]} стопы`);
+      });
+    });
   });
 
   const parts = [];
@@ -182,11 +196,12 @@ export default function FootJointSurfaceModal({ isOpen, onClose, textareaRef }) 
     const ankleSentence = ankleParts.map((s, i) => (i === 0 ? s[0].toUpperCase() + s.slice(1) : s)).join(", ") + ".";
     parts.push(ankleSentence);
   }
-  if (degreeParts.length) parts.push("Суставные поверхности " + degreeParts.join("; ") + ".");
-  if (!parts.length) return "Суставные поверхности стоп без патологических изменений.";
+  if (degreeParts.length) parts.push("Суставные щели " + degreeParts.join("; ") + ".");
+  if (!parts.length) return "Суставные щели стоп равномерной высоты.";
 
   return parts.join(" ");
 };
+
 
 
   if (!isOpen) return null;

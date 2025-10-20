@@ -73,92 +73,63 @@ export default function FootDiagnosisModal({ isOpen, onClose, textareaRef }) {
     });
   };
 
-  const generateDiagnosisDescription = () => {
-    const footNames = { right: "правой", left: "левой" };
-
-    const jointGroups = {
-      Mtp: { plural: "плюснефаланговых суставах", single: "плюснефаланговом суставе" },
-      PIP: { plural: "проксимальных межфаланговых суставах", single: "проксимальном межфаланговом суставе" },
-      DIP: { plural: "дистальных межфаланговых суставах", single: "дистальном межфаланговом суставе" },
-      Tmt: { plural: "предплюсне-плюсневых суставах", single: "предплюсне-плюсневом суставе" },
-      IP: { plural: "межфаланговых суставах I пальца", single: "межфаланговом суставе I пальца" },
-    };
-
-    const romanToNum = { I: 1, II: 2, III: 3, IV: 4, V: 5 };
-    const numToRoman = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V" };
-
-    const compressFingers = (labels) => {
-      const nums = labels.map(l => romanToNum[l]).filter(Boolean).sort((a, b) => a - b);
-      if (!nums.length) return "";
-      const ranges = [];
-      let start = nums[0];
-      let end = nums[0];
-      for (let i = 1; i <= nums.length; i++) {
-        if (nums[i] === end + 1) end = nums[i];
-        else {
-          ranges.push(start === end ? numToRoman[start] : `${numToRoman[start]}–${numToRoman[end]}`);
-          start = nums[i];
-          end = nums[i];
-        }
-      }
-      return ranges.join(", ");
-    };
-
-    const diagnosisGroups = {};
-
-    ["right", "left"].forEach(foot => {
-      jointMap.filter(j => j.key.startsWith(foot)).forEach(j => {
-        const joint = selectedOptions[j.key];
-        if (!joint) return;
-
-        const type = Object.keys(jointGroups).find(t => j.key.includes(t));
-        const label = j.label;
-
-        Object.entries(joint).forEach(([diagnosis, checked]) => {
-          if (!checked) return;
-
-          diagnosisGroups[diagnosis] = diagnosisGroups[diagnosis] || {};
-          diagnosisGroups[diagnosis][foot] = diagnosisGroups[diagnosis][foot] || {};
-          diagnosisGroups[diagnosis][foot][type] = diagnosisGroups[diagnosis][foot][type] || [];
-          diagnosisGroups[diagnosis][foot][type].push(label);
-        });
-      });
-    });
-
-    const parts = [];
-
-    diagnoses.forEach(diagnosis => {
-      const footData = diagnosisGroups[diagnosis];
-      if (!footData) return;
-
-      const footParts = [];
-      Object.entries(footData).forEach(([foot, types]) => {
-        const typeParts = [];
-        Object.entries(types).forEach(([type, labels]) => {
-          const joint = jointGroups[type];
-          const fingers = compressFingers(labels);
-          
-          if (type === "IP") {
-            typeParts.push(`${joint.single} ${footNames[foot]} стопы`);
-          } else {
-            typeParts.push(`${fingers} ${labels.length > 1 ? joint.plural : joint.single} ${footNames[foot]} стопы`);
-          }
-        });
-        if (typeParts.length) {
-          footParts.push(typeParts.join(", "));
-        }
-      });
-
-      if (footParts.length) {
-        const diagnosisText = diagnosis.toLowerCase();
-        parts.push(`Признаки ${diagnosisText} в ${footParts.join(", ")}`);
-      }
-    });
-
-    if (!parts.length) return "Признаков патологических изменений суставов стоп не выявлено.";
-
-    return parts.join("; ") + ".";
+const generateDiagnosisDescription = () => {
+  const jointGroups = {
+    Mtp: { plural: "плюсне-фаланговых суставов", single: "плюсне-фалангового сустава" },
+    PIP: { plural: "проксимальных межфаланговых суставов", single: "проксимального межфалангового сустава" },
+    DIP: { plural: "дистальных межфаланговых суставов", single: "дистального межфалангового сустава" },
+    Tmt: { plural: "предплюсне-плюсневых суставов", single: "предплюсне-плюсневого сустава" },
+    IP: { plural: "межфаланговых суставов I пальца", single: "межфалангового сустава I пальца" },
   };
+
+  const romanToNum = { I: 1, II: 2, III: 3, IV: 4, V: 5 };
+
+  const positions = {}; // { 'артроза': { Mtp: Set([1,2]), degree: "1 ст" } }
+
+  Object.entries(selectedOptions).forEach(([jointKey, jointObj]) => {
+    const type = Object.keys(jointGroups).find(t => jointKey.includes(t));
+    if (!type) return;
+
+    Object.entries(jointObj).forEach(([diag, checked]) => {
+      if (!checked) return;
+
+      const degreeMatch = diag.match(/\d+\s*ст/);
+      const degree = degreeMatch ? degreeMatch[0] : "";
+
+      let diagText = diag.replace(/\d+\s*ст/, "").trim().toLowerCase();
+      if (diagText === "артроз") diagText = "артроза";
+
+      const joint = jointMap.find(j => j.key === jointKey);
+      const pos = romanToNum[joint.label];
+
+      positions[diagText] = positions[diagText] || {};
+      positions[diagText][type] = positions[diagText][type] || new Set();
+      positions[diagText][type].add(pos);
+      positions[diagText].degree = degree; // сохраняем степень
+    });
+  });
+
+  const parts = [];
+  Object.entries(positions).forEach(([diag, types]) => {
+    Object.entries(types).forEach(([type, posSet]) => {
+      if (type === "degree") return;
+      const sorted = Array.from(posSet).sort((a,b)=>a-b);
+      const countText = sorted.join(",") + "-х";
+      const degree = types.degree;
+      parts.push(`Заключение: признаки ${diag} ${countText} ${jointGroups[type].plural} ${degree}.`);
+    });
+  });
+
+  return parts.length ? parts.join(" ") : "Заключение: конгруэнтность суставных поверхностей не нарушена.";
+};
+
+
+
+
+
+
+
+
 
   if (!isOpen) return null;
 
@@ -228,7 +199,7 @@ export default function FootDiagnosisModal({ isOpen, onClose, textareaRef }) {
                 // если перед вставкой нет переноса — добавить
                 let finalText = insertText;
                 if (textBefore.length > 0 && !textBefore.endsWith("\n")) {
-                  finalText = "\n" + insertText;
+                  finalText = "\n\n" + insertText;
                 }
 
                 textarea.value = textBefore + finalText + textAfter;

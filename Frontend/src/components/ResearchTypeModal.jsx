@@ -39,19 +39,21 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
         textToInsert = `${cleanName} ${projection}\n\n`;
       }
 
-      onInsertText(textToInsert, researchName);
+      onInsertText(textToInsert, selectedResearchName);
       onResearchSelect(selectedResearchName);
       onClose();
       onOpenDescriptionModal();
     } else if (fullResearch) {
+      // ИСПРАВЛЕНИЕ: Правильно обрабатываем клик на основную кнопку
       const cleanName = fullResearch.name.replace(/\s*\(плоскостопие\)/i, "");
-      onInsertText(`${cleanName}\n\n`, cleanName);
+      const textToInsert = `${cleanName}\n\n`;
+      
+      onInsertText(textToInsert, fullResearch.name);
       onResearchSelect(fullResearch.name);
       onClose();
       onOpenDescriptionModal();
     }
   };
-
 
   return (
     <div
@@ -90,10 +92,18 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
 
                 return (
                   <div key={index} className="relative">
-                    {/* Кнопка исследования */}
+                    {/* Кнопка исследования - ИСПРАВЛЕНИЕ: добавляем прямой обработчик клика */}
                     <button
                       className="w-full bg-gray-700 text-yellow-200 py-1 px-2 text-sm rounded flex items-center hover:bg-gray-600 break-words"
-                      onClick={() => toggleItem(item.name)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        // Если есть подпункты, раскрываем список, иначе сразу выбираем исследование
+                        if (item.subItems?.length > 0) {
+                          toggleItem(item.name);
+                        } else {
+                          handleResearchClick(item.name);
+                        }
+                      }}
                     >
                       <span className="flex-1 text-left">{item.name}</span>
                       {item.subItems?.length > 0 && (

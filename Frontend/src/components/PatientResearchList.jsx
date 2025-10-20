@@ -63,10 +63,9 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
     setSelectedResearchId(research.id);
     
     // Проверяем, есть ли описание в данных исследования
-    // Убедитесь, что research.description приходит с бэкенда
-    console.log('Research data:', research); // Добавьте это для отладки
+    const hasDescription = research.description && research.description.trim() !== "";
     
-    if (research.description && research.description.trim() !== "") {
+    if (hasDescription) {
       // Есть описание — открываем модалку просмотра
       setSelectedDescription(research.description);
       setIsViewModalOpen(true);
@@ -76,10 +75,26 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
     }
   };
 
+  // Функция для открытия модалки редактирования описания
+  const handleEditDescription = (research) => {
+    setSelectedResearchId(research.id);
+    
+    // Если есть описание, открываем модалку редактирования с текущим описанием
+    if (research.description && research.description.trim() !== "") {
+      setSelectedResearch(research.research_type || "");
+      setCurrentDescription(research.description);
+      setIsDescriptionModalOpen(true);
+    } else {
+      // Нет описания — открываем модалку выбора типа
+      openTypeModal();
+    }
+  };
+
   return (
     <div className="mt-3 flex flex-row gap-2 overflow-x-auto">
       {researches.map(r => {
         const isIssued = issuedResearchIds.includes(r.id) || r.issued_on_hands;
+        const hasDescription = r.description && r.description.trim() !== "";
 
         return (
           <div
@@ -88,24 +103,29 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
           >
             {/* Блок кнопок сверху */}
             <div className="relative flex gap-1 p-1 bg-gray-800 rounded-t-md">
-              {/* Разорванный бордер снизу */}
               <span className="absolute left-2 right-2 bottom-0 border-b border-yellow-500"></span>
 
+              {/* Изменяем эту кнопку - используем handleDescriptionClick вместо handleEditDescription */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDescriptionClick(r);
+                  handleDescriptionClick(r); // ← меняем на handleDescriptionClick
                 }}
-                className="px-2 py-0.5 rounded border border-yellow-500 text-yellow-400 hover:text-yellow-300 hover:border-yellow-300 text-xs self-start transition-colors"
-                title="Описание исследования"
+                className={`px-2 py-0.5 rounded border text-xs self-start transition-colors ${
+                  hasDescription 
+                    ? "border-green-500 text-green-400 hover:text-green-300 hover:border-green-300" 
+                    : "border-yellow-500 text-yellow-400 hover:text-yellow-300 hover:border-yellow-300"
+                }`}
+                title={hasDescription ? "Просмотреть описание" : "Добавить описание"}
               >
-                Описание
+                {hasDescription ? "Просмотр" : "Описание"} {/* Меняем текст кнопки */}
               </button>
 
+              {/* Остальные кнопки без изменений */}
               <PencilIcon
                 className="h-5 w-5 ml-14 text-yellow-400 cursor-pointer hover:text-yellow-300"
                 onClick={(e) => { e.stopPropagation(); onEdit?.(r); }}
-                title="Редактировать"
+                title="Редактировать исследование"
               />
               <TrashIcon
                 className="h-5 w-5 text-red-500 cursor-pointer hover:text-red-700"
@@ -121,7 +141,7 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
               </button>
             </div>
 
-            {/* Основное содержимое исследования */}
+            {/* Основное содержимое исследования без изменений */}
             <div className="p-2">
               <div><strong>Диагноз:</strong> {r.dsnapr}</div>
               <div><strong>Область:</strong> {r.research_region}</div>
@@ -130,8 +150,13 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
               <div><strong>Исследований:</strong> {r.numb_of_proc}</div>
               <div><strong>Доза:</strong> {r.dose} мЗв</div>
               <div><strong>Направил:</strong> {r.sent}</div>
+              {hasDescription && (
+                <div className="mt-2 text-green-400 text-xs">
+                  <strong>Статус:</strong> Описание добавлено
+                </div>
+              )}
               {isIssued && (
-                <div className="mt-2 text-green-400">
+                <div className="mt-2 text-green-400 text-xs">
                   <strong>Статус:</strong> Снимки выданы на руки
                 </div>
               )}
@@ -140,7 +165,7 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
         );
       })}
 
-      {/* Модальные окна */}
+      {/* Модальные окна без изменений */}
       {isTypeModalOpen && (
         <ResearchTypeModal
           onClose={closeTypeModal}

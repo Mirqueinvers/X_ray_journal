@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { generateDescriptionUniversal } from "../generateDescription/generateDescriptionHandFoot";
 
 export default function HandJointSpaceModal({ isOpen, onClose, textareaRef }) {
   const degrees = ["Не изменены", "Незначительно", "Умеренно", "Выраженно", "Резко"];
@@ -89,158 +90,6 @@ export default function HandJointSpaceModal({ isOpen, onClose, textareaRef }) {
     });
   };
 
-  const generateDescription = () => {
-    const handNamesGenitive = { right: "правого", left: "левого" }; // для ЛЗС
-    const handNames = { right: "правой", left: "левой" }; // для остальных суставов
-
-    // Названия суставов в нужных формах
-    const jointGroups = {
-      Mcp: {
-        plural: "пястно-фаланговых суставах",
-        single: "пястно-фаланговом суставе",
-      },
-      Pip: {
-        plural: "проксимальных межфаланговых суставах",
-        single: "проксимальном межфаланговом суставе",
-      },
-      Dip: {
-        plural: "дистальных межфаланговых суставах",
-        single: "дистальном межфаланговом суставе",
-      },
-      Cmc: {
-        plural: "пястно-запястных суставах",
-        single: "пястно-запястном суставе",
-      },
-      Wrist: {
-        plural: "лучезапястных суставах",
-        single: "лучезапястном суставе",
-      },
-      Ip: {
-        plural: "межфаланговых суставах I пальца",
-        single: "межфаланговом суставе I пальца",
-      },
-    };
-
-    const romanToNum = { I: 1, II: 2, III: 3, IV: 4, V: 5 };
-    const numToRoman = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V" };
-
-    // Сжатие: ["II","III","IV"] → "II–IV"
-    const compressFingers = (labels) => {
-      const nums = labels.map(l => romanToNum[l]).filter(Boolean).sort((a, b) => a - b);
-      if (!nums.length) return "";
-      const ranges = [];
-      let start = nums[0];
-      let end = nums[0];
-      for (let i = 1; i <= nums.length; i++) {
-        if (nums[i] === end + 1) end = nums[i];
-        else {
-          if (start === end) ranges.push(numToRoman[start]);
-          else ranges.push(`${numToRoman[start]}–${numToRoman[end]}`);
-          start = nums[i];
-          end = nums[i];
-        }
-      }
-      return ranges.join(", ");
-    };
-
-    // Группировка: степень → рука → тип сустава
-    const degreeGroups = {};
-
-    ["right", "left"].forEach(hand => {
-      const jointsForHand = jointMap.filter(j => j.key.startsWith(hand));
-
-      jointsForHand.forEach(j => {
-        const joint = selectedOptions[j.key];
-        if (!joint) return;
-
-        const type = Object.keys(jointGroups).find(t => j.key.includes(t));
-        const label = j.label;
-
-        Object.entries(joint).forEach(([degree, checked]) => {
-          if (!checked) return;
-          const deg = degree.toLowerCase();
-
-          degreeGroups[deg] = degreeGroups[deg] || {};
-          degreeGroups[deg][hand] = degreeGroups[deg][hand] || {};
-          degreeGroups[deg][hand][type] = degreeGroups[deg][hand][type] || [];
-          degreeGroups[deg][hand][type].push(label);
-        });
-      });
-    });
-
-    // Проверяем, есть ли лучезапястные суставы отдельно
-    const wristParts = [];
-    const degreeOrder = ["незначительно", "умеренно", "выраженно"];
-    degreeOrder.forEach(deg => {
-      const hands = degreeGroups[deg];
-      if (!hands) return;
-
-      Object.entries(hands).forEach(([hand, types]) => {
-        if (types.Wrist) {
-          wristParts.push(
-            `суставная щель ${handNamesGenitive[hand]} лучезапястного сустава ${deg} сужена`
-          );
-          delete types.Wrist; // чтобы не дублировать в общем блоке
-        }
-      });
-    });
-
-    // Формируем остальное описание
-    const degreeParts = [];
-
-    degreeOrder.forEach(deg => {
-      const hands = degreeGroups[deg];
-      if (!hands) return;
-
-      const handParts = [];
-
-      Object.entries(hands).forEach(([hand, types]) => {
-        const typeParts = [];
-
-        Object.entries(types).forEach(([type, labels]) => {
-          const joint = jointGroups[type];
-          const fingers = compressFingers(labels); // всегда сжимает и один, и несколько пальцев
-
-          if (type === "Ip") {
-            typeParts.push(`${joint.single} ${handNames[hand]} кисти`);
-          } else {
-            typeParts.push(`${fingers} ${labels.length > 1 ? joint.plural : joint.single} ${handNames[hand]} кисти`);
-          }
-        });
-
-        if (typeParts.length) {
-          handParts.push(typeParts.join(", "));
-        }
-      });
-
-      if (handParts.length) {
-        degreeParts.push(`${deg} сужены в ${handParts.join(", ")}`);
-      }
-    });
-
-
-    const parts = [];
-
-    if (wristParts.length) {
-      // Первая буква — с заглавной
-      const wristSentence =
-        wristParts
-          .map((s, i) => (i === 0 ? s[0].toUpperCase() + s.slice(1) : s))
-          .join(", ") + ".";
-      parts.push(wristSentence);
-    }
-
-    if (degreeParts.length) {
-      parts.push("Суставные щели " + degreeParts.join("; ") + ".");
-    }
-
-    if (!parts.length) {
-      return "Суставные щели кистей рук равномерной высоты.";
-    }
-
-    return parts.join(" ");
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -299,35 +148,39 @@ export default function HandJointSpaceModal({ isOpen, onClose, textareaRef }) {
         <div className="absolute bottom-4 left-4">
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
-            onClick={() => {
-              if (textareaRef?.current) {
-                const textarea = textareaRef.current;
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                const textBefore = textarea.value.substring(0, start);
-                const textAfter = textarea.value.substring(end);
+              onClick={() => {
+                if (textareaRef?.current) {
+                  const textarea = textareaRef.current;
+                  const start = textarea.selectionStart;
+                  const end = textarea.selectionEnd;
+                  const textBefore = textarea.value.substring(0, start);
+                  const textAfter = textarea.value.substring(end);
 
-                let insertText = "";
+                  let insertText = "";
 
-                if (activeDegree === "Не изменены") {
-                  insertText = "Суставные щели мелких суставов кистей сохранены, равномерные.";
-                } else {
-                  insertText = generateDescription();
+                  if (activeDegree === "Не изменены") {
+                    insertText = "Суставные щели мелких суставов стоп сохранены, равномерные.";
+                  } else {
+                    insertText = generateDescriptionUniversal({
+                      jointMap,
+                      selectedOptions,
+                      type: "hand" // или "hand" если это руки
+                    });
+                  }
+
+                  if (textBefore.length > 0 && !textBefore.endsWith("\n")) {
+                    insertText = "\n" + insertText;
+                  }
+
+                  textarea.value = textBefore + insertText + textAfter;
+
+                  const cursorPos = start + insertText.length;
+                  textarea.selectionStart = textarea.selectionEnd = cursorPos;
+                  textarea.dispatchEvent(new Event("input", { bubbles: true }));
                 }
+                onClose();
+              }}
 
-                // если перед вставкой нет переноса — добавить
-                if (textBefore.length > 0 && !textBefore.endsWith("\n")) {
-                  insertText = "\n" + insertText;
-                }
-
-                textarea.value = textBefore + insertText + textAfter;
-
-                const cursorPos = start + insertText.length;
-                textarea.selectionStart = textarea.selectionEnd = cursorPos;
-                textarea.dispatchEvent(new Event("input", { bubbles: true }));
-              }
-              onClose();
-            }}
           >
             Добавить
           </button>

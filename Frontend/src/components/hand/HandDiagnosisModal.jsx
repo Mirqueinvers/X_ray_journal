@@ -229,6 +229,27 @@ export default function HandDiagnosisModal({ isOpen, onClose, textareaRef }) {
 
         {/* Плашки выбора диагноза */}
         <div className="absolute left-4 top-20 flex flex-col gap-2 z-20">
+          {/* 🔹 Плашка "Норма" */}
+          <button
+            onClick={() => {
+// Для кнопки "Норма"
+if (textareaRef?.current) {
+  const textarea = textareaRef.current;
+  const text = "Заключение: костной патологии не выявлено.";
+
+  // Делаем двойной отступ от конца текста, если текст уже есть
+  const prefix = textarea.value.length > 0 ? "\n\n" : "";
+  textarea.value = textarea.value + prefix + text;
+
+  textarea.dispatchEvent(new Event("input", { bubbles: true }));
+}
+onClose();
+
+            }}
+            className="px-4 py-2 rounded font-medium text-sm bg-green-500 text-gray-900 hover:bg-green-400"
+          >
+            Норма
+          </button>
           {diagnoses.map(d => (
             <button
               key={d}

@@ -68,70 +68,83 @@ export default function FootOsteophytesModal({ isOpen, onClose, textareaRef }) {
     });
   };
 
-  const generateDescription = () => {
-    const footNames = { right: "правой", left: "левой" };
-    const jointGroups = {
-      Mtp: { plural: "плюснефаланговых суставах", single: "плюснефаланговом суставе" },
-      PIP: { plural: "проксимальных межфаланговых суставах", single: "проксимальном межфаланговом суставе" },
-      DIP: { plural: "дистальных межфаланговых суставах", single: "дистальном межфаланговом суставе" },
-      Tmt: { plural: "предплюсне-плюсневых суставах", single: "предплюсне-плюсневом суставе" },
-      IP: { plural: "межфаланговых суставах I пальца", single: "межфаланговом суставе I пальца" },
-      Ankle: { plural: "голеностопных суставах", single: "голеностопном суставе" },
-    };
+const generateDescription = () => {
+  const footNames = { right: "правой", left: "левой" };
+const jointGroups = {
+  Mtp: { plural: "плюснефаланговых суставов", single: "плюснефалангового сустава" },
+  PIP: { plural: "проксимальных межфаланговых суставов", single: "проксимального межфалангового сустава" },
+  DIP: { plural: "дистальных межфаланговых суставов", single: "дистального межфалангового сустава" },
+  Tmt: { plural: "предплюсне-плюсневых суставов", single: "предплюсне-плюсневого сустава" },
+  IP: { plural: "межфаланговых суставах I пальца", single: "межфалангового сустава I пальца" },
+  Ankle: { plural: "голеностопных суставов", single: "голеностопного сустава" },
+};
 
-    const romanToNum = { I: 1, II: 2, III: 3, IV: 4, V: 5 };
-    const numToRoman = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V" };
 
-    const compressFingers = (labels) => {
-      const nums = labels.map(l => romanToNum[l]).filter(Boolean).sort((a, b) => a - b);
-      if (!nums.length) return "";
-      const ranges = [];
-      let start = nums[0], end = nums[0];
-      for (let i = 1; i <= nums.length; i++) {
-        if (nums[i] === end + 1) end = nums[i];
-        else {
-          ranges.push(start === end ? numToRoman[start] : `${numToRoman[start]}–${numToRoman[end]}`);
-          start = nums[i]; end = nums[i];
-        }
+  const romanToNum = { I: 1, II: 2, III: 3, IV: 4, V: 5 };
+  const numToRoman = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V" };
+
+  const compressFingers = (labels) => {
+    const nums = labels.map(l => romanToNum[l]).filter(Boolean).sort((a, b) => a - b);
+    if (!nums.length) return "";
+    const ranges = [];
+    let start = nums[0], end = nums[0];
+    for (let i = 1; i <= nums.length; i++) {
+      if (nums[i] === end + 1) {
+        end = nums[i];
+      } else {
+        ranges.push(start === end ? numToRoman[start] : `${numToRoman[start]}–${numToRoman[end]}`);
+        start = nums[i]; 
+        end = nums[i];
       }
-      return ranges.join(", ");
-    };
-
-    const footGroups = {};
-    ["right", "left"].forEach(foot => {
-      jointMap.forEach(j => {
-        if (!j.key.startsWith(foot)) return;
-        const joint = selectedOptions[j.key];
-        if (!joint || !joint.остеофиты) return;
-
-        const type = Object.keys(jointGroups).find(t => j.key.includes(t));
-        if (!type) return;
-
-        footGroups[foot] = footGroups[foot] || {};
-        footGroups[foot][type] = footGroups[foot][type] || [];
-        footGroups[foot][type].push(j.label);
-      });
-    });
-
-    const footParts = [];
-    Object.entries(footGroups).forEach(([foot, types]) => {
-      const typeParts = [];
-      Object.entries(types).forEach(([type, labels]) => {
-        const joint = jointGroups[type];
-        const fingers = compressFingers(labels);
-        if (type === "IP" || labels.length === 1) {
-          typeParts.push(`${joint.single} ${footNames[foot]} стопы`);
-        } else {
-          typeParts.push(`${fingers} ${joint.plural} ${footNames[foot]} стопы`);
-        }
-      });
-      if (typeParts.length) footParts.push(typeParts.join(", "));
-    });
-
-    if (!footParts.length) return "Краевые костные разрастания не выявлены.";
-
-    return `Определяются краевые костные разрастания по боковым поверхностям ${footParts.join("; ")}.`;
+    }
+    return ranges.join(", ");
   };
+
+  const footGroups = {};
+
+  ["right", "left"].forEach(foot => {
+    jointMap.forEach(j => {
+      if (!j.key.startsWith(foot)) return;
+
+      const joint = selectedOptions[j.key];
+      if (!joint || !joint.остеофиты) return;
+
+      const type = Object.keys(jointGroups).find(t => j.key.startsWith(`${foot}${t}`));
+      if (!type) return;
+
+      footGroups[foot] = footGroups[foot] || {};
+      footGroups[foot][type] = footGroups[foot][type] || [];
+      footGroups[foot][type].push(j.label); // j.label должен быть "I", "II" и т.д.
+    });
+  });
+
+  const footParts = [];
+
+  Object.entries(footGroups).forEach(([foot, types]) => {
+    const typeParts = [];
+Object.entries(types).forEach(([type, labels]) => {
+  const joint = jointGroups[type];
+  const fingers = compressFingers(labels);
+
+  if (labels.length === 1) {
+    // Один сустав → single
+    typeParts.push(`${fingers} ${joint.single} ${footNames[foot]} стопы`);
+  } else if (labels.length > 1) {
+    // Несколько суставов → plural
+    typeParts.push(`${fingers} ${joint.plural} ${footNames[foot]} стопы`);
+  }
+});
+
+
+
+    if (typeParts.length) footParts.push(typeParts.join(", "));
+  });
+
+  if (!footParts.length) return "Краевые костные разрастания не выявлены.";
+
+  return `Определяются краевые костные разрастания по боковым поверхностям ${footParts.join("; ")}.`;
+};
+
 
   if (!isOpen) return null;
 

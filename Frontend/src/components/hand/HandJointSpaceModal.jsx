@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { generateDescriptionUniversal } from "../generateDescription/generateDescriptionHandFoot";
+import { generateDescriptionUniversalCombined } from "../generateDescription/HandFoot/generateDescriptionUniversalCombined";
 
 export default function HandJointSpaceModal({ isOpen, onClose, textareaRef }) {
   const degrees = ["Не изменены", "Незначительно", "Умеренно", "Выраженно", "Резко"];
@@ -159,12 +159,13 @@ export default function HandJointSpaceModal({ isOpen, onClose, textareaRef }) {
                   let insertText = "";
 
                   if (activeDegree === "Не изменены") {
-                    insertText = "Суставные щели мелких суставов стоп сохранены, равномерные.";
+                    insertText = "Суставные щели мелких суставов кистей сохранены, равномерные.";
                   } else {
-                    insertText = generateDescriptionUniversal({
+                    insertText = generateDescriptionUniversalCombined({
                       jointMap,
                       selectedOptions,
-                      type: "hand" // или "hand" если это руки
+                      type: "hand",
+                      mode: "gaps",
                     });
                   }
 

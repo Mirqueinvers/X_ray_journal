@@ -1,5 +1,6 @@
 // Frontend/src/components/hand/HandCongruencyModal.jsx
 import React, { useState } from "react";
+import { generateDescriptionUniversalCongruence } from "../generateDescription/HandFoot/generateDescriptionCongruence";
 
 export default function HandCongruencyModal({ isOpen, onClose, textareaRef }) {
   const [mode, setMode] = useState("Не нарушена"); // новая плашка активна по дефолту
@@ -245,11 +246,11 @@ export default function HandCongruencyModal({ isOpen, onClose, textareaRef }) {
                 const end = textarea.selectionEnd;
                 const textBefore = textarea.value.substring(0, start);
                 const textAfter = textarea.value.substring(end);
-                const insertText =
-                  "\n" +
-                  (mode === "Не нарушена"
-                    ? "Конгруэнтность суставных поверхностей не нарушена."
-                    : generateDescription(selectedOptions, jointMap));
+                const insertText = generateDescriptionUniversalCongruence({
+                  jointMap,
+                  selectedOptions,
+                  type: "hand", // или "foot"
+                });
                 textarea.value = textBefore + insertText + textAfter;
                 const cursorPos = start + insertText.length;
                 textarea.selectionStart = textarea.selectionEnd = cursorPos;

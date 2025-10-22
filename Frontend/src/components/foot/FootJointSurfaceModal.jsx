@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { generateDescriptionUniversalCombined } from "../generateDescription/HandFoot/generateDescriptionUniversalCombined";
 
 export default function FootJointSurfaceModal({ isOpen, onClose, textareaRef }) {
   const degrees = ["Не изменены", "Незначительно", "Умеренно", "Выраженно", "Резко"];
@@ -78,132 +79,6 @@ export default function FootJointSurfaceModal({ isOpen, onClose, textareaRef }) 
     });
   };
 
-const generateFootDescription = () => {
-  const footNamesGenitive = { right: "правой", left: "левой" }; // для голеностопа
-  const footNames = { right: "правой", left: "левой" }; // для остальных суставов
-
-  const jointGroups = {
-    Mtp: { plural: "плюснефаланговых суставах", single: "плюснефаланговом суставе" },
-    PIP: { plural: "проксимальных межфаланговых суставах", single: "проксимальном межфаланговом суставе" },
-    DIP: { plural: "дистальных межфаланговых суставах", single: "дистальном межфаланговом суставе" },
-    Tmt: { plural: "предплюсне-плюсневых суставах", single: "предплюсне-плюсневом суставе" },
-    IP: { plural: "межфаланговых суставах I пальца", single: "межфаланговом суставе I пальца" },
-    Ankle: { plural: "голеностопных суставах", single: "голеностопном суставе" },
-  };
-
-  const jointGroupsBothFeet = {
-    Mtp: "плюснефаланговых суставов",
-    PIP: "проксимальных межфаланговых суставов",
-    DIP: "дистальных межфаланговых суставов",
-    Tmt: "предплюсне-плюсневых суставов",
-    IP: "межфаланговых суставов I пальца",
-    Ankle: "голеностопных суставов",
-  };
-
-  const romanToNum = { I: 1, II: 2, III: 3, IV: 4, V: 5 };
-  const numToRoman = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V" };
-
-  const compressFingers = (labels) => {
-    const nums = labels.map(l => romanToNum[l]).filter(Boolean).sort((a, b) => a - b);
-    if (!nums.length) return "";
-    const ranges = [];
-    let start = nums[0];
-    let end = nums[0];
-    for (let i = 1; i <= nums.length; i++) {
-      if (nums[i] === end + 1) end = nums[i];
-      else {
-        ranges.push(start === end ? numToRoman[start] : `${numToRoman[start]}–${numToRoman[end]}`);
-        start = nums[i];
-        end = nums[i];
-      }
-    }
-    return ranges.join(", ");
-  };
-
-  // Группировка: степень → стопа → тип сустава
-  const degreeGroups = {};
-  ["right", "left"].forEach(foot => {
-    jointMap.filter(j => j.key.startsWith(foot)).forEach(j => {
-      const joint = selectedOptions[j.key];
-      if (!joint) return;
-
-      const type = Object.keys(jointGroups).find(t => j.key.includes(t));
-      const label = j.label;
-
-      Object.entries(joint).forEach(([degree, checked]) => {
-        if (!checked) return;
-        const deg = degree.toLowerCase();
-
-        degreeGroups[deg] = degreeGroups[deg] || {};
-        degreeGroups[deg][foot] = degreeGroups[deg][foot] || {};
-        degreeGroups[deg][foot][type] = degreeGroups[deg][foot][type] || [];
-        degreeGroups[deg][foot][type].push(label);
-      });
-    });
-  });
-
-  // Голеностоп обрабатываем отдельно
-  const ankleParts = [];
-  const degreeOrder = ["незначительно", "умеренно", "выраженно"];
-  degreeOrder.forEach(deg => {
-    const feet = degreeGroups[deg];
-    if (!feet) return;
-
-    Object.entries(feet).forEach(([foot, types]) => {
-      if (types.Ankle) {
-        ankleParts.push(
-          `суставная щель ${footNamesGenitive[foot]} голеностопного сустава ${deg} сужена`
-        );
-        delete types.Ankle; // чтобы не дублировать в общем блоке
-      }
-    });
-  });
-
-  const degreeParts = [];
-  degreeOrder.forEach(deg => {
-    const feet = degreeGroups[deg];
-    if (!feet) return;
-
-    // --- Сценарий 1: одинаковые суставы на обеих стопах ---
-    Object.keys(jointGroups).forEach(type => {
-      if (!feet.right?.[type] || !feet.left?.[type]) return;
-      const rightLabels = feet.right[type].sort();
-      const leftLabels = feet.left[type].sort();
-
-      if (JSON.stringify(rightLabels) === JSON.stringify(leftLabels)) {
-        const fingers = compressFingers(rightLabels);
-        const jointName = jointGroupsBothFeet[type]; // <- множественная форма для обеих стоп
-        degreeParts.push(`${fingers} ${jointName} ${deg} сужены`);
-        delete feet.right[type];
-        delete feet.left[type];
-      }
-    });
-
-    // --- Сценарий 2: разные суставы / степени ---
-    Object.entries(feet).forEach(([foot, types]) => {
-      Object.entries(types).forEach(([type, labels]) => {
-        if (!labels || !labels.length) return;
-        const joint = jointGroups[type];
-        const fingers = compressFingers(labels);
-        const jointName = type === "IP" ? joint.single : joint.single;
-        degreeParts.push(`${deg} сужены в ${fingers} ${jointName} ${footNames[foot]} стопы`);
-      });
-    });
-  });
-
-  const parts = [];
-  if (ankleParts.length) {
-    const ankleSentence = ankleParts.map((s, i) => (i === 0 ? s[0].toUpperCase() + s.slice(1) : s)).join(", ") + ".";
-    parts.push(ankleSentence);
-  }
-  if (degreeParts.length) parts.push("Суставные щели " + degreeParts.join("; ") + ".");
-  if (!parts.length) return "Суставные щели стоп равномерной высоты.";
-
-  return parts.join(" ");
-};
-
-
-
   if (!isOpen) return null;
 
   return (
@@ -262,39 +137,42 @@ const generateFootDescription = () => {
         {/* Кнопка добавить */}
         <div className="absolute bottom-4 left-4">
           <button
-            className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
-            onClick={() => {
-              if (textareaRef?.current) {
-                const textarea = textareaRef.current;
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                const textBefore = textarea.value.substring(0, start);
-                const textAfter = textarea.value.substring(end);
+              className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
+              onClick={() => {
+                if (textareaRef?.current) {
+                  const textarea = textareaRef.current;
+                  const start = textarea.selectionStart;
+                  const end = textarea.selectionEnd;
+                  const textBefore = textarea.value.substring(0, start);
+                  const textAfter = textarea.value.substring(end);
 
-                let insertText = "";
+                  let insertText = "";
 
-                if (activeDegree === "Не изменены") {
-                  insertText = "Суставные поверхности мелких суставов стоп без патологических изменений.";
-                } else {
-                  insertText = generateFootDescription();
+                  if (activeDegree === "Не изменены") {
+                    insertText = "Суставные поверхности мелких суставов стоп без патологических изменений.";
+                  } else {
+                    insertText = generateDescriptionUniversalCombined({
+                      jointMap,
+                      selectedOptions,
+                      type: "foot",
+                      mode: "surfaces",
+                    });
+                  }
+
+                  if (textBefore.length > 0 && !textBefore.endsWith("\n")) {
+                    insertText = "\n" + insertText;
+                  }
+
+                  textarea.value = textBefore + insertText + textAfter;
+                  const cursorPos = start + insertText.length;
+                  textarea.selectionStart = textarea.selectionEnd = cursorPos;
+                  textarea.dispatchEvent(new Event("input", { bubbles: true }));
                 }
-
-                // если перед вставкой нет переноса — добавить
-                if (textBefore.length > 0 && !textBefore.endsWith("\n")) {
-                  insertText = "\n" + insertText;
-                }
-
-                textarea.value = textBefore + insertText + textAfter;
-
-                const cursorPos = start + insertText.length;
-                textarea.selectionStart = textarea.selectionEnd = cursorPos;
-                textarea.dispatchEvent(new Event("input", { bubbles: true }));
-              }
-              onClose();
-            }}
-          >
-            Добавить
-          </button>
+                onClose();
+              }}
+            >
+              Добавить
+            </button>
         </div>
 
       </div>

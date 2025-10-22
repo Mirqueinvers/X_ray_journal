@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { generateDescriptionUniversalCongruence } from "../generateDescription/HandFoot/generateDescriptionCongruence";
+
 
 export default function FootCongruencyModal({ isOpen, onClose, textareaRef }) {
   const [selectedOptions, setSelectedOptions] = useState({
@@ -167,13 +169,23 @@ export default function FootCongruencyModal({ isOpen, onClose, textareaRef }) {
         {/* Кнопка Добавить */}
         <div className="absolute bottom-4 left-4">
           <button
-            className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
-            onClick={()=>{
-              if(textareaRef?.current){
-                const textarea=textareaRef.current;
-                const prefix = textarea.value.length>0 ? "\n" : "";
-                textarea.value = textarea.value + prefix + generateDescription();
-                textarea.dispatchEvent(new Event("input",{bubbles:true}));
+            className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
+            onClick={() => {
+              if (textareaRef?.current) {
+                const textarea = textareaRef.current;
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const textBefore = textarea.value.substring(0, start);
+                const textAfter = textarea.value.substring(end);
+                const insertText = generateDescriptionUniversalCongruence({
+                  jointMap,
+                  selectedOptions,
+                  type: "foot", // или "foot"
+                });
+                textarea.value = textBefore + insertText + textAfter;
+                const cursorPos = start + insertText.length;
+                textarea.selectionStart = textarea.selectionEnd = cursorPos;
+                textarea.dispatchEvent(new Event("input", { bubbles: true }));
               }
               onClose();
             }}

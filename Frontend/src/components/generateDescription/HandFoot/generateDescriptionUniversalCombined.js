@@ -1,5 +1,3 @@
-// src/components/generateDescription/generateDescriptionUniversalCombined.js
-
 export const generateDescriptionUniversalCombined = ({
   jointMap,
   selectedOptions,
@@ -91,12 +89,51 @@ export const generateDescriptionUniversalCombined = ({
   });
 
   const degreeParts = [];
+
+  // ✅ Новый блок — проверка симметрии (всегда во множественном числе)
+  degreeOrder.forEach((deg) => {
+    const sides = degreeGroups[deg];
+    if (!sides || !sides.right || !sides.left) return;
+
+    const rightTypes = sides.right;
+    const leftTypes = sides.left;
+
+    Object.keys(rightTypes).forEach((typeKey) => {
+      const rightLabels = (rightTypes[typeKey] || []).sort();
+      const leftLabels = (leftTypes[typeKey] || []).sort();
+
+      if (JSON.stringify(rightLabels) === JSON.stringify(leftLabels) && rightLabels.length) {
+        // ✅ Симметричные суставы
+        const jointName = jointGroups[typeKey].plural; // всегда множественное
+        const limbSuffix = type === "hand" ? "кистей" : "стоп";
+
+        const fingers = compressFingers(rightLabels);
+        const fingerText =
+          rightLabels.length === 1
+            ? `${rightLabels[0]} пальцев `
+            : `${fingers} пальцев `;
+
+        const actionText =
+          mode === "gaps"
+            ? `${deg} сужены в`
+            : `${deg} склерозированы в`;
+
+        degreeParts.push(`${actionText} ${jointName} ${fingerText}${limbSuffix}`.trim());
+
+        // удаляем, чтобы не дублировалось в обычной логике
+        delete sides.right[typeKey];
+        delete sides.left[typeKey];
+      }
+    });
+  });
+
+  // ⚙️ Прежняя логика (без изменений)
   degreeOrder.forEach((deg) => {
     const sides = degreeGroups[deg];
     if (!sides) return;
 
     Object.entries(sides).forEach(([side, types]) => {
-        Object.entries(types).forEach(([typeKey, labels]) => {
+      Object.entries(types).forEach(([typeKey, labels]) => {
         if (!labels.length) return;
 
         const jointName = labels.length > 1 ? jointGroups[typeKey].plural : jointGroups[typeKey].single;
@@ -104,24 +141,24 @@ export const generateDescriptionUniversalCombined = ({
         const limbSuffix = type === "hand" ? "кисти" : "стопы";
 
         let fingerText = "";
-
         if (labels.length === 1) {
-            // один сустав
-            if (typeKey === "Ip" || typeKey === "IP" || typeKey === specialJoint) {
-            fingerText = ""; // для Ip/IP и специальных суставов номер не добавляем
-            } else {
+          if (typeKey === "Ip" || typeKey === "IP" || typeKey === specialJoint) {
+            fingerText = "";
+          } else {
             fingerText = `${labels[0]} пальца `;
-            }
+          }
         } else {
-            // несколько суставов
-            const fingers = compressFingers(labels);
-            fingerText = `${fingers} пальцев `;
+          const fingers = compressFingers(labels);
+          fingerText = `${fingers} пальцев `;
         }
 
-        const actionText = mode === "gaps" ? `${deg} сужены в` : `${deg} склерозированы в`;
-        degreeParts.push(`${actionText} ${jointName} ${fingerText}${sideName} ${limbSuffix}`.trim());
-        });
+        const actionText =
+          mode === "gaps"
+            ? `${deg} сужены в`
+            : `${deg} склерозированы в`;
 
+        degreeParts.push(`${actionText} ${jointName} ${fingerText}${sideName} ${limbSuffix}`.trim());
+      });
     });
   });
 

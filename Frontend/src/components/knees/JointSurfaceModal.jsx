@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { generateDescriptionKneeGapSurface } from "../generateDescription/Knees/generateDescriptionKneeGapSurface";
 
 // Словарь степеней склерозирования
 const surfaceMap = {
@@ -59,55 +60,6 @@ const toggleZoneOption = (zoneKey, option) => {
     }
   };
 
-const generateDescription = () => {
-  const perKnee = { left: {}, right: {} };
-  zones.forEach(({ key }) => {
-    const condition = selectedOptions[key]?.[0];
-    if (!condition) return;
-    const knee = key.startsWith("left") ? "left" : "right";
-    const part = key.endsWith("Medial") ? "медиальном" : "латеральном";
-    perKnee[knee][part] = condition;
-  });
-
-  const descriptions = [];
-
-  // 1. Объединяем одинаковые состояния на обоих коленях по отделам
-  ["медиальном", "латеральном"].forEach((part) => {
-    const leftCondition = perKnee.left[part];
-    const rightCondition = perKnee.right[part];
-    if (leftCondition && rightCondition && leftCondition === rightCondition) {
-      const partText = part === "медиальном" ? "медиальных" : "латеральных";
-      descriptions.push(`Суставные поверхности коленных суставов ${surfaceMap[leftCondition]} в ${partText} отделах`);
-      delete perKnee.left[part];
-      delete perKnee.right[part];
-    }
-  });
-
-  // 2. Добавляем индивидуальные описания для колен, где состояния разные
-  const individualDesc = [];
-
-  ["left", "right"].forEach((knee) => {
-    const kneeParts = perKnee[knee];
-    const sideName = knee === "left" ? "левого" : "правого";
-    const partsDesc = [];
-
-    if (kneeParts["медиальном"]) partsDesc.push(`${surfaceMap[kneeParts["медиальном"]]} в медиальном отделе`);
-    if (kneeParts["латеральном"]) partsDesc.push(`${surfaceMap[kneeParts["латеральном"]]} в латеральном отделе`);
-
-    if (partsDesc.length > 0) {
-      individualDesc.push(`${sideName} коленного сустава ${partsDesc.join(", ")}`);
-    }
-  });
-
-  if (individualDesc.length > 0) {
-    descriptions.push(`Суставные поверхности ${individualDesc.join(", ")}`);
-  }
-
-  return descriptions.length ? descriptions.join(", ") + "." : "Суставные поверхности склерозированы без изменений.";
-};
-
-
-
   if (!isOpen) return null;
 
   const isOptionSelected = (zoneKey, option) => {
@@ -166,12 +118,21 @@ const generateDescription = () => {
         </div>
 
         <div className="absolute bottom-4 left-4">
-          <button className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50" onClick={() => {
-            insertTextToTextarea(generateDescription());
-            onClose();
-          }}>
+          <button
+            className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
+            onClick={() => {
+              insertTextToTextarea(
+                generateDescriptionKneeGapSurface({
+                  mode: "surfaces",
+                  selectedOptions, // передаем только выбранные варианты
+                })
+              );
+              onClose();
+            }}
+          >
             Добавить
           </button>
+
         </div>
       </div>
     </div>

@@ -1,28 +1,7 @@
+// JointSpaceModal.jsx
 // Суставные щели
 import React, { useState } from "react";
-
-// Словарь правильных форм
-const narrowingMap = {
-  "незначительно сужены": "незначительно сужены",
-  "умеренно сужены": "умеренно сужены",
-  "выраженно сужены": "выраженно сужены",
-  "резко сужены": "резко сужены",
-};
-
-const narrowingMapSingle = {
-  "незначительно сужены": "незначительно сужена",
-  "умеренно сужены": "умеренно сужена",
-  "выраженно сужены": "выраженно сужена",
-  "резко сужены": "резко сужена",
-};
-
-const narrowingMapPlural = {
-  "незначительно сужена": "незначительно сужены",
-  "умеренно сужена": "умеренно сужены",
-  "выраженно сужена": "выраженно сужены",
-  "резко сужена": "резко сужены",
-};
-
+import { generateDescriptionKneeGapSurface } from "../generateDescription/Knees/generateDescriptionKneeGapSurface";
 
 export default function JointSpaceSection({ isOpen, onClose, textareaRef }) {
   const [selectedOptions, setSelectedOptions] = useState({
@@ -32,7 +11,12 @@ export default function JointSpaceSection({ isOpen, onClose, textareaRef }) {
     rightLateral: [],
   });
 
-  const [expandedZone, setExpandedZone] = useState(null); // Новое состояние для отслеживания открытой зоны
+  const [selectedPositions, setSelectedPositions] = useState({
+    left: "",
+    right: ""
+  });
+
+  const [expandedZone, setExpandedZone] = useState(null);
 
   const degreeOptions = [
     "равномерной высоты",
@@ -43,15 +27,12 @@ export default function JointSpaceSection({ isOpen, onClose, textareaRef }) {
   ];
 
   // Зоны
-    const zones = [
-      { key: "rightLateral", name: "Правый латеральный", position: { top: "28%", left: "22%" } },
-      { key: "rightMedial", name: "Правый медиальный", position: { top: "28%", left: "36%" } },
-      
-      { key: "leftMedial", name: "Левый медиальный", position: { top: "28%", left: "56.5%" } },
-      { key: "leftLateral", name: "Левый латеральный", position: { top: "28%", left: "70.5%" } },
-    ];
-
-
+  const zones = [
+    { key: "rightLateral", name: "Правый латеральный", position: { top: "28%", left: "22%" } },
+    { key: "rightMedial", name: "Правый медиальный", position: { top: "28%", left: "36%" } },
+    { key: "leftMedial", name: "Левый медиальный", position: { top: "28%", left: "56.5%" } },
+    { key: "leftLateral", name: "Левый латеральный", position: { top: "28%", left: "70.5%" } },
+  ];
 
   // Логика выбора
   const toggleZoneOption = (zoneKey, option) => {
@@ -74,7 +55,7 @@ export default function JointSpaceSection({ isOpen, onClose, textareaRef }) {
         };
       }
     });
-    setExpandedZone(null); // Закрываем меню после выбора
+    setExpandedZone(null);
   };
 
   // Вставка в textarea
@@ -85,94 +66,6 @@ export default function JointSpaceSection({ isOpen, onClose, textareaRef }) {
       textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
     }
   };
-
-  // Генерация описания
-const generateDescription = () => {
-  const zones = [
-    { key: "leftMedial", side: "левого", part: "медиальном" },
-    { key: "leftLateral", side: "левого", part: "латеральном" },
-    { key: "rightMedial", side: "правого", part: "медиальном" },
-    { key: "rightLateral", side: "правого", part: "латеральном" },
-  ];
-
-  const perKnee = { left: {}, right: {} };
-
-  zones.forEach(({ key, side, part }) => {
-    const degree = selectedOptions[key]?.[0];
-    if (!degree) return;
-    const kneeKey = side === "левого" ? "left" : "right";
-    perKnee[kneeKey][part] = degree;
-  });
-
-  const descriptions = [];
-  const usedParts = new Set();
-
-// 1. Проверяем одинаковые степени на обоих коленях по отделам
-["медиальном", "латеральном"].forEach((part) => {
-  const leftDegree = perKnee.left[part];
-  const rightDegree = perKnee.right[part];
-
-  if (leftDegree && rightDegree && leftDegree === rightDegree) {
-    const partText = part === "медиальном" ? "медиальных" : "латеральных";
-descriptions.push(
-  `Суставные щели коленных суставов ${narrowingMapPlural[narrowingMapSingle[leftDegree]]} в ${partText} отделах`
-);
-    usedParts.add(part); // отмечаем, что отдел уже обработан
-  }
-});
-
-
-  // 2. Обработка разных степеней на одном отделе (правое и левое)
-  ["медиальном", "латеральном"].forEach((part) => {
-    if (usedParts.has(part)) return; // уже обработано
-    const leftDegree = perKnee.left[part];
-    const rightDegree = perKnee.right[part];
-    if (leftDegree && rightDegree && leftDegree !== rightDegree) {
-      descriptions.push(
-        `Суставная щель правого коленного сустава ${narrowingMapSingle[rightDegree]} в ${part} отделе, левого коленного сустава ${narrowingMapSingle[leftDegree]} в ${part} отделе`
-      );
-      usedParts.add(part);
-    }
-  });
-
-// 3. Добавляем индивидуальные описания для колен
-["left", "right"].forEach((knee) => {
-  const kneeParts = perKnee[knee];
-  const sideName = knee === "left" ? "левого" : "правого";
-
-  // Проверяем, остались ли неиспользованные отделы
-  const remainingParts = Object.keys(kneeParts).filter(part => !usedParts.has(part));
-  if (remainingParts.length === 0) return; // всё уже учтено
-
-  const partsDesc = remainingParts.map(part => {
-    return `${narrowingMapSingle[kneeParts[part]]} в ${part === "медиальном" ? "медиальном" : "латеральном"} отделе`;
-  });
-
-  if (partsDesc.length > 0) {
-    descriptions.push(`Суставная щель ${sideName} коленного сустава ${partsDesc.join(", ")}`);
-  }
-});
-
-
-
-
-
-
-  if (descriptions.length === 0) return "Суставные щели равномерной высоты";
-
-  return descriptions.join(", ") + ".";
-};
-
-
-
-
-
-
-
-
-
-
-
 
   if (!isOpen) return null;
 
@@ -187,9 +80,9 @@ descriptions.push(
   // Обработчик клика на зону
   const handleZoneClick = (zoneKey) => {
     if (expandedZone === zoneKey) {
-      setExpandedZone(null); // Закрываем, если кликнули на уже открытую зону
+      setExpandedZone(null);
     } else {
-      setExpandedZone(zoneKey); // Открываем зону
+      setExpandedZone(zoneKey);
     }
   }
 
@@ -266,7 +159,13 @@ descriptions.push(
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
-              insertTextToTextarea(generateDescription());
+              insertTextToTextarea(
+                generateDescriptionKneeGapSurface({
+                  mode: "gaps",
+                  selectedOptions,
+                  selectedPositions
+                })
+              );
               onClose();
             }}
           >

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { generateDescriptionOsteophytes } from "../generateDescription/AnkleWristElbow/generateDescriptionOsteophytes.js";
 
 export default function AnkleOsteophytesModal({ isOpen, onClose, textareaRef }) {
   if (!isOpen) return null;
@@ -26,84 +27,6 @@ export default function AnkleOsteophytesModal({ isOpen, onClose, textareaRef }) 
     }));
     setIsNormal(false);
   };
-
-  const generateDescription = () => {
-  const {
-    rightLateral,
-    rightMedial,
-    leftLateral,
-    leftMedial,
-  } = selectedAreas;
-
-  // 1️⃣ Если ничего не выбрано
-  if (!rightLateral && !rightMedial && !leftLateral && !leftMedial) {
-    return "Краевые костные разрастания не выявлены.";
-  }
-
-  // 2️⃣ Если выбраны все
-  if (rightLateral && rightMedial && leftLateral && leftMedial) {
-    return "Определяются краевые костные разрастания на боковых поверхностях голеностопных суставов.";
-  }
-
-  // 3️⃣ Если обе стороны только у правого
-  if (rightLateral && rightMedial && !leftLateral && !leftMedial) {
-    return "Определяются краевые костные разрастания на боковых поверхностях правого голеностопного сустава.";
-  }
-
-  // 4️⃣ Если обе стороны только у левого
-  if (!rightLateral && !rightMedial && leftLateral && leftMedial) {
-    return "Определяются краевые костные разрастания на боковых поверхностях левого голеностопного сустава.";
-  }
-
-  // 🆕 4.1 Если одинаковые стороны на обоих суставах
-  if (rightLateral && leftLateral && !rightMedial && !leftMedial) {
-    return "Определяются краевые костные разрастания на латеральных поверхностях голеностопных суставов.";
-  }
-  if (rightMedial && leftMedial && !rightLateral && !leftLateral) {
-    return "Определяются краевые костные разрастания на медиальных поверхностях голеностопных суставов.";
-  }
-
-  // 5️⃣ Если обе стороны у правого и хотя бы одна у левого
-  if (rightLateral && rightMedial && (leftLateral || leftMedial)) {
-    const leftSide =
-      leftLateral && leftMedial
-        ? "на боковых поверхностях левого голеностопного сустава"
-        : leftLateral
-        ? "на латеральной поверхности левого голеностопного сустава"
-        : "на медиальной поверхности левого голеностопного сустава";
-    return `Определяются краевые костные разрастания на боковых поверхностях правого голеностопного сустава и ${leftSide}.`;
-  }
-
-  // 6️⃣ Если обе стороны у левого и хотя бы одна у правого
-  if (leftLateral && leftMedial && (rightLateral || rightMedial)) {
-    const rightSide =
-      rightLateral && rightMedial
-        ? "на боковых поверхностях правого голеностопного сустава"
-        : rightLateral
-        ? "на латеральной поверхности правого голеностопного сустава"
-        : "на медиальной поверхности правого голеностопного сустава";
-    return `Определяются краевые костные разрастания ${rightSide} и на боковых поверхностях левого голеностопного сустава.`;
-  }
-
-  // 7️⃣ Если по одной стороне на каждом суставе (разные комбинации)
-  const parts = [];
-  if (rightLateral)
-    parts.push("на латеральной поверхности правого голеностопного сустава");
-  if (rightMedial)
-    parts.push("на медиальной поверхности правого голеностопного сустава");
-  if (leftLateral)
-    parts.push("на латеральной поверхности левого голеностопного сустава");
-  if (leftMedial)
-    parts.push("на медиальной поверхности левого голеностопного сустава");
-
-  if (parts.length === 1) {
-    return `Определяются краевые костные разрастания ${parts[0]}.`;
-  }
-
-  const last = parts.pop();
-  return `Определяются краевые костные разрастания ${parts.join(" и ")} и ${last}.`;
-};
-
 
   return (
     <div
@@ -219,15 +142,20 @@ export default function AnkleOsteophytesModal({ isOpen, onClose, textareaRef }) 
 
         {/* Добавить */}
         <div className="absolute bottom-4 left-4">
-          <button
-            className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
-            onClick={() => {
-              insertTextToTextarea(generateDescription());
-              onClose();
-            }}
-          >
-            Добавить
-          </button>
+  <button
+    className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
+    onClick={() => {
+      // Генерация описания именно для голеностопного сустава
+      const description = generateDescriptionOsteophytes({
+        type: "ankle",
+        selectedAreas, // объект с { rightLateral, rightMedial, leftLateral, leftMedial }
+      });
+      insertTextToTextarea(description);
+      onClose();
+    }}
+  >
+    Добавить
+  </button>
         </div>
       </div>
     </div>

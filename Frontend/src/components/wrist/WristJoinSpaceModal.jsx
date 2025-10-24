@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { generateDescriptionGapSurface } from "../generateDescription/AnkleWristElbow/generateDescriptionGapSurface.js";
 
 export default function AnkleJoinSpaceModal({ onClose, textareaRef }) {
   const [selectedSides, setSelectedSides] = useState([]);
@@ -54,65 +55,6 @@ export default function AnkleJoinSpaceModal({ onClose, textareaRef }) {
     }));
     setIsNormal(false);
   };
-
-const generateDescriptionCompact = () => {
-  const leftOpts = selectedOptions.left;
-  const rightOpts = selectedOptions.right;
-  const leftPos = selectedPositions.left;
-  const rightPos = selectedPositions.right;
-
-  const positionPhrase = (pos, plural = false) => {
-    switch (pos) {
-      case "медиально": return plural ? "медиальных" : "медиальном";
-      case "латерально": return plural ? "латеральных" : "латеральном";
-      case "равномерно": return "равномерно";
-      default: return "";
-    }
-  };
-
-  const addPosition = (pos, plural = false) => {
-    if (!pos || pos === "равномерно") return "";
-    return `, преимущественно в ${positionPhrase(pos, plural)} отдел${plural ? "ах" : "е"}`;
-  };
-
-  // Норма
-  if (!leftOpts.length && !rightOpts.length) {
-    return "Суставные щели луче-запястных суставов сохранены, равномерные.";
-  }
-
-  // Оба сустава выбраны
-  if (leftOpts.length && rightOpts.length) {
-    const sameDegree = leftOpts[0] === rightOpts[0];
-    const samePos = leftPos === rightPos;
-
-    if (sameDegree && samePos) {
-      // одинаковая степень и позиция
-      if (!leftPos || leftPos === "равномерно") {
-        return `Суставные щели луче-запястных суставов ${leftOpts[0]} сужены.`;
-      }
-      return `Суставные щели луче-запястных суставов ${leftOpts[0]} сужены${addPosition(leftPos, true)}.`;
-    } else {
-      return `Суставная щель правого луче-запястного сустава ${rightOpts[0]} сужена${addPosition(rightPos)}; левого ${leftOpts[0]} сужена${addPosition(leftPos)}.`;
-    }
-  }
-
-  // Только левый
-  if (leftOpts.length) {
-    return `Суставная щель левого луче-запястного сустава ${leftOpts[0]} сужена${addPosition(leftPos)}, правого не изменена.`;
-  }
-
-  // Только правый
-  if (rightOpts.length) {
-    return `Суставная щель правого луче-запястного сустава ${rightOpts[0]} сужена${addPosition(rightPos)}, левого не изменена.`;
-  }
-
-  return "Изменений не выявлено.";
-};
-
-
-
-
-
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 cursor-pointer">
@@ -273,15 +215,22 @@ const generateDescriptionCompact = () => {
 
         {/* Добавить */}
         <div className="absolute bottom-4 left-4">
-          <button
-            className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
-            onClick={() => {
-              insertTextToTextarea(generateDescriptionCompact()); // ← используем новую функцию
-              onClose();
-            }}
-          >
-            Добавить
-          </button>
+<button
+  className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
+  onClick={() => {
+    const text = generateDescriptionGapSurface({
+      type: "wrist", // 🔹 тип сустава — голеностопный
+      selectedOptions,
+      selectedPositions,
+      mode: "gaps", // или "surfaces", если нужно описывать суставные поверхности
+    });
+
+    insertTextToTextarea(text);
+    onClose();
+  }}
+>
+  Добавить
+</button>
         </div>
       </div>
     </div>

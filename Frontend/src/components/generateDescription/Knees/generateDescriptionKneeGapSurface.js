@@ -49,10 +49,7 @@ const modeMaps = {
   },
 };
 
-export const generateDescriptionKneeGapSurface = ({
-  selectedOptions,
-  mode = "gaps",
-}) => {
+export const generateDescriptionKneeGapSurface = ({ selectedOptions, mode = "gaps" }) => {
   const perKnee = { left: {}, right: {} };
   let totalSelected = 0;
 
@@ -64,69 +61,104 @@ export const generateDescriptionKneeGapSurface = ({
     totalSelected++;
   });
 
-  const map = modeMaps[mode];
-  const singleMap = map.single;
-  const pluralMap = map.plural;
-
   // Если ничего не выбрано
-  if (totalSelected === 0) return map.uniformText + ".";
+  if (totalSelected === 0) return modeMaps[mode].uniformText + ".";
 
-  // Если выбраны только "равномерной высоты" или "поверхность гладкая"
+  // Проверка "равномерной высоты" или "поверхность гладкая"
   const allUniform = Object.values(selectedOptions).every(
     (options) =>
       options.length === 1 &&
       (options[0] === "равномерной высоты" || options[0] === "поверхность гладкая")
   );
-  if (allUniform) return map.uniformText + ".";
+  if (allUniform) return modeMaps[mode].uniformText + ".";
 
   const descriptions = [];
   const usedParts = new Set();
-  let usePlural = false;
 
-  // 1. Объединяем одинаковые состояния на обоих коленях по отделам
-  ["медиальном", "латеральном"].forEach((part) => {
-    const leftDegree = perKnee.left[part];
-    const rightDegree = perKnee.right[part];
-    if (leftDegree && rightDegree && leftDegree === rightDegree) {
-      const partText = part === "медиальном" ? "медиальных" : "латеральных";
-      descriptions.push(
-        `коленных суставов ${pluralMap[singleMap[leftDegree]]} в ${partText} отделах`
-      );
-      usedParts.add(part);
-      usePlural = true;
-    }
-  });
+  if (mode === "gaps") {
+    // ===============================
+    // Суставные щели — старая логика
+    // ===============================
+    const singleMap = modeMaps.gaps.single;
+    const pluralMap = modeMaps.gaps.plural;
+    let usePlural = false;
 
-  // 2. Асимметричные изменения
-  ["медиальном", "латеральном"].forEach((part) => {
-    if (usedParts.has(part)) return;
-    const leftDegree = perKnee.left[part];
-    const rightDegree = perKnee.right[part];
-    if (leftDegree && rightDegree && leftDegree !== rightDegree) {
-      descriptions.push(
-        `правого коленного сустава ${singleMap[rightDegree]} в ${part} отделе, левого коленного сустава ${singleMap[leftDegree]} в ${part} отделе`
-      );
-      usedParts.add(part);
-    }
-  });
+    ["медиальном", "латеральном"].forEach((part) => {
+      const left = perKnee.left[part];
+      const right = perKnee.right[part];
+      if (left && right && left === right) {
+        const partText = part === "медиальном" ? "медиальных" : "латеральных";
+        descriptions.push(`коленных суставов ${pluralMap[singleMap[left]]} в ${partText} отделах`);
+        usedParts.add(part);
+        usePlural = true;
+      }
+    });
 
-  // 3. Индивидуальные описания для колен
-  ["left", "right"].forEach((knee) => {
-    const kneeParts = perKnee[knee];
-    const sideName = knee === "left" ? "левого" : "правого";
-    const remainingParts = Object.keys(kneeParts).filter((part) => !usedParts.has(part));
-    if (!remainingParts.length) return;
+    ["медиальном", "латеральном"].forEach((part) => {
+      if (usedParts.has(part)) return;
+      const left = perKnee.left[part];
+      const right = perKnee.right[part];
+      if (left && right && left !== right) {
+        descriptions.push(
+          `правого коленного сустава ${singleMap[right]} в ${part} отделе, левого коленного сустава ${singleMap[left]} в ${part} отделе`
+        );
+        usedParts.add(part);
+      }
+    });
 
-    if (remainingParts.length === 1) {
-      const part = remainingParts[0];
-      descriptions.push(`${sideName} коленного сустава ${singleMap[kneeParts[part]]} в ${part} отделе`);
-    } else {
-      const partDesc = remainingParts.map((part) => `${singleMap[kneeParts[part]]} в ${part} отделе`);
-      descriptions.push(`${sideName} коленного сустава ${partDesc.join(", ")}`);
-    }
-  });
+    ["left", "right"].forEach((knee) => {
+      const kneeParts = perKnee[knee];
+      const sideName = knee === "left" ? "левого" : "правого";
+      Object.keys(kneeParts)
+        .filter((part) => !usedParts.has(part))
+        .forEach((part) => {
+          descriptions.push(`${sideName} коленного сустава ${singleMap[kneeParts[part]]} в ${part} отделе`);
+        });
+    });
 
-  if (!descriptions.length) return map.uniformText + ".";
-  const firstPhrase = usePlural ? map.firstPhrase.plural : map.firstPhrase.single;
-  return `${firstPhrase} ${descriptions.join(", ")}.`;
+    const firstPhrase = usePlural ? modeMaps.gaps.firstPhrase.plural : modeMaps.gaps.firstPhrase.single;
+    return `${firstPhrase} ${descriptions.join(", ")}.`;
+  }
+
+  if (mode === "surfaces") {
+    // ===============================
+    // Суставные поверхности — новая логика
+    // ===============================
+    const pluralMap = modeMaps.surfaces.plural;
+
+    ["медиальном", "латеральном"].forEach((part) => {
+      const left = perKnee.left[part];
+      const right = perKnee.right[part];
+      if (left && right && left === right) {
+        const partText = part === "медиальном" ? "медиальных" : "латеральных";
+        descriptions.push(`коленных суставов ${pluralMap[left]} в ${partText} отделах`);
+        usedParts.add(part);
+      }
+    });
+
+    ["медиальном", "латеральном"].forEach((part) => {
+      if (usedParts.has(part)) return;
+      const left = perKnee.left[part];
+      const right = perKnee.right[part];
+      if (left && right && left !== right) {
+        descriptions.push(
+          `правого коленного сустава ${pluralMap[right]} в ${part} отделе, левого коленного сустава ${pluralMap[left]} в ${part} отделе`
+        );
+        usedParts.add(part);
+      }
+    });
+
+    ["left", "right"].forEach((knee) => {
+      const kneeParts = perKnee[knee];
+      const sideName = knee === "left" ? "левого" : "правого";
+      Object.keys(kneeParts)
+        .filter((part) => !usedParts.has(part))
+        .forEach((part) => {
+          descriptions.push(`${sideName} коленного сустава ${pluralMap[kneeParts[part]]} в ${part} отделе`);
+        });
+    });
+
+    return `${modeMaps.surfaces.firstPhrase.plural} ${descriptions.join(", ")}.`;
+  }
 };
+

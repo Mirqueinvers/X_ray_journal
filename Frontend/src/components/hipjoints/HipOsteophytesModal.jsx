@@ -7,12 +7,12 @@ export default function HipOsteophytesModal({ isOpen, onClose, textareaRef }) {
 
   // Зоны для остеофитов
   const zones = [
-    { key: "rightLateral", name: "Правый латеральный", label: "латеральной поверхности крыши вертлужной впадины правого тазобедренного сустава", position: { top: "150px", left: "30%" } },
-    { key: "rightMedial", name: "Правый медиальный", label: "медиальной поверхности вертлужной впадины правого тазобедренного сустава", position: { top: "200px", left: "40%" } },
-    { key: "leftMedial", name: "Левый медиальный", label: "медиальной поверхности вертлужной впадины левого тазобедренного сустава", position: { top: "200px", left: "60%" } },
-    { key: "leftLateral", name: "Левый латеральный", label: "латеральной поверхности крыши вертлужной впадины левого тазобедренного сустава", position: { top: "150px", left: "70%" } },
-    { key: "rightGreaterTrochanter", name: "Правый большой вертел", label: "краю большого вертела правой бедренной кости", position: { top: "330px", left: "30%" } },
-    { key: "leftGreaterTrochanter", name: "Левый большой вертел", label: "краю большого вертела левой бедренной кости", position: { top: "330px", left: "70%" } },
+    { key: "rightLateral", name: "Правый латеральный", label: "латеральной поверхности крыши вертлужной впадины правого тазобедренного сустава", position: { top: "52%", left: "32%" } },
+    { key: "rightMedial", name: "Правый медиальный", label: "медиальной поверхности вертлужной впадины правого тазобедренного сустава", position: { top: "67%", left: "36%" } },
+    { key: "leftMedial", name: "Левый медиальный", label: "медиальной поверхности вертлужной впадины левого тазобедренного сустава", position: { top: "67%", left: "60%" } },
+    { key: "leftLateral", name: "Левый латеральный", label: "латеральной поверхности крыши вертлужной впадины левого тазобедренного сустава", position: { top: "52%", left: "64%" } },
+    { key: "rightGreaterTrochanter", name: "Правый большой вертел", label: "краю большого вертела правой бедренной кости", position: { top: "330px", left: "27%" } },
+    { key: "leftGreaterTrochanter", name: "Левый большой вертел", label: "краю большого вертела левой бедренной кости", position: { top: "330px", left: "69%" } },
   ];
 
   const toggleZone = (zoneKey) => {
@@ -135,7 +135,7 @@ const generateDescription = () => {
         <div
           className="w-full h-full relative"
           style={{
-            backgroundImage: `url(/images/hip-front.jpg)`,
+            backgroundImage: `url(/images/hip.png)`,
             backgroundSize: "contain",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -145,7 +145,7 @@ const generateDescription = () => {
           {zones.map((zone) => (
             <div
               key={zone.key}
-              className={`absolute w-[120px] h-[100px] border-2 rounded-lg cursor-pointer flex flex-col items-center justify-center transition-all duration-200 ${
+              className={`absolute w-[50px] h-[50px] border-2 rounded-lg cursor-pointer flex flex-col items-center justify-center transition-all duration-200 ${
                 selectedZones.includes(zone.key)
                   ? "bg-yellow-200/30 border-yellow-400 text-yellow-300"
                   : "border-yellow-500 bg-transparent text-white"

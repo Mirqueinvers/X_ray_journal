@@ -1,15 +1,7 @@
 import React, { useState } from "react";
 
-const surfaceMapSingle = {
-  "не изменена": "не изменена",
-  "незначительно склерозирована": "незначительно склерозирована",
-  "умеренно склерозирована": "умеренно склерозирована",
-  "выраженно склерозирована": "выраженно склерозирована",
-  "резко склерозирована": "резко склерозирована",
-};
-
 const surfaceMapPlural = {
-  "не склерозирована": "не изменены",
+  "не изменена": "не изменены",
   "незначительно склерозирована": "незначительно склерозированы",
   "умеренно склерозирована": "умеренно склерозированы",
   "выраженно склерозирована": "выраженно склерозированы",
@@ -57,31 +49,33 @@ export default function ShoulderJointSurfaceModal({ isOpen, onClose, textareaRef
   };
 
   const generateDescription = () => {
-    const { left, right } = selectedOptions;
+  const { left, right } = selectedOptions;
 
-    if (!left && !right)
-      return "Суставные поверхности плечевых суставов не изменены.";
+  // 🟡 Ничего не выбрано
+  if (!left && !right)
+    return "Суставные поверхности плечевых суставов не изменены.";
 
-    // если обе стороны выбраны и одинаковые
-    if (left && right && left === right) {
-      return `Суставные поверхности плечевых суставов ${surfaceMapPlural[left]}.`;
-    }
+  // 🟡 Оба выбраны и одинаковые
+  if (left && right && left === right) {
+    return `Суставные поверхности плечевых суставов ${surfaceMapPlural[left]}.`;
+  }
 
-    // если обе стороны выбраны и разные
-    if (left && right && left !== right) {
-      return `Суставная поверхность правого плечевого сустава ${surfaceMapSingle[right]}, левого плечевого сустава ${surfaceMapSingle[left]}.`;
-    }
+  // 🟡 Оба выбраны, но разные
+  if (left && right && left !== right) {
+    return `Суставные поверхности правого плечевого сустава ${surfaceMapPlural[right]}, левого — ${surfaceMapPlural[left]}.`;
+  }
 
-    // если выбрана только одна сторона
-    if (right) {
-      return `Суставная поверхность правого плечевого сустава ${surfaceMapSingle[right]}.`;
-    }
-    if (left) {
-      return `Суставная поверхность левого плечевого сустава ${surfaceMapSingle[left]}.`;
-    }
+  // 🟡 Выбрана только одна сторона — всё равно во множественном числе
+  if (right && !left) {
+    return `Суставные поверхности плечевых суставов справа ${surfaceMapPlural[right]}.`;
+  }
+  if (left && !right) {
+    return `Суставные поверхности плечевых суставов слева ${surfaceMapPlural[left]}.`;
+  }
 
-    return "";
-  };
+  return "";
+};
+
 
   if (!isOpen) return null;
 
@@ -127,7 +121,9 @@ export default function ShoulderJointSurfaceModal({ isOpen, onClose, textareaRef
               style={zone.position}
               onClick={() => handleZoneClick(zone.key)}
             >
-              <span className="text-white text-sm font-medium text-center">{zone.name}</span>
+              <span className="text-white text-sm font-medium text-center">
+                {zone.name}
+              </span>
               {selectedOptions[zone.key] && (
                 <span className="text-yellow-300 text-xs mt-1">
                   {selectedOptions[zone.key]}

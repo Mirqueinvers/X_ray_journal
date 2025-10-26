@@ -19,8 +19,8 @@ export default function HipJointSurfaceModal({ isOpen, onClose, textareaRef }) {
 
   // Зоны для суставных поверхностей
   const zones = [
-    { key: "right", name: "Правый", position: { top: "200px", left: "40%" } },
-    { key: "left", name: "Левый", position: { top: "200px", left: "60%" } },
+    { key: "right", name: "Правый", position: { top: "55%", left: "30%" } },
+    { key: "left", name: "Левый", position: { top: "55%", left: "60%" } },
   ];
 
   // Логика выбора
@@ -95,7 +95,7 @@ const generateDescription = () => {
         </button>
 
         <div className="w-full h-full relative" style={{
-          backgroundImage: `url(/images/hip-front.jpg)`,
+          backgroundImage: `url(/images/hip.png)`,
           backgroundSize: "contain",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

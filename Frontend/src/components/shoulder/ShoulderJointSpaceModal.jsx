@@ -1,25 +1,9 @@
 import React, { useState } from "react";
 
-const narrowingMapSingle = {
-  "не изменена": "не изменена",
-  "незначительно сужена": "незначительно сужена",
-  "умеренно сужена": "умеренно сужена",
-  "выраженно сужена": "выраженно сужена",
-  "резко сужена": "резко сужена",
-};
-
-const narrowingMapPlural = {
-  "не изменена": "не изменены",
-  "незначительно сужена": "незначительно сужены",
-  "умеренно сужена": "умеренно сужены",
-  "выраженно сужена": "выраженно сужены",
-  "резко сужена": "резко сужены",
-};
-
 export default function ShoulderJointSpaceModal({ isOpen, onClose, textareaRef }) {
   const [selectedOptions, setSelectedOptions] = useState({
-    right: "",
-    left: "",
+    left: { degree: "", uniformity: "" },
+    right: { degree: "", uniformity: "" },
   });
   const [expandedZone, setExpandedZone] = useState(null);
 
@@ -31,53 +15,97 @@ export default function ShoulderJointSpaceModal({ isOpen, onClose, textareaRef }
     "резко сужена",
   ];
 
+  const uniformityOptions = ["равномерно", "неравномерно"];
+
   const zones = [
-    { key: "right", name: "Правый сустав", position: { top: "33%", left: "32%" } },
-    { key: "left", name: "Левый сустав", position: { top: "33%", left: "59%" } },
+    { key: "right", name: "Правый плечевой сустав", position: { top: "35%", left: "33%" } },
+    { key: "left", name: "Левый плечевой сустав", position: { top: "35%", left: "60%" } },
   ];
 
   const handleZoneClick = (zoneKey) => {
     setExpandedZone(expandedZone === zoneKey ? null : zoneKey);
   };
 
-  const selectOption = (zoneKey, option) => {
+  const handleOptionSelect = (zoneKey, field, value) => {
     setSelectedOptions((prev) => ({
       ...prev,
-      [zoneKey]: option,
+      [zoneKey]: { ...prev[zoneKey], [field]: value },
     }));
-    setExpandedZone(null);
   };
+
+  const isSelected = (zoneKey, field, value) =>
+    selectedOptions[zoneKey][field] === value;
 
   const insertTextToTextarea = (text) => {
     if (textareaRef?.current) {
       const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + text : text;
+      textareaRef.current.value = current ? current + "\n" + text : text;
       textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
     }
   };
 
+  // 🟡 Генерация описания (аналогично тазобедренным суставам)
   const generateDescription = () => {
-    const { left, right } = selectedOptions;
+    const sides = { right: "правого", left: "левого" };
+    const desc = {};
 
-    if (!left && !right)
+    Object.keys(sides).forEach((side) => {
+      const { degree, uniformity } = selectedOptions[side];
+      if (!degree && !uniformity) return;
+      const textParts = [];
+      if (degree && degree !== "не изменена") textParts.push(degree.replace(" сужена", ""));
+      if (uniformity && degree !== "не изменена") textParts.push(uniformity);
+      desc[side] = { degree, text: textParts.join(", ") };
+    });
+
+    const right = desc.right;
+    const left = desc.left;
+
+    // если ничего не выбрано
+    if (!right && !left)
       return "Суставные щели плечевых суставов не изменены.";
 
-    // если обе стороны выбраны и одинаковые
-    if (left && right && left === right) {
-      return `Суставные щели плечевых суставов ${narrowingMapPlural[left]}.`;
+    // если оба выбраны и одинаковы
+    if (
+      right &&
+      left &&
+      right.degree === left.degree &&
+      right.text === left.text
+    ) {
+      if (right.degree === "не изменена") {
+        return "Суставные щели плечевых суставов не изменены.";
+      }
+      return `Суставные щели плечевых суставов ${right.text} сужены.`;
     }
 
-    // если обе стороны выбраны и разные
-    if (left && right && left !== right) {
-      return `Суставная щель правого плечевого сустава ${narrowingMapSingle[right]}, левого плечевого сустава ${narrowingMapSingle[left]}.`;
+    // если оба выбраны, но разные
+    if (right && left) {
+      if (right.degree === "не изменена" && left.degree === "не изменена") {
+        return "Суставные щели плечевых суставов не изменены.";
+      }
+      const rightPart =
+        right.degree === "не изменена"
+          ? "не изменена"
+          : `${right.text} сужена`;
+      const leftPart =
+        left.degree === "не изменена"
+          ? "не изменена"
+          : `${left.text} сужена`;
+
+      return `Суставная щель правого плечевого сустава ${rightPart}; левого — ${leftPart}.`;
     }
 
-    // если выбрана только одна сторона
+    // если выбран только один сустав
     if (right) {
-      return `Суставная щель правого плечевого сустава ${narrowingMapSingle[right]}.`;
+      if (right.degree === "не изменена")
+        return "Суставная щель правого плечевого сустава не изменена.";
+      return `Суставная щель правого плечевого сустава ${right.text} сужена.`;
     }
+
     if (left) {
-      return `Суставная щель левого плечевого сустава ${narrowingMapSingle[left]}.`;
+      if (left.degree === "не изменена")
+        return "Суставная щель левого плечевого сустава не изменена.";
+      return `Суставная щель левого плечевого сустава ${left.text} сужена.`;
     }
 
     return "";
@@ -85,7 +113,10 @@ export default function ShoulderJointSpaceModal({ isOpen, onClose, textareaRef }
 
   if (!isOpen) return null;
 
-  const isOptionSelected = (zoneKey, option) => selectedOptions[zoneKey] === option;
+  const hasSelection = (zoneKey) => {
+    const z = selectedOptions[zoneKey];
+    return z.degree || z.uniformity;
+  };
 
   return (
     <div
@@ -96,7 +127,7 @@ export default function ShoulderJointSpaceModal({ isOpen, onClose, textareaRef }
         className="bg-gray-800 rounded-lg shadow-xl w-[350mm] h-[148.5mm] relative overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Закрыть */}
+        {/* Кнопка закрытия */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-yellow-400 hover:text-yellow-200 z-10"
@@ -105,13 +136,13 @@ export default function ShoulderJointSpaceModal({ isOpen, onClose, textareaRef }
           ✕
         </button>
 
-        {/* Фон с плечевыми суставами */}
+        {/* Фон */}
         <div
           className="w-full h-full relative"
           style={{
             backgroundImage: `url(/images/shoulder-right.png), url(/images/shoulder-left.png)`,
             backgroundSize: "contain",
-            backgroundPosition: "23% 95%, 77% 95%",
+            backgroundPosition: "25% 95%, 75% 95%",
             backgroundRepeat: "no-repeat",
             backgroundColor: "#374151",
           }}
@@ -119,40 +150,62 @@ export default function ShoulderJointSpaceModal({ isOpen, onClose, textareaRef }
           {zones.map((zone) => (
             <div
               key={zone.key}
-              className={`absolute w-[120px] h-[160px] border-2 rounded-lg cursor-pointer flex flex-col items-center justify-center transition-all duration-200 ${
-                selectedOptions[zone.key]
+              className={`absolute w-[130px] h-[180px] border-2 rounded-lg cursor-pointer flex flex-col items-center justify-center transition-all duration-200 ${
+                hasSelection(zone.key)
                   ? "bg-yellow-200/30 border-yellow-400"
                   : "border-yellow-500 bg-transparent"
               }`}
               style={zone.position}
               onClick={() => handleZoneClick(zone.key)}
             >
-              <span className="text-white text-sm font-medium text-center">{zone.name}</span>
-              {selectedOptions[zone.key] && (
-                <span className="text-yellow-300 text-xs mt-1">
-                  {selectedOptions[zone.key]}
-                </span>
-              )}
+              <span className="text-white text-xs font-medium text-center">
+                {zone.name}
+              </span>
             </div>
           ))}
 
+          {/* Всплывающее окно выбора */}
           {expandedZone && (
             <div
-              className="absolute bg-gray-700 p-2 rounded-lg shadow-lg z-20"
+              className="absolute bg-gray-700 p-3 rounded-lg shadow-lg z-20 w-[180px]"
               style={{
                 top: zones.find((z) => z.key === expandedZone).position.top,
                 left: zones.find((z) => z.key === expandedZone).position.left,
               }}
             >
+              <p className="text-yellow-300 text-xs mb-1 text-center">
+                Степень сужения
+              </p>
               {degreeOptions.map((option) => (
                 <div
                   key={`${expandedZone}-${option}`}
-                  className={`p-2 border text-xs text-white mb-1 rounded cursor-pointer transition-all duration-200 ${
-                    isOptionSelected(expandedZone, option)
+                  className={`p-1 border text-xs text-white mb-1 ${
+                    isSelected(expandedZone, "degree", option)
                       ? "bg-yellow-500 border-yellow-400"
-                      : "border-yellow-500 bg-gray-600 hover:bg-gray-500"
-                  }`}
-                  onClick={() => selectOption(expandedZone, option)}
+                      : "border-yellow-500 bg-gray-600"
+                  } rounded cursor-pointer text-center`}
+                  onClick={() =>
+                    handleOptionSelect(expandedZone, "degree", option)
+                  }
+                >
+                  {option}
+                </div>
+              ))}
+
+              <p className="text-yellow-300 text-xs mb-1 mt-2 text-center">
+                Характер сужения
+              </p>
+              {uniformityOptions.map((option) => (
+                <div
+                  key={`${expandedZone}-${option}`}
+                  className={`p-1 border text-xs text-white mb-1 ${
+                    isSelected(expandedZone, "uniformity", option)
+                      ? "bg-yellow-500 border-yellow-400"
+                      : "border-yellow-500 bg-gray-600"
+                  } rounded cursor-pointer text-center`}
+                  onClick={() =>
+                    handleOptionSelect(expandedZone, "uniformity", option)
+                  }
                 >
                   {option}
                 </div>
@@ -161,10 +214,10 @@ export default function ShoulderJointSpaceModal({ isOpen, onClose, textareaRef }
           )}
         </div>
 
-        {/* Кнопка добавить */}
+        {/* Кнопка "Добавить" */}
         <div className="absolute bottom-4 left-4">
           <button
-            className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
+            className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
               insertTextToTextarea(generateDescription());
               onClose();

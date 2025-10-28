@@ -1,8 +1,10 @@
-import { PencilIcon, TrashIcon, DocumentDuplicateIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, TrashIcon, DocumentDuplicateIcon, CheckCircleIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import { useState, useEffect } from 'react';
+import ResearchDescriptionModal from './ResearchDescriptionModal';
 
 export default function PatientResearchList({ patientId, researches, onEdit, onDelete, onIssue }) {
   const [issuedResearchIds, setIssuedResearchIds] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   // Инициализируем состояние на основе данных с сервера
   useEffect(() => {
@@ -35,6 +37,16 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
     onIssue?.(researchId, true); // true - отмена выдачи
   };
 
+  // Открыть модальное окно описания
+  const openDescriptionModal = () => {
+    setIsModalOpen(true);
+  };
+
+  // Закрыть модальное окно
+  const closeDescriptionModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="mt-3 flex flex-row gap-2 overflow-x-auto">
       {researches.map(r => {
@@ -48,6 +60,20 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
             key={r.id}
             className="relative border-2 border-yellow-500 rounded-md p-2 bg-gray-800 text-yellow-200 text-sm min-w-[200px] flex-shrink-0"
           >
+            {/* Иконка описания в левом верхнем углу */}
+            <div className="absolute top-1 left-1">
+              <button
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  openDescriptionModal();
+                }}
+                className="h-4 w-4 text-yellow-400 cursor-pointer hover:text-yellow-300"
+                title="Описание исследования"
+              >
+                <InformationCircleIcon />
+              </button>
+            </div>
+
             {/* Кнопки редактирования, удаления и выдачи */}
             <div className="absolute top-1 right-1 flex gap-1">
               <PencilIcon
@@ -86,7 +112,7 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
             <div><strong>Тип:</strong> {r.research_type}</div>
             <div><strong>Кассета:</strong> {r.cassete_size}</div>
             <div><strong>Исследований:</strong> {r.numb_of_proc}</div>
-            <div><strong>Доза:</strong> {r.dose}</div>
+            <div><strong>Доза:</strong> {r.dose} мЗв</div>
             <div><strong>Направил:</strong> {r.sent}</div>
             
             {/* Блок статуса без разделительной полосы */}
@@ -98,6 +124,11 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
           </div>
         );
       })}
+      
+      {/* Модальное окно описания исследования */}
+      {isModalOpen && (
+        <ResearchDescriptionModal onClose={closeDescriptionModal} />
+      )}
     </div>
   );
 }

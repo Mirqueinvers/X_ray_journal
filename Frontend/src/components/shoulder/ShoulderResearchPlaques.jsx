@@ -1,5 +1,4 @@
-
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import ResearchPlaques from "../general/ResearchPlaques";
 import ShoulderCongruencySection from "../general/CongruencySection";
 import ShoulderIntegritySection from "../general/IntegritySection";
 import ShoulderParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
@@ -10,225 +9,36 @@ export default function ShoulderResearchPlaques({
   setOpenModal,
   insertTextToTextarea,
 }) {
-  const shoulderJointPlaques = [
-    "Суставные щели",
-    "Суставные поверхности",
-    "Остеофиты",
-    "Ключично-акромиальные сочленения",
-    "Конгруэнтность",
-    "Целостность",
-    "Параартикулярные ткани",
-    "Норма",
-    "Диагноз",
+  const plaques = [
+    { label: "Суставные щели", type: "modal", modalName: "ShoulderJointSpaceModal" },
+    { label: "Суставные поверхности", type: "modal", modalName: "ShoulderJointSurfaceModal" },
+    { label: "Остеофиты", type: "modal", modalName: "ShoulderOsteophytesModal" },
+    { label: "Ключично-акромиальные сочленения", type: "modal", modalName: "ShoulderAcromioclavicularModal" },
+    { label: "Конгруэнтность", type: "expandable", component: ShoulderCongruencySection },
+    { label: "Целостность", type: "expandable", component: ShoulderIntegritySection },
+    { label: "Параартикулярные ткани", type: "expandable", component: ShoulderParaarticularTissuesSection },
+    {
+      label: "Норма",
+      type: "text",
+      defaultText: [
+        "Суставные щели плечевых суставов сохранены, равномерные.",
+        "Суставные поверхности ровные, чёткие, без признаков деформации.",
+        "Конгруэнтность суставных поверхностей не нарушена.",
+        "Костно-травматических и костно-деструктивных изменений не выявлено.",
+        "Параартикулярные ткани не имеют рентгено-позитивных признаков изменений.",
+        "Ключично-акромиальные сочленения без патологии."
+      ].join("\n"),
+    },
+    { label: "Диагноз", type: "modal", modalName: "DiagnosisModal" },
   ];
 
   return (
-    <div className="mt-4 space-y-2">
-      {shoulderJointPlaques.map((plaque, index) => {
-
-        if (plaque === "Норма") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  insertTextToTextarea(                    
-                    [
-                      "Суставные щели плечевых суставов сохранены, равномерные.",
-                      "Суставные поверхности ровные, чёткие, без признаков деформации.",
-                      "Конгруэнтность суставных поверхностей не нарушена.",
-                      "Костно-травматических и костно-деструктивных изменений не выявлено.",
-                      "Параартикулярные ткани не имеют рентгено-позитивных признаков изменений.",
-                      "Ключично-акромиальные сочленения без патологии.",
-                    ].join("\n"),
-                  );
-                }}
-              >
-                <span>{plaque}</span>
-              </div>
-            </div>
-          );
-        }
-
-        if (plaque === "Остеофиты") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenModal("ShoulderOsteophytesModal");
-                }}
-              >
-                <span>{plaque}</span>
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-              </div>
-            </div>
-          );
-        }
-
-        // Обработчик для плашки "Ключично-акромиальные сочленения"
-        if (plaque === "Ключично-акромиальные сочленения") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenModal("ShoulderAcromioclavicularModal");
-                }}
-              >
-                <span>{plaque}</span>
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-              </div>
-            </div>
-          );
-        }
-
-        if (plaque === "Конгруэнтность") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (expandedPlaque === plaque) {
-                    setExpandedPlaque(null);
-                  } else {
-                    setExpandedPlaque(plaque);
-                  }
-                }}
-              >
-                <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
-              </div>
-
-              {expandedPlaque === plaque && (
-                <ShoulderCongruencySection
-                  insertTextToTextarea={insertTextToTextarea}
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
-            </div>
-          );
-        }
-
-        if (plaque === "Целостность") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (expandedPlaque === plaque) {
-                    setExpandedPlaque(null);
-                  } else {
-                    setExpandedPlaque(plaque);
-                  }
-                }}
-              >
-                <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
-              </div>
-
-              {expandedPlaque === plaque && (
-                <ShoulderIntegritySection
-                  insertTextToTextarea={insertTextToTextarea}
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
-            </div>
-          );
-        }
-
-        if (plaque === "Параартикулярные ткани") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (expandedPlaque === plaque) {
-                    setExpandedPlaque(null);
-                  } else {
-                    setExpandedPlaque(plaque);
-                  }
-                }}
-              >
-                <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
-              </div>
-
-              {expandedPlaque === plaque && (
-                <ShoulderParaarticularTissuesSection
-                  insertTextToTextarea={insertTextToTextarea}
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
-            </div>
-          );
-        }
-
-        // Для "Суставные щели" используем модальное окно
-        if (plaque === "Суставные щели") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenModal("ShoulderJointSpaceModal");
-                }}
-              >
-                <span>{plaque}</span>
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-              </div>
-            </div>
-          );
-        }
-
-        // Для "Суставные поверхности" используем модальное окно
-        if (plaque === "Суставные поверхности") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenModal("ShoulderJointSurfaceModal");
-                }}
-              >
-                <span>{plaque}</span>
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-              </div>
-            </div>
-          );
-        }
-
-        if (plaque === "Диагноз") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenModal("ShoulderDiagnosisModal");
-                }}
-              >
-                <span>{plaque}</span>
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-              </div>
-            </div>
-          );
-        }
-      })}
-    </div>
+    <ResearchPlaques
+      plaques={plaques}
+      expandedPlaque={expandedPlaque}
+      setExpandedPlaque={setExpandedPlaque}
+      setOpenModal={setOpenModal}
+      insertTextToTextarea={insertTextToTextarea}
+    />
   );
 }

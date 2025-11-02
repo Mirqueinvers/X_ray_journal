@@ -34,7 +34,7 @@ services:
       - mysql
 
   frontend:
-    build: ./frontend   # вместо image: node:20-alpine
+    build: ./frontend
     container_name: my-frontend
     restart: always
     ports:

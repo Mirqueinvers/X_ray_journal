@@ -1,4 +1,4 @@
-import PlaqueButton from "../ui/PlaqueButton";
+import ResearchPlaques from "../general/ResearchPlaques";
 
 export default function FlatfootResearchPlaques({
   expandedPlaque,
@@ -7,47 +7,30 @@ export default function FlatfootResearchPlaques({
   insertTextToTextarea,
 }) {
   const flatfootPlaques = [
-    "Плоскостопие",
-    "Норма",
+    {
+      label: "Норма",
+      type: "text",
+      defaultText: "Признаков плоскостопия не выявлено. Форма стоп нормальная, своды сохранены.",
+    },
+    {
+      label: "Плоскостопие",
+      type: "modal",
+      modalName: "FlatfootModal",
+    },
+    {
+      label: "Диагноз",
+      type: "modal",
+      modalName: "DiagnosisModal",
+    }
   ];
 
-  const handlePlaqueClick = (plaque, e) => {
-    e.stopPropagation();
-
-    switch (plaque) {
-      case "Норма":
-        insertTextToTextarea(
-          "Признаков плоскостопия не выявлено. Форма стоп нормальная, своды сохранены."
-        );
-        break;
-
-      case "Плоскостопие":
-        setOpenModal("FlatfootModal");
-        break;
-
-      default:
-        setExpandedPlaque(expandedPlaque === plaque ? null : plaque);
-        break;
-    }
-  };
-
   return (
-    <div className="mt-4 space-y-2">
-      {flatfootPlaques.map((plaque, index) => {
-        const isExpandable = plaque === "Плоскостопие";
-        const isExpanded = expandedPlaque === plaque;
-
-        return (
-          <div key={index}>
-            <PlaqueButton
-              label={plaque}
-              onClick={(e) => handlePlaqueClick(plaque, e)}
-              hasChildren={isExpandable}
-              isExpanded={isExpanded}
-            />
-          </div>
-        );
-      })}
-    </div>
+    <ResearchPlaques
+      plaques={flatfootPlaques}
+      expandedPlaque={expandedPlaque}
+      setExpandedPlaque={setExpandedPlaque}
+      setOpenModal={setOpenModal}
+      insertTextToTextarea={insertTextToTextarea}
+    />
   );
 }

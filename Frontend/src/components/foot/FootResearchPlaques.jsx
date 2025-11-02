@@ -1,201 +1,41 @@
-// Frontend/src/components/foot/FootResearchPlaques.jsx
-
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import ResearchPlaques from "../general/ResearchPlaques";
 import FootIntegritySection from "../general/IntegritySection";
 import FootParaarticularTissuesSection from "../general/ParaarticularTissuesSection";
 
+const footPlaques = [
+  { label: "Суставные щели", type: "modal", modalName: "FootJointSpaceModal" },
+  { label: "Суставные поверхности", type: "modal", modalName: "FootJointSurfaceModal" },
+  { label: "Остеофиты", type: "modal", modalName: "FootOsteophytesModal" },
+  { label: "Конгруэнтность", type: "modal", modalName: "FootCongruencyModal" },
+  { label: "Целостность", type: "expandable", component: FootIntegritySection },
+  { label: "Параартикулярные ткани", type: "expandable", component: FootParaarticularTissuesSection },
+  {
+    label: "Норма",
+    type: "text",
+    defaultText: [
+      "Суставные щели стоп сохранены, равномерные.",
+      "Суставные поверхности ровные, чёткие, без признаков деформации.",
+      "Конгруэнтность суставных поверхностей не нарушена.",
+      "Костно-травматических и костно-деструктивных изменений не выявлено.",
+      "Параартикулярные ткани не имеют рентгено-позитивных признаков изменений."
+    ].join("\n")
+  },
+  { label: "Диагноз", type: "modal", modalName: "DiagnosisModal" },
+];
 
-export default function FeetResearchPlaques({
+export default function FootResearch({
   expandedPlaque,
   setExpandedPlaque,
-  textareaRef,
   setOpenModal,
-  insertTextToTextarea,
+  insertTextToTextarea
 }) {
-  
-  const feetJointPlaques = [
-    "Суставные щели",
-    "Суставные поверхности",
-    "Остеофиты",
-    "Конгруэнтность",
-    "Целостность",
-    "Параартикулярные ткани",
-    "Норма",
-    "Диагноз",
-  ];
-
   return (
-    <div className="mt-4 space-y-2">
-      {feetJointPlaques.map((plaque, index) => {
-
-        if (plaque === "Норма") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  insertTextToTextarea(  "\n" +                   
-                    [
-                      "Суставные щели мелких суставов стоп сохранены, равномерные.",
-                      "Суставные поверхности ровные, чёткие, без признаков деформации.",
-                      "Конгруэнтность суставных поверхностей не нарушена.",
-                      "Костно-травматических и костно-деструктивных изменений не выявлено.",
-                      "Параартикулярные ткани не имеют рентгено-позитивных признаков изменений.",
-                    ].join("\n"),
-                  );
-                }}
-              >
-                <span>{plaque}</span>
-              </div>
-            </div>
-          );
-        }
-
-        if (plaque === "Остеофиты") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenModal("FootOsteophytesModal");
-                }}
-              >
-                <span>{plaque}</span>
-              </div>
-            </div>
-          );
-        }
-
-        if (plaque === "Суставные щели") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenModal("FootJointSpaceModal");
-                }}
-              >
-                <span>{plaque}</span>
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-              </div>
-            </div>
-          );
-        }
-
-        if (plaque === "Суставные поверхности") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenModal("FootJointSurfaceModal");
-                }}
-              >
-                <span>{plaque}</span>
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-              </div>
-            </div>
-          );
-        }
-
-        if (plaque === "Конгруэнтность") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenModal("FootCongruencyModal");
-                }}
-              >
-                <span>{plaque}</span>
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-              </div>
-            </div>
-          );
-        }
-
-        if (plaque === "Целостность") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (expandedPlaque === plaque) {
-                    setExpandedPlaque(null);
-                  } else {
-                    setExpandedPlaque(plaque);
-                  }
-                }}
-              >
-                <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
-              </div>
-
-              {expandedPlaque === plaque && (
-                <FootIntegritySection
-                  insertTextToTextarea={insertTextToTextarea}
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
-            </div>
-          );
-        }
-
-        if (plaque === "Параартикулярные ткани") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (expandedPlaque === plaque) {
-                    setExpandedPlaque(null);
-                  } else {
-                    setExpandedPlaque(plaque);
-                  }
-                }}
-              >
-                <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
-              </div>
-
-              {expandedPlaque === plaque && (
-                <FootParaarticularTissuesSection
-                  insertTextToTextarea={insertTextToTextarea}
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
-            </div>
-          );
-        }
-
-        if (plaque === "Диагноз") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenModal("FootDiagnosisModal");
-                }}
-              >
-                <span>{plaque}</span>
-                <ChevronRightIcon className="h-4 w-4 text-yellow-400" />
-              </div>
-            </div>
-          );
-        }
-      })}
-    </div>
+    <ResearchPlaques
+      plaques={footPlaques}
+      expandedPlaque={expandedPlaque}
+      setExpandedPlaque={setExpandedPlaque}
+      setOpenModal={setOpenModal}
+      insertTextToTextarea={insertTextToTextarea}
+    />
   );
 }

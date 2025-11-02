@@ -1,6 +1,4 @@
-// Frontend/src/components/lungs/LungResearchPlaques.jsx
-import { useState } from "react";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import ResearchPlaques from "../general/ResearchPlaques";
 import VesselsSection from "./VesselsSection";
 import HilaSection from "./HilaSection";
 import SinusSection from "./SinusSection";
@@ -15,269 +13,41 @@ export default function LungResearchPlaques({
   setOpenModal,
   insertTextToTextarea,
 }) {
-  const lungJointPlaques = [   
-    "Без патологических теней",
-    "Патологические тени",
-    "Сосудистый рисунок",
-    "Корни легких",
-    "Синусы",
-    "Плевра",
-    "Средостение",
-    "Сердце",
-    "Грудная клетка",
-    "Норма",
+  const plaques = [
+    { label: "Без патологических теней", type: "text", defaultText: "Легочная ткань без инфильтративных и очаговых теней." },
+    { label: "Патологические тени", type: "modal", modalName: "LungPatternModal" },
+    { label: "Сосудистый рисунок", type: "expandable", component: VesselsSection },
+    { label: "Корни легких", type: "expandable", component: HilaSection },
+    { label: "Синусы", type: "expandable", component: SinusSection },
+    { label: "Плевра", type: "expandable", component: PleuraSection },
+    { label: "Средостение", type: "expandable", component: MediastinumSection },
+    { label: "Сердце", type: "expandable", component: HeartSection },
+    { label: "Грудная клетка", type: "expandable", component: ChestCageSection },
+    {
+      label: "Норма",
+      type: "text",
+      defaultText: [
+        "Легкие без инфильтративных и очаговых теней.",
+        "Сосудистый рисунок не изменен.",
+        "Корни легких не расширены, структурны.",
+        "Синусы плевры свободны.",
+        "Диафрагма куполообразной формы, расположена обычно.",
+        "Тень средостения не расширена.",
+        "Сердце в пределах возрастной нормы.",
+        "Целостность костей грудной клетки не нарушена."
+      ].join("\n"),
+    },
+    { label: "Диагноз", type: "modal", modalName: "DiagnosisModal" }
+    
   ];
 
   return (
-    <div className="mt-4 h-[500px] overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-yellow-500 scrollbar-track-gray-800">
-      {lungJointPlaques.map((plaque, index) => {
-        if (plaque === "Норма") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  insertTextToTextarea("\n" + 
-                    [
-                      "Легкие без инфильтративных и очаговых теней.",
-                      "Сосудистый рисунок не изменен.",
-                      "Корни легких не расширены, структурны.",
-                      "Синусы плевры свободны.",
-                      "Диафрагма куполообразной формы, расположена обычно.",
-                      "Тень средостения не расширена.",
-                      "Сердце в пределах возрастной нормы.",
-                      "Целостность костей грудной клетки не нарушена."
-                    ].join("\n"),
-                    plaque
-                  );
-                }}
-              >
-                <span>{plaque}</span>
-              </div>
-            </div>
-          );
-        }
-
-        if (plaque === "Без патологических теней") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  insertTextToTextarea(
-                    "Легочная ткань без инфильтративных и очаговых теней.",
-                    plaque
-                  );
-                }}
-              >
-                <span>{plaque}</span>
-              </div>
-            </div>
-          );
-        }
-
-        if (plaque === "Патологические тени") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenModal("LungPatternModal");
-                }}
-              >
-                <span>{plaque}</span>
-              </div>
-            </div>
-          );
-        }
-
-        if (plaque === "Сосудистый рисунок") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setExpandedPlaque(expandedPlaque === plaque ? null : plaque);
-                }}
-              >
-                <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
-              </div>
-
-              {expandedPlaque === plaque && (
-                <VesselsSection
-                  insertTextToTextarea={insertTextToTextarea} 
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
-            </div>
-          );
-        }
-       
-        if (plaque === "Корни легких") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setExpandedPlaque(expandedPlaque === plaque ? null : plaque);
-                }}
-              >
-                <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
-              </div>
-
-              {expandedPlaque === plaque && (
-                <HilaSection
-                  insertTextToTextarea={insertTextToTextarea} 
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
-            </div>
-          );
-        }
-
-        if (plaque === "Синусы") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setExpandedPlaque(expandedPlaque === plaque ? null : plaque);
-                }}
-              >
-                <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
-              </div>
-
-              {expandedPlaque === plaque && (
-                <SinusSection
-                  insertTextToTextarea={insertTextToTextarea} 
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
-            </div>
-          );
-        }
-
-        if (plaque === "Плевра") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setExpandedPlaque(expandedPlaque === plaque ? null : plaque);
-                }}
-              >
-                <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
-              </div>
-
-              {expandedPlaque === plaque && (
-                <PleuraSection
-                  insertTextToTextarea={insertTextToTextarea} 
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
-            </div>
-          );
-        }
-
-        if (plaque === "Средостение") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setExpandedPlaque(expandedPlaque === plaque ? null : plaque);
-                }}
-              >
-                <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
-              </div>
-
-              {expandedPlaque === plaque && (
-                <MediastinumSection
-                  insertTextToTextarea={insertTextToTextarea} 
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
-            </div>
-          );
-        }
-
-        if (plaque === "Сердце") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setExpandedPlaque(expandedPlaque === plaque ? null : plaque);
-                }}
-              >
-                <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
-              </div>
-
-              {expandedPlaque === plaque && (
-                <HeartSection
-                  insertTextToTextarea={insertTextToTextarea} 
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
-            </div>
-          );
-        }
-
-        if (plaque === "Грудная клетка") {
-          return (
-            <div key={index} onClick={(e) => e.stopPropagation()}>
-              <div
-                className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setExpandedPlaque(expandedPlaque === plaque ? null : plaque);
-                }}
-              >
-                <span>{plaque}</span>
-                {expandedPlaque === plaque && (
-                  <ChevronDownIcon className="h-4 w-4 text-yellow-400" />
-                )}
-              </div>
-
-              {expandedPlaque === plaque && (
-                <ChestCageSection
-                  insertTextToTextarea={insertTextToTextarea} 
-                  setExpandedPlaque={setExpandedPlaque}
-                />
-              )}
-            </div>
-          );
-        }
-
-        return null;
-      })}
-    </div>
+    <ResearchPlaques
+      plaques={plaques}
+      expandedPlaque={expandedPlaque}
+      setExpandedPlaque={setExpandedPlaque}
+      setOpenModal={setOpenModal}
+      insertTextToTextarea={insertTextToTextarea}
+    />
   );
 }

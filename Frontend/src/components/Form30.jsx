@@ -46,7 +46,6 @@ export default function Form30({ startDate, endDate }) {
   useEffect(() => {
     async function fetchData() {
       try {
-        // Старые данные (общее количество)
         const res1 = await axios.get(`${API_BASE}/api/research`, {
           params: { startDate, endDate },
         });
@@ -62,7 +61,6 @@ export default function Form30({ startDate, endDate }) {
         });
         setData(grouped);
 
-        // Новые данные (по типам приёма)
         const res2 = await axios.get(`${API_BASE}/research-summary`, {
           params: { startDate, endDate },
         });
@@ -75,7 +73,6 @@ export default function Form30({ startDate, endDate }) {
     fetchData();
   }, [startDate, endDate]);
 
-  // Суммирование для старых данных
   const sumOldCategory = (parts) =>
     parts.reduce(
       (acc, part) => {
@@ -98,7 +95,6 @@ export default function Form30({ startDate, endDate }) {
     totalProcedures += procCount;
   });
 
-  // Суммирование для новых данных
   const sumNewCategory = (parts) => {
     const sum = {
       "Амбулаторно": { researchCount: 0 },
@@ -140,14 +136,14 @@ export default function Form30({ startDate, endDate }) {
 
   return (
     <div className="overflow-x-auto p-4 mx-12">
-      <div className="mb-3 font-semibold text-yellow-400">Форма 30</div>
-      <table className="min-w-full border border-yellow-500 text-sm text-yellow-200">
-        <thead className="bg-gray-800 text-center text-yellow-300">
+      <div className="mb-3 font-semibold text-gray-800 text-lg">Форма 30</div>
+      <table className="min-w-full border border-gray-300 text-sm text-gray-800">
+        <thead className="bg-gray-100 text-center text-gray-700">
           <tr>
             {headersTop.map((header, idx) => (
               <th
                 key={idx}
-                className={`border border-yellow-500 p-2 ${idx === 0 ? "text-left" : ""}`}
+                className={`border border-gray-300 p-2 ${idx === 0 ? "text-left" : ""}`}
               >
                 {header}
               </th>
@@ -175,15 +171,19 @@ export default function Form30({ startDate, endDate }) {
               <tr
                 key={idx}
                 className={`${
-                  isTotal ? "font-bold bg-gray-900" : idx % 2 === 0 ? "bg-gray-900" : "bg-gray-800"
-                } hover:bg-yellow-950 transition-colors`}
+                  isTotal
+                    ? "font-semibold bg-gray-200"
+                    : idx % 2 === 0
+                    ? "bg-white"
+                    : "bg-gray-50"
+                } hover:bg-gray-100 transition-colors`}
               >
-                <td className="border border-yellow-500 p-2">{label}</td>
-                <td className="border border-yellow-500 p-2 text-center">{oldRow.researchCount}</td>
-                <td className="border border-yellow-500 p-2 text-center">{oldRow.procCount}</td>
-                <td className="border border-yellow-500 p-2 text-center">{newRow["Амбулаторно"]?.researchCount || 0}</td>
-                <td className="border border-yellow-500 p-2 text-center">{newRow["Стационар дневной"]?.researchCount || 0}</td>
-                <td className="border border-yellow-500 p-2 text-center">{newRow["Стационар круглосуточный"]?.researchCount || 0}</td>
+                <td className="border border-gray-300 p-2">{label}</td>
+                <td className="border border-gray-300 p-2 text-center">{oldRow.researchCount}</td>
+                <td className="border border-gray-300 p-2 text-center">{oldRow.procCount}</td>
+                <td className="border border-gray-300 p-2 text-center">{newRow["Амбулаторно"]?.researchCount || 0}</td>
+                <td className="border border-gray-300 p-2 text-center">{newRow["Стационар дневной"]?.researchCount || 0}</td>
+                <td className="border border-gray-300 p-2 text-center">{newRow["Стационар круглосуточный"]?.researchCount || 0}</td>
               </tr>
             );
           })}

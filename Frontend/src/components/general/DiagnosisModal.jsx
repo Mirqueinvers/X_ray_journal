@@ -1,110 +1,78 @@
-import { useState } from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import diagnosisSamples from "./diagnosisSamples";
+import React, { useState, useRef, useEffect } from "react";
 
-export default function DiagnosisModal({ 
-  isOpen, 
-  onClose, 
-  researchType, 
-  onDiagnosisSelect 
-}) {
-  const [searchTerm, setSearchTerm] = useState("");
+export default function DiagnosisModal({ onClose, insertTextToTextarea, patientName }) {
+  const [diagnosisText, setDiagnosisText] = useState("");
+  const textareaRef = useRef(null);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    }, 100);
+  }, []);
 
-  // Получаем примеры диагнозов для данного типа исследования
-  const examples = diagnosisSamples[researchType] || [];
-  
-  // Фильтруем примеры по поисковому запросу
-  const filteredExamples = examples.filter(example =>
-    example.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleSelect = (diagnosis) => {
-    onDiagnosisSelect(diagnosis);
-    onClose();
+  const handleAdd = () => {
+    if (diagnosisText.trim() !== "") {
+      insertTextToTextarea("\n\n"+ "Диагноз: " + diagnosisText.trim());
+      setDiagnosisText("");
+      onClose();
+    }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div 
-        className="bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-hidden"
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 relative"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Заголовок */}
-        <div className="flex justify-between items-center p-4 border-b border-yellow-500">
-          <h2 className="text-xl font-bold text-yellow-200">
-            Выбор диагноза - {getResearchTypeName(researchType)}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-yellow-400 hover:text-yellow-200"
-          >
-            <XMarkIcon className="h-6 w-6" />
-          </button>
-        </div>
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl"
+          aria-label="Закрыть"
+        >
+          ×
+        </button>
 
-        {/* Поиск */}
-        <div className="p-4">
-          <input
-            type="text"
-            placeholder="Поиск диагноза..."
-            className="w-full p-3 bg-gray-700 border border-yellow-500 rounded text-yellow-200 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+        <h2 className="text-lg font-semibold text-gray-800 mb-1">
+          Диагноз
+        </h2>
+        {patientName && (
+          <p className="text-sm text-gray-500 mb-4">
+            Добавить диагноз для пациента: <span className="font-medium text-gray-700">{patientName}</span>
+          </p>
+        )}
+
+        <div className="mb-4">
+          <textarea
+            ref={textareaRef}
+            rows={4}
+            value={diagnosisText}
+            onChange={(e) => setDiagnosisText(e.target.value)}
+            placeholder="Введите диагноз..."
+            className="w-full bg-gray-100 rounded-md px-3 py-2 text-sm text-gray-800
+                       focus:outline-none focus:ring-4 focus:ring-gray-300 focus:border-gray-300 transition-all resize-none"
           />
         </div>
 
-        {/* Список диагнозов */}
-        <div className="p-4 overflow-y-auto max-h-[60vh]">
-          <div className="grid grid-cols-1 gap-2">
-            {filteredExamples.map((example, index) => (
-              <button
-                key={index}
-                onClick={() => handleSelect(example)}
-                className="p-3 bg-gray-700 text-yellow-200 rounded border border-yellow-500 hover:bg-gray-600 hover:border-yellow-400 transition-colors text-left"
-              >
-                {example}
-              </button>
-            ))}
-          </div>
-          
-          {filteredExamples.length === 0 && (
-            <div className="text-center text-gray-400 py-4">
-              Диагнозы не найдены
-            </div>
-          )}
-        </div>
-
-        {/* Кнопка ручного ввода */}
-        <div className="p-4 border-t border-yellow-500">
+        <div className="flex justify-start mt-4 space-x-2">
           <button
-            onClick={() => handleSelect("")}
-            className="w-full p-3 bg-gray-700 text-yellow-200 rounded border border-yellow-500 hover:bg-gray-600 hover:border-yellow-400 transition-colors"
+            onClick={handleAdd}
+            className="px-4 py-2 rounded bg-blue-400 hover:bg-gray-800 text-white font-semibold transition"
           >
-            Ввести диагноз вручную
+            Добавить
+          </button>
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-800 transition"
+          >
+            Отмена
           </button>
         </div>
       </div>
     </div>
   );
-}
-
-// Функция для получения читаемого названия типа исследования
-function getResearchTypeName(researchType) {
-  const names = {
-    ogk: "Органы грудной клетки",
-    knee: "Коленные суставы",
-    foot: "Стопы",
-    hand: "Кисти",
-    hip: "Тазобедренные суставы",
-    spine: "Позвоночник",
-    shoulder: "Плечевые суставы",
-    elbow: "Локтевые суставы",
-    wrist: "Лучезапястные суставы",
-    ankle: "Голеностопные суставы",
-    calcaneus: "Пяточные кости",
-    paranasal: "Придаточные пазухи носа"
-  };
-  return names[researchType] || researchType;
 }

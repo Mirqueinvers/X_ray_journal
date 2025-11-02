@@ -1,32 +1,23 @@
-import React from "react";
+import PlaqueButton from "../ui/PlaqueButton";
 
 export default function LumbarLordosisSection({ insertTextToTextarea, setExpandedPlaque }) {
   const options = ["не изменен", "сглажен"];
 
   const insertText = (option) => {
-    // Ваша логика формирования текста остается без изменений
-    const fullText = `Лордоз грудного отдела позвоночника ${option}.\n`;
-
-    // Используем пропс для вставки
-    insertTextToTextarea(fullText);
-    
-    // Сворачиваем плашку
+    insertTextToTextarea(`Лордоз грудного отдела позвоночника ${option}.\n`);
     setExpandedPlaque(null);
   };
 
   return (
     <div className="ml-6 mt-1 space-y-1">
       {options.map((option, idx) => (
-        <div
+        <PlaqueButton
           key={idx}
-          className="p-1 bg-gray-700 text-gray-300 text-xs hover:bg-gray-600 cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            insertText(option);
-          }}
-        >
-          {option}
-        </div>
+          label={option}
+          onClick={() => insertText(option)}
+          isExpanded={false}
+          hasChildren={false}
+        />
       ))}
     </div>
   );

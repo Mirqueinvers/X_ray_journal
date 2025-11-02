@@ -40,7 +40,6 @@ export default function Doz3doses({ startDate, endDate }) {
     fetchData();
   }, [startDate, endDate]);
 
-  // Считаем общие суммы для взрослых, детей и вместе
   let totalAdultDose = 0;
   let totalChildDose = 0;
 
@@ -53,14 +52,14 @@ export default function Doz3doses({ startDate, endDate }) {
 
   return (
     <div className="overflow-x-auto p-4 mx-12">
-      <div className="mb-3 font-semibold text-yellow-400">ДОЗ-3 (дозы)</div>
-      <table className="min-w-full border border-yellow-500 text-sm text-yellow-200">
-        <thead className="bg-gray-800 text-center text-yellow-300">
+      <div className="mb-3 font-semibold text-gray-800 text-lg">ДОЗ-3 (дозы)</div>
+      <table className="min-w-full border border-gray-300 text-sm text-gray-800">
+        <thead className="bg-gray-100 text-center text-gray-700">
           <tr>
             {headersTop.map((header, index) => (
               <th
                 key={index}
-                className={`border border-yellow-500 p-2 ${index === 0 ? "text-left" : ""}`}
+                className={`border border-gray-300 p-2 ${index === 0 ? "text-left" : ""}`}
               >
                 {header}
               </th>
@@ -86,12 +85,12 @@ export default function Doz3doses({ startDate, endDate }) {
             return (
               <tr
                 key={rowIndex}
-                className={`${rowIndex % 2 === 0 ? "bg-gray-900" : "bg-gray-800"} hover:bg-yellow-950 transition-colors`}
+                className={`${rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-200 transition-colors`}
               >
-                <td className="border border-yellow-500 p-2">{label}</td>
-                <td className="border border-yellow-500 p-2 text-center">{adultValue}</td>
-                <td className="border border-yellow-500 p-2 text-center">{childValue}</td>
-                <td className="border border-yellow-500 p-2 text-center">{totalValue}</td>
+                <td className="border border-gray-300 p-2">{label}</td>
+                <td className="border border-gray-300 p-2 text-center">{adultValue}</td>
+                <td className="border border-gray-300 p-2 text-center">{childValue}</td>
+                <td className="border border-gray-300 p-2 text-center">{totalValue}</td>
               </tr>
             );
           })}

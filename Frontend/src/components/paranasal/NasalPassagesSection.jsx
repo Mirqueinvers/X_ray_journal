@@ -1,40 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
+import PlaqueButton from "../ui/PlaqueButton";
 
-export default function NasalPassagesSection({ setExpandedPlaque, insertTextToTextarea }) { // 1. Принимаем пропс
+export default function NasalPassagesSection({ setExpandedPlaque, insertTextToTextarea }) {
   const nasalPassagesOptions = [
-    "свободны",
-    "сужены",
-    "отечные",
-    "содержат патологическое содержимое",
-    "ушные ходы без особенностей",
+    "Свободны",
+    "Сужены",
+    "Отечные",
+    "Содержат патологическое содержимое",
+    "Носовые ходы без особенностей",
   ];
 
-  // --- ИЗMЕНЕННЯ ФУНКЦИЯ ---
-  const insertNasalPassagesText = (option) => {
-    // Ваша логика формирования текста остается без изменений
-    const fullText = `\nНосовые ходы ${option.toLowerCase()}.`;
+  const [expandedOption, setExpandedOption] = useState(null);
 
-    // 2. Используем пропс для вставки
-    insertTextToTextarea(fullText);
-    
-    // Сворачиваем плашку после выбора
+  const insertNasalPassagesText = (option) => {
+    insertTextToTextarea(`\nНосовые ходы ${option.toLowerCase()}.`);
     setExpandedPlaque(null);
   };
-  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
   return (
     <div className="ml-6 mt-1 space-y-1">
       {nasalPassagesOptions.map((option, idx) => (
-        <div
+        <PlaqueButton
           key={idx}
-          className="p-1 bg-gray-700 text-gray-300 text-xs hover:bg-gray-600 cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            insertNasalPassagesText(option);
-          }}
-        >
-          {option}
-        </div>
+          label={option}
+          onClick={() => insertNasalPassagesText(option)}
+          isExpanded={false}
+          hasChildren={false}
+        />
       ))}
     </div>
   );

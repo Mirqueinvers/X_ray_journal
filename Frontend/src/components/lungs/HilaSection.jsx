@@ -1,36 +1,34 @@
-// Frontend/src/components/lungs/HilaSection.jsx
 import { useState } from "react";
+import PlaqueButton from "../ui/PlaqueButton";
 import HilaExpansionModal from "./HilaExpansionModal";
 
 export default function HilaSection({ insertTextToTextarea, setExpandedPlaque }) {
   const [showExpansionModal, setShowExpansionModal] = useState(false);
-  const [selectedHila, setSelectedHila] = useState(null);
 
   const hilaOptions = [
     "Не расширены",
     "Расширены"
   ];
 
+  const handleOptionClick = (option) => {
+    if (option === "Расширены") {
+      setShowExpansionModal(true);
+    } else {
+      insertTextToTextarea("\n" + `Корни легких ${option.toLowerCase()}, структурные.`);
+      setExpandedPlaque(null);
+    }
+  };
+
   return (
     <>
-      <div className="ml-4 space-y-1">
-        {hilaOptions.map((option, index) => (
-          <div
-            key={index}
-            className="p-1 bg-gray-700 text-gray-300 text-xs hover:bg-gray-600 cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (option === "Расширены") {
-                setShowExpansionModal(true);
-              } else {
-                setSelectedHila(option);
-                insertTextToTextarea("\n" + `Корни легких ${option.toLowerCase()}, структурные.`);
-                setExpandedPlaque(null);
-              }
-            }}
-          >
-            {option}
-          </div>
+      <div className="ml-6 mt-1 space-y-1">
+        {hilaOptions.map((option, idx) => (
+          <PlaqueButton
+            key={idx}
+            label={option}
+            onClick={() => handleOptionClick(option)}
+            hasChildren={false}
+          />
         ))}
       </div>
 

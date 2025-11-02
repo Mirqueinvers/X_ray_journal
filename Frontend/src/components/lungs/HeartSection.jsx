@@ -1,4 +1,5 @@
-// Frontend/src/components/lungs/HeartSection.jsx
+import PlaqueButton from "../ui/PlaqueButton";
+
 export default function HeartSection({ insertTextToTextarea, setExpandedPlaque }) {
   const heartOptions = [
     { label: "не расширена", text: "в пределах возрастной нормы" },
@@ -13,18 +14,14 @@ export default function HeartSection({ insertTextToTextarea, setExpandedPlaque }
   };
 
   return (
-    <div className="ml-4 space-y-1">
-      {heartOptions.map((option, index) => (
-        <div
-          key={index}
-          className="p-1 bg-gray-700 text-gray-300 text-xs hover:bg-gray-600 cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleOptionClick(option);
-          }}
-        >
-          {option.label}
-        </div>
+    <div className="ml-6 mt-1 space-y-1">
+      {heartOptions.map((option, idx) => (
+        <PlaqueButton
+          key={idx}
+          label={option.label}
+          onClick={() => handleOptionClick(option)}
+          hasChildren={false}
+        />
       ))}
     </div>
   );

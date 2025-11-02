@@ -1,17 +1,20 @@
-FROM node:20-alpine
+# Используем Debian-based образ, а не Alpine
+FROM node:20-bullseye
 
+# Рабочая директория
 WORKDIR /app
 
-# копируем package.json и lock-файл
+# Копируем манифесты зависимостей
 COPY package*.json ./
 
-# устанавливаем зависимости
+# Устанавливаем зависимости
 RUN npm install --legacy-peer-deps
 
-# копируем весь код
+# Копируем остальные файлы проекта
 COPY . .
 
+# Открываем порт для Vite
 EXPOSE 3000
 
-# запускаем dev-сервер Vite
+# Запуск dev-сервера с доступом извне
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

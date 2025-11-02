@@ -145,9 +145,9 @@ export default function ResearchDescriptionModal({
         </button>
 
         {/* Контент */}
-        <div className="flex flex-1 p-6 gap-6">
+        <div className="flex flex-1 h-full gap-6 p-6">
           {/* Левая часть — текстовое поле */}
-          <div className="flex flex-col w-2/3">
+          <div className="flex flex-col w-2/3 h-full">
             <textarea
               ref={textareaRef}
               value={text}
@@ -155,12 +155,17 @@ export default function ResearchDescriptionModal({
               placeholder="Введите описание исследования..."
               className="flex-1 resize-none bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
             />
-
             <button
-              onClick={saveDescription}
-              className="mt-3 self-end px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition"
+              onClick={() => {
+                if (textareaRef.current) {
+                  const textToCopy = "\n\n" + textareaRef.current.value + "\n";
+                  navigator.clipboard.writeText(textToCopy).catch(err => console.error(err));
+                }
+                saveDescription();
+              }}
+              className="mt-3 self-start px-5 py-2 bg-blue-400 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition"
             >
-              {saving ? "Сохраняем..." : saveSuccess ? "Сохранено!" : "Сохранить"}
+              {saving ? "Сохраняем..." : saveSuccess ? "Сохранено!" : "Сохранить и скопировать"}
             </button>
           </div>
 
@@ -168,7 +173,7 @@ export default function ResearchDescriptionModal({
           <div className="w-px bg-gray-200"></div>
 
           {/* Правая часть — плаки */}
-          <div className="flex-1 overflow-y-auto pr-2">
+          <div className="flex-1 h-full overflow-y-auto pr-2">
             {ResearchComponent && (
               <ResearchComponent
                 expandedPlaque={expandedPlaque}

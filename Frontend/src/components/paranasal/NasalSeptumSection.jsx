@@ -1,7 +1,7 @@
 import React from "react";
+import PlaqueButton from "../ui/PlaqueButton";
 
 export default function NasalSeptumSection({ insertTextToTextarea, setExpandedPlaque }) {
-  // Варианты состояния носовой перегородки
   const nasalSeptumOptions = [
     "Не искривлена",
     "Искривлена влево",
@@ -12,32 +12,21 @@ export default function NasalSeptumSection({ insertTextToTextarea, setExpandedPl
     "Гипертрофия носовых раковин",
   ];
 
-  // --- ИЗMЕНЕННЯ ФУНКЦИЯ ---
   const insertNasalSeptumText = (option) => {
-    // Ваша логика формирования текста остается без изменений
-    const fullText = `\nНосовая перегородка ${option.toLowerCase()}.`;
-
-    // 2. Используем пропс для вставки
-    insertTextToTextarea(fullText);
-    
-    // Сворачиваем плашку после выбора
+    insertTextToTextarea(`\nНосовая перегородка ${option.toLowerCase()}.`);
     setExpandedPlaque(null);
   };
-  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
   return (
     <div className="ml-6 mt-1 space-y-1">
       {nasalSeptumOptions.map((option, idx) => (
-        <div
+        <PlaqueButton
           key={idx}
-          className="p-1 bg-gray-700 text-gray-300 text-xs hover:bg-gray-600 cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            insertNasalSeptumText(option);
-          }}
-        >
-          {option}
-        </div>
+          label={option}
+          onClick={() => insertNasalSeptumText(option)}
+          isExpanded={false}
+          hasChildren={false}
+        />
       ))}
     </div>
   );

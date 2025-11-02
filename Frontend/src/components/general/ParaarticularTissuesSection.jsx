@@ -1,13 +1,11 @@
-import React from "react";
+import PlaqueButton from "../ui/PlaqueButton";
 
-export default function ParaarticularTissuesSection({ textareaRef, setExpandedPlaque, insertTextToTextarea }) { // 1. Принимаем пропс
-  // Варианты параартикулярных тканей
+export default function ParaarticularTissuesSection({ setExpandedPlaque, insertTextToTextarea }) {
   const paraarticularOptions = [
     "Без изменений",
     "Изменения",
   ];
 
-  // --- ИЗМЕНЕННЯ ФУНКЦИЯ ---
   const insertParaarticularText = (option) => {
     let fullText = "";
     if (option === "Без изменений") {
@@ -16,27 +14,19 @@ export default function ParaarticularTissuesSection({ textareaRef, setExpandedPl
       fullText = "\nОпределяются образования костной плотности в параартикулярных тканях.";
     }
 
-    // 2. Вызываем пропс для вставки
     insertTextToTextarea(fullText);
-
-    // сворачиваем плашку
     setExpandedPlaque(null);
   };
-  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
   return (
     <div className="ml-6 mt-1 space-y-1">
       {paraarticularOptions.map((option, idx) => (
-        <div
+        <PlaqueButton
           key={idx}
-          className="p-1 bg-gray-700 text-gray-300 text-xs hover:bg-gray-600 cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            insertParaarticularText(option);
-          }}
-        >
-          {option}
-        </div>
+          label={option}
+          onClick={() => insertParaarticularText(option)}
+          hasChildren={false}
+        />
       ))}
     </div>
   );

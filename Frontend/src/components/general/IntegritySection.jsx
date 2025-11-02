@@ -1,56 +1,29 @@
 import React from "react";
 
-export default function IntegritySection({ textareaRef, setExpandedPlaque }) {
+export default function IntegritySection({ textareaRef, setExpandedPlaque, insertTextToTextarea }) { // 1. Принимаем пропс
   // Варианты целостности суставных поверхностей
   const integrityOptions = [
     "Не нарушена",
     "Нарушена",
   ];
 
-  // Вставка текста в textarea
+  // --- ИЗМЕНЕННЯ ФУНКЦИЯ ---
   const insertIntegrityText = (option) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
+    let fullText = "";
+    
     if (option === "Не нарушена") {
-      const fullText = "\nКостно-травматических и костно-деструктивных изменений не выявлено.";
-      
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const text = textarea.value;
-
-      const newText = text.substring(0, start) + fullText + text.substring(end);
-      textarea.value = newText;
-
-      const newCursorPosition = start + fullText.length;
-      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-      textarea.focus();
-
-      const event = new Event("input", { bubbles: true });
-      textarea.dispatchEvent(event);
-      
-      setExpandedPlaque(null);
-    } 
-    else if (option === "Нарушена") {
-      const fullText = "Определяется нарушение целостности костной ткани в";
-      
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const text = textarea.value;
-
-      const newText = text.substring(0, start) + fullText + text.substring(end);
-      textarea.value = newText;
-
-      const newCursorPosition = start + fullText.length;
-      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-      textarea.focus();
-
-      const event = new Event("input", { bubbles: true });
-      textarea.dispatchEvent(event);
-      
-      setExpandedPlaque(null);
+      fullText = "\nКостно-травматических и костно-деструктивных изменений не выявлено.";
+    } else if (option === "Нарушена") {
+      fullText = "Определяется нарушение целостности костной ткани в";
     }
+    
+    // 2. Вызываем пропс для вставки
+    insertTextToTextarea(fullText);
+    
+    // Сворачиваем плашку после выбора
+    setExpandedPlaque(null);
   };
+  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
   return (
     <div className="ml-6 mt-1 space-y-1">

@@ -9,22 +9,20 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
   const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
   const [selectedResearch, setSelectedResearch] = useState(null);
-  const [currentDescription, setCurrentDescription] = useState("");
-  const [insertedText, setInsertedText] = useState("");
   const [textareaRef, setTextareaRef] = useState(null);
   const [selectedResearchId, setSelectedResearchId] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedDescription, setSelectedDescription] = useState("");
+  const [tempDescription, setTempDescription] = useState("");
 
   useEffect(() => {
     const issuedIds = researches?.filter(r => r.issued_on_hands).map(r => r.id) || [];
     setIssuedResearchIds(issuedIds);
   }, [researches]);
 
-  if (!researches || researches.length === 0) return null;
-
   const handleIssue = (researchId) => {
-    const isCurrentlyIssued = issuedResearchIds.includes(researchId) ||
+    const isCurrentlyIssued =
+      issuedResearchIds.includes(researchId) ||
       researches.find(r => r.id === researchId)?.issued_on_hands;
 
     if (isCurrentlyIssued) {
@@ -40,146 +38,126 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
     onIssue?.(researchId, true);
   };
 
-  const openTypeModal = (ref) => {
-    setTextareaRef(ref);
+  const openTypeModal = (researchId = null) => {
+    setSelectedResearchId(researchId);
     setIsTypeModalOpen(true);
   };
 
   const closeTypeModal = () => setIsTypeModalOpen(false);
+
+  const closeDescriptionModal = () => {
+    setIsDescriptionModalOpen(false);
+    setTempDescription("");
+  };
+
   const handleResearchTypeSelect = (researchName) => {
     setSelectedResearch(researchName);
-    setCurrentDescription("");
   };
 
-  const handleOpenDescriptionModal = () => setIsDescriptionModalOpen(true);
   const handleInsertText = (text, researchName) => {
-    setInsertedText(text);
     setSelectedResearch(researchName);
+    setTempDescription(text);
+    setIsTypeModalOpen(false);
+    setIsDescriptionModalOpen(true);
   };
-  const closeDescriptionModal = () => setIsDescriptionModalOpen(false);
 
-  // Функция для обработки клика по кнопке "Описание"
-  const handleDescriptionClick = (research) => {
+  const handleResearchClick = (research) => {
     setSelectedResearchId(research.id);
-    
-    // Проверяем, есть ли описание в данных исследования
     const hasDescription = research.description && research.description.trim() !== "";
-    
+
     if (hasDescription) {
-      // Есть описание — открываем модалку просмотра
       setSelectedDescription(research.description);
       setIsViewModalOpen(true);
     } else {
-      // Нет описания — открываем модалку выбора типа исследования
-      openTypeModal();
-    }
-  };
-
-  // Функция для открытия модалки редактирования описания
-  const handleEditDescription = (research) => {
-    setSelectedResearchId(research.id);
-    
-    // Если есть описание, открываем модалку редактирования с текущим описанием
-    if (research.description && research.description.trim() !== "") {
-      setSelectedResearch(research.research_type || "");
-      setCurrentDescription(research.description);
-      setIsDescriptionModalOpen(true);
-    } else {
-      // Нет описания — открываем модалку выбора типа
-      openTypeModal();
+      openTypeModal(research.id);
     }
   };
 
   return (
-    <div className="mt-3 flex flex-row gap-2 overflow-x-auto">
-      {researches.map(r => {
+    <div className="mt-3 flex flex-col gap-4">
+      {researches.map((r, index) => {
         const isIssued = issuedResearchIds.includes(r.id) || r.issued_on_hands;
         const hasDescription = r.description && r.description.trim() !== "";
 
         return (
           <div
             key={r.id}
-            className="relative border-2 border-yellow-500 rounded-md bg-gray-800 text-yellow-200 text-sm min-w-[200px] flex-shrink-0"
+            onClick={(e) => {
+              e.stopPropagation(); // ← Останавливаем всплытие
+              handleResearchClick(r);
+            }}
+            className={`cursor-pointer bg-gray-50 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow ${
+              hasDescription ? 'hover:border-green-400' : 'hover:border-gray-400'
+            }`}
           >
-            {/* Блок кнопок сверху */}
-            <div className="relative flex gap-1 p-1 bg-gray-800 rounded-t-md">
-              <span className="absolute left-2 right-2 bottom-0 border-b border-yellow-500"></span>
+            <div className="flex justify-between items-center p-2 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <span className="bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold px-2 py-1 rounded">
+                  Исследование #{index + 1}
+                </span>
 
-              {/* Изменяем эту кнопку - используем handleDescriptionClick вместо handleEditDescription */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDescriptionClick(r); // ← меняем на handleDescriptionClick
-                }}
-                className={`px-2 py-0.5 rounded border text-xs self-start transition-colors ${
-                  hasDescription 
-                    ? "border-green-500 text-green-400 hover:text-green-300 hover:border-green-300" 
-                    : "border-yellow-500 text-yellow-400 hover:text-yellow-300 hover:border-yellow-300"
-                }`}
-                title={hasDescription ? "Просмотреть описание" : "Добавить описание"}
-              >
-                {hasDescription ? "Просмотр" : "Описание"} {/* Меняем текст кнопки */}
-              </button>
+                {hasDescription && (
+                  <span className="text-green-600 text-xs font-semibold">
+                    (описание добавлено)
+                  </span>
+                )}
+              </div>
 
-              {/* Остальные кнопки без изменений */}
-              <PencilIcon
-                className="h-5 w-5 ml-14 text-yellow-400 cursor-pointer hover:text-yellow-300"
-                onClick={(e) => { e.stopPropagation(); onEdit?.(r); }}
-                title="Редактировать исследование"
-              />
-              <TrashIcon
-                className="h-5 w-5 text-red-500 cursor-pointer hover:text-red-700"
-                onClick={(e) => { e.stopPropagation(); onDelete?.(r.id); }}
-                title="Удалить"
-              />
-              <button
-                onClick={(e) => { e.stopPropagation(); handleIssue(r.id); }}
-                className={`h-5 w-5 cursor-pointer ${isIssued ? 'text-green-500 hover:text-green-300' : 'text-blue-500 hover:text-blue-300'}`}
-                title={isIssued ? "Отменить выдачу" : "Выдать снимки"}
-              >
-                {isIssued ? <CheckCircleIcon /> : <DocumentDuplicateIcon />}
-              </button>
+              <div className="flex items-center gap-2">
+                <PencilIcon
+                  className="h-5 w-5 text-gray-500 cursor-pointer hover:text-gray-700"
+                  onClick={(e) => { e.stopPropagation(); onEdit?.(r); }}
+                  title="Редактировать"
+                />
+                <TrashIcon
+                  className="h-5 w-5 text-gray-500 cursor-pointer hover:text-red-500"
+                  onClick={(e) => { e.stopPropagation(); onDelete?.(r.id); }}
+                  title="Удалить"
+                />
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleIssue(r.id); }}
+                  className={`h-5 w-5 cursor-pointer ${
+                    isIssued ? 'text-green-500 hover:text-green-300' : 'text-gray-500 hover:text-blue-300'
+                  }`}
+                  title={isIssued ? "Отменить выдачу" : "Выдать снимки"}
+                >
+                  {isIssued ? <CheckCircleIcon /> : <DocumentDuplicateIcon />}
+                </button>
+              </div>
             </div>
 
-            {/* Основное содержимое исследования без изменений */}
-            <div className="p-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-1 p-3 text-sm text-gray-700">
               <div><strong>Диагноз:</strong> {r.dsnapr}</div>
               <div><strong>Область:</strong> {r.research_region}</div>
               <div><strong>Тип:</strong> {r.research_type}</div>
               <div><strong>Кассета:</strong> {r.cassete_size}</div>
-              <div><strong>Исследований:</strong> {r.numb_of_proc}</div>
+              <div><strong>Количество:</strong> {r.numb_of_proc}</div>
               <div><strong>Доза:</strong> {r.dose} мЗв</div>
               <div><strong>Направил:</strong> {r.sent}</div>
-              {hasDescription && (
-                <div className="mt-2 text-green-400 text-xs">
-                  <strong>Статус:</strong> Описание добавлено
-                </div>
-              )}
-              {isIssued && (
-                <div className="mt-2 text-green-400 text-xs">
-                  <strong>Статус:</strong> Снимки выданы на руки
-                </div>
-              )}
             </div>
+
+            {isIssued && (
+              <div className="px-3 pb-3 text-blue-600 text-xs font-medium">
+                <strong>Статус:</strong> Снимки выданы на руки
+              </div>
+            )}
           </div>
         );
       })}
 
-      {/* Модальные окна без изменений */}
       {isTypeModalOpen && (
         <ResearchTypeModal
           onClose={closeTypeModal}
           onResearchSelect={handleResearchTypeSelect}
           onInsertText={handleInsertText}
-          onOpenDescriptionModal={handleOpenDescriptionModal}
         />
       )}
-      
+
       {isDescriptionModalOpen && (
         <ResearchDescriptionModal
           onClose={closeDescriptionModal}
           selectedResearch={selectedResearch}
-          description={insertedText}
+          description={tempDescription || selectedDescription}
           researchId={selectedResearchId}
           setTextareaRef={setTextareaRef}
         />

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import SinusExpansionModal from "./SinusExpansionModal";
 
-export default function SinusSection({ textareaRef, setExpandedPlaque }) {
+export default function SinusSection({ insertTextToTextarea, setExpandedPlaque }) {
   const [showExpansionModal, setShowExpansionModal] = useState(false);
   const [selectedSinus, setSelectedSinus] = useState(null);
 
@@ -10,19 +10,6 @@ export default function SinusSection({ textareaRef, setExpandedPlaque }) {
     "Свободны",
     "Патология"
   ];
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current 
-        ? current + "\n" + text 
-        : text;
-      
-      // Вызываем событие input для React
-      const event = new Event('input', { bubbles: true });
-      textareaRef.current.dispatchEvent(event);
-    }
-  };
 
   return (
     <>
@@ -37,7 +24,7 @@ export default function SinusSection({ textareaRef, setExpandedPlaque }) {
                 setShowExpansionModal(true);
               } else {
                 setSelectedSinus(option);
-                insertTextToTextarea(`Синусы плевры ${option.toLowerCase()}.`);
+                insertTextToTextarea("\n" + `Синусы плевры ${option.toLowerCase()}.`);
                 setExpandedPlaque(null);
               }
             }}
@@ -50,7 +37,7 @@ export default function SinusSection({ textareaRef, setExpandedPlaque }) {
       {showExpansionModal && (
         <SinusExpansionModal
           onClose={() => setShowExpansionModal(false)}
-          textareaRef={textareaRef}
+          insertTextToTextarea={insertTextToTextarea}
         />
       )}
     </>

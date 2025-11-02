@@ -8,7 +8,6 @@ import LumbarLordosisSection from "./LordosisSection";
 export default function LumbarResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  textareaRef,
   setOpenModal,
   insertTextToTextarea,
 }) {
@@ -169,7 +168,7 @@ export default function LumbarResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <LumbarIntegritySection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -195,7 +194,7 @@ export default function LumbarResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <LumbarParaarticularTissuesSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -221,7 +220,7 @@ export default function LumbarResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <LumbarLordosisSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}

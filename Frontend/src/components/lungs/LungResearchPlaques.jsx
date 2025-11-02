@@ -12,7 +12,6 @@ import ChestCageSection from "./ChestCageSection";
 export default function LungResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  textareaRef,
   setOpenModal,
   insertTextToTextarea,
 }) {
@@ -39,7 +38,7 @@ export default function LungResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  insertTextToTextarea(
+                  insertTextToTextarea("\n" + 
                     [
                       "Легкие без инфильтративных и очаговых теней.",
                       "Сосудистый рисунок не изменен.",
@@ -113,7 +112,7 @@ export default function LungResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <VesselsSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea} 
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -139,7 +138,7 @@ export default function LungResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <HilaSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea} 
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -165,7 +164,7 @@ export default function LungResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <SinusSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea} 
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -191,7 +190,7 @@ export default function LungResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <PleuraSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea} 
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -217,7 +216,7 @@ export default function LungResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <MediastinumSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea} 
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -243,7 +242,7 @@ export default function LungResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <HeartSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea} 
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -269,7 +268,7 @@ export default function LungResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <ChestCageSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea} 
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}

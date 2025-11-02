@@ -7,7 +7,6 @@ import LumbarParaarticularTissuesSection from "../general/ParaarticularTissuesSe
 export default function CervicalResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  textareaRef,
   setOpenModal,
   insertTextToTextarea,
 }) {
@@ -152,7 +151,7 @@ export default function CervicalResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <LumbarIntegritySection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -178,7 +177,7 @@ export default function CervicalResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <LumbarParaarticularTissuesSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}

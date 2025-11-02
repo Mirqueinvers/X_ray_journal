@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { generateDescriptionKneeGapSurface } from "../generateDescription/Knees/generateDescriptionKneeGapSurface";
 
-export default function JointSpaceSection({ isOpen, onClose, textareaRef }) {
+export default function JointSpaceSection({ isOpen, onClose, insertTextToTextarea }) { // 1. Принимаем insertTextToTextarea
   const [selectedOptions, setSelectedOptions] = useState({
     leftMedial: [],
     leftLateral: [],
@@ -56,15 +56,6 @@ export default function JointSpaceSection({ isOpen, onClose, textareaRef }) {
       }
     });
     setExpandedZone(null);
-  };
-
-  // Вставка в textarea
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + text : text;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
   };
 
   if (!isOpen) return null;
@@ -159,8 +150,9 @@ export default function JointSpaceSection({ isOpen, onClose, textareaRef }) {
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
+              // 3. ИСПОЛЬЗУЕМ пропс insertTextToTextarea, который пришел от ResearchDescriptionModal
               insertTextToTextarea(
-                generateDescriptionKneeGapSurface({
+                "\n" + generateDescriptionKneeGapSurface({
                   mode: "gaps",
                   selectedOptions,
                   selectedPositions

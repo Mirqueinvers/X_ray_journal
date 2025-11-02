@@ -7,7 +7,6 @@ import ShoulderParaarticularTissuesSection from "../general/ParaarticularTissues
 export default function ShoulderResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  textareaRef,
   setOpenModal,
   insertTextToTextarea,
 }) {
@@ -109,7 +108,7 @@ export default function ShoulderResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <ShoulderCongruencySection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -139,7 +138,7 @@ export default function ShoulderResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <ShoulderIntegritySection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -169,7 +168,7 @@ export default function ShoulderResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <ShoulderParaarticularTissuesSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}

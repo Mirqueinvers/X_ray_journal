@@ -1,7 +1,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
-export default function LungPatternModal({ onClose, textareaRef }) {
+export default function LungPatternModal({ onClose, insertTextToTextarea }) {
   const [selectedType, setSelectedType] = useState(null);
   const [selectedIntensity, setSelectedIntensity] = useState(null);
   const [selectedContour, setSelectedContour] = useState([]);
@@ -50,44 +50,42 @@ export default function LungPatternModal({ onClose, textareaRef }) {
   };
 
 const insertSelected = () => {
-  if (!textareaRef?.current || selectedSegments.length === 0) return;
+    if (selectedSegments.length === 0) return;
 
-  const textarea = textareaRef.current;
-  const parts = selectedSegments.map((seg) => {
-    const typeText = selectedType ? selectedType.toLowerCase() : "";
+    // Сохраняем всю вашу сложную логику генерации текста
+    const parts = selectedSegments.map((seg) => {
+      const typeText = selectedType ? selectedType.toLowerCase() : "";
+      
+      const intensityText = selectedIntensity
+        ? selectedIntensity === "Низкая" ? "низкой" :
+          selectedIntensity === "Средняя" ? "средней" :
+          "высокой"
+        : "";
+
+      const contourText = selectedContour.length > 0
+        ? selectedContour.map(c => 
+            c === "Четкий" ? "четким" :
+            c === "Не четкий" ? "не четким" :
+            c === "Ровный" ? "ровным" :
+            "не ровным"
+          ).join(", ")
+        : "";
+
+      const structureText = selectedStructure
+        ? selectedStructure === "Однородная" ? "однородной" : "неоднородной"
+        : "";
+
+      const contourFormatted = contourText ? `с ${contourText} контуром` : "";
+      const structureFormatted = structureText ? `${structureText} структуры` : "";
+
+      return `В ${seg} определяется ${typeText} тень${intensityText ? ` ${intensityText} интенсивности` : ""}${contourFormatted ? `, ${contourFormatted}` : ""}${structureFormatted ? `, ${structureFormatted}` : ""}.`;
+    });
+
+    const finalText = parts.join(" ");
     
-    const intensityText = selectedIntensity
-      ? selectedIntensity === "Низкая" ? "низкой" :
-        selectedIntensity === "Средняя" ? "средней" :
-        "высокой"
-      : "";
-
-    const contourText = selectedContour.length > 0
-      ? selectedContour.map(c => 
-          c === "Четкий" ? "четким" :
-          c === "Не четкий" ? "не четким" :
-          c === "Ровный" ? "ровным" :
-          "не ровным"
-        ).join(", ")
-      : "";
-
-    const structureText = selectedStructure
-      ? selectedStructure === "Однородная" ? "однородной" : "неоднородной"
-      : "";
-
-    const contourFormatted = contourText ? `с ${contourText} контуром` : "";
-    const structureFormatted = structureText ? `${structureText} структуры` : "";
-
-    return `В ${seg} определяется ${typeText} тень${intensityText ? ` ${intensityText} интенсивности` : ""}${contourFormatted ? `, ${contourFormatted}` : ""}${structureFormatted ? `, ${structureFormatted}` : ""}.`;
-  });
-
-const current = textarea.value;
-const newText = parts.join(" "); // не трогаем пробелы внутри частей
-textarea.value = current + newText; // просто конкатенация без добавления пробела
-textarea.dispatchEvent(new Event("input", { bubbles: true }));
-textarea.focus();
-
-};
+    // 2. Используем пропс для вставки
+    insertTextToTextarea("\n" + finalText);
+  };
 
 
 

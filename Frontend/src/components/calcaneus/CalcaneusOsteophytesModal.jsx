@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function CalcaneusOsteophytesModal({ isOpen, onClose, textareaRef }) {
+export default function CalcaneusOsteophytesModal({ isOpen, onClose, insertTextToTextarea }) {
   if (!isOpen) return null;
 
   const [selectedAreas, setSelectedAreas] = useState({
@@ -15,15 +15,6 @@ export default function CalcaneusOsteophytesModal({ isOpen, onClose, textareaRef
       ...prev,
       [areaKey]: !prev[areaKey],
     }));
-  };
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      const newText = current ? current + text : text;
-      textareaRef.current.value = newText;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
   };
 
   const generateDescription = () => {
@@ -138,7 +129,7 @@ export default function CalcaneusOsteophytesModal({ isOpen, onClose, textareaRef
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
             onClick={() => {
-              insertTextToTextarea(generateDescription());
+              insertTextToTextarea("\n" + generateDescription());
               onClose();
             }}
           >

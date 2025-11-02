@@ -1,0 +1,358 @@
+/* src/styles/journal-exact.css */
+
+/* --- 1. Переменные из Figma --- */
+:root {
+  /* Цвета */
+  --journal-page-bg: #f9fafb;
+  --journal-card-bg: #ffffff;
+  --journal-card-border: #e5e7eb;
+  --journal-card-hover-bg: #f9fafb;
+  --journal-focus-border: #3b82f6;
+  --journal-focus-ring: #bfdbfe;
+  --journal-text-primary: #111827;
+  --journal-text-secondary: #6b7280;
+  --journal-text-muted: #9ca3af;
+  --journal-badge-bg: #e0e7ff;
+  --journal-badge-text: #3730a3;
+  --journal-button-bg: #ffffff;
+  --journal-button-border: #d1d5db;
+  --journal-button-hover-bg: #f9fafb;
+  --journal-icon-color: #6b7280;
+  --journal-icon-hover-color: #374151;
+  --journal-status-color: #059669;
+  --journal-avatar-bg: #e5e7eb;
+
+  /* Типографика (Inter) */
+  --journal-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --journal-text-xs: 12px;
+  --journal-text-sm: 14px;
+  --journal-text-base: 16px;
+  --journal-font-weight-medium: 500;
+  --journal-font-weight-semibold: 600;
+
+  /* Отступы и размеры */
+  --journal-container-padding: 24px;
+  --journal-card-padding: 16px;
+  --journal-gap: 12px;
+  --journal-border-radius: 8px;
+  --journal-icon-size: 20px;
+  --journal-button-size: 32px;
+  --journal-avatar-size: 40px;
+  --journal-transition: all 120ms ease;
+}
+
+/* --- 2. Стили для страницы --- */
+.journal-page {
+  background-color: var(--journal-page-bg);
+  font-family: var(--journal-font-family);
+  color: var(--journal-text-primary);
+  
+  /* Изменение здесь: уменьшаем горизонтальные отступы */
+  padding: 24px 12px; /* 24px сверху/снизу, 12px слева/справа */
+
+  border-radius: var(--journal-border-radius);
+  display: flex;
+  flex-direction: column;
+  gap: var(--journal-gap);
+  width: 100%; /* Убедимся, что контейнер растягивается */
+}
+
+.journal-page-title {
+  font-size: var(--journal-text-base);
+  font-weight: var(--journal-font-weight-semibold);
+  color: var(--journal-text-primary);
+  margin: 0;
+}
+
+/* --- 3. Карточка пациента --- */
+.patient-card {
+  background-color: var(--journal-card-bg);
+  border: 1px solid var(--journal-card-border);
+  border-radius: var(--journal-border-radius);
+  cursor: pointer;
+  transition: var(--journal-transition);
+  position: relative;
+}
+
+.patient-card:hover {
+  background-color: var(--journal-card-hover-bg);
+}
+
+.patient-card.focused {
+  border-color: var(--journal-focus-border);
+  box-shadow: 0 0 0 3px var(--journal-focus-ring);
+}
+
+.patient-card-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--journal-card-padding);
+  gap: var(--journal-gap);
+}
+
+.patient-card-main {
+  flex-grow: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.patient-card-avatar {
+  width: var(--journal-avatar-size);
+  height: var(--journal-avatar-size);
+  border-radius: 50%;
+  background-color: var(--journal-avatar-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--journal-text-secondary);
+  font-weight: var(--journal-font-weight-semibold);
+  font-size: var(--journal-text-sm);
+  flex-shrink: 0;
+}
+
+.patient-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.patient-card-name {
+  font-size: var(--journal-text-base);
+  font-weight: var(--journal-font-weight-medium);
+  color: var(--journal-text-primary);
+  margin: 0;
+}
+
+.patient-card-details {
+  font-size: var(--journal-text-sm);
+  color: var(--journal-text-secondary);
+  margin: 0;
+}
+
+.patient-card-badges {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.patient-card-badge {
+  padding: 2px 8px;
+  background-color: var(--journal-badge-bg);
+  color: var(--journal-badge-text);
+  border-radius: 999px;
+  font-size: var(--journal-text-xs);
+  font-weight: var(--journal-font-weight-medium);
+}
+
+.patient-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* --- 4. Иконка-кнопка --- */
+.icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--journal-button-size);
+  height: var(--journal-button-size);
+  background-color: var(--journal-button-bg);
+  border: 1px solid var(--journal-button-border);
+  border-radius: var(--journal-border-radius);
+  cursor: pointer;
+  transition: var(--journal-transition);
+}
+
+.icon-button:hover {
+  background-color: var(--journal-button-hover-bg);
+}
+
+.icon-button svg {
+  width: var(--journal-icon-size);
+  height: var(--journal-icon-size);
+  color: var(--journal-icon-color);
+  transition: var(--journal-transition);
+}
+
+.icon-button:hover svg {
+  color: var(--journal-icon-hover-color);
+}
+
+/* --- 5. Список исследований --- */
+.research-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--journal-gap);
+  padding: 0 var(--journal-card-padding) var(--journal-card-padding);
+}
+
+.research-item {
+  background-color: var(--journal-card-bg);
+  border: 1px solid var(--journal-card-border);
+  border-radius: var(--journal-border-radius);
+  padding: var(--journal-card-padding);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.research-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--journal-card-border);
+}
+
+.research-item-title {
+  font-size: var(--journal-text-sm);
+  font-weight: var(--journal-font-weight-semibold);
+  color: var(--journal-text-primary);
+  margin: 0;
+}
+
+.research-item-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.research-item-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: var(--journal-text-sm);
+  color: var(--journal-text-secondary);
+}
+
+.research-item-details strong {
+  color: var(--journal-text-primary);
+}
+
+.research-item-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--journal-card-border);
+  font-size: var(--journal-text-xs);
+}
+
+.research-item-status {
+  font-weight: var(--journal-font-weight-medium);
+  color: var(--journal-status-color);
+}
+
+/* --- Модальные окна (дополнение для AddResearchModal) --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: var(--journal-container-padding);
+}
+
+.modal-content {
+  background-color: var(--journal-card-bg);
+  border-radius: var(--journal-border-radius);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--journal-font-family);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--journal-card-padding);
+  border-bottom: 1px solid var(--journal-card-border);
+}
+
+.modal-title {
+  font-size: var(--journal-text-lg);
+  font-weight: var(--journal-font-weight-semibold);
+  color: var(--journal-text-primary);
+  margin: 0;
+}
+
+.modal-close-button {
+  background: none;
+  border: none;
+  padding: var(--space-2);
+  cursor: pointer;
+  color: var(--journal-text-secondary);
+  border-radius: var(--journal-border-radius);
+  transition: background-color var(--journal-transition);
+}
+
+.modal-close-button:hover {
+  background-color: var(--journal-button-hover-bg);
+}
+
+.modal-body {
+  padding: var(--journal-card-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--journal-gap);
+}
+
+/* --- Стили полей формы --- */
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-input {
+  border: 1px solid var(--journal-card-border);
+  border-radius: var(--journal-border-radius);
+  padding: 10px 12px;
+  font-size: var(--journal-text-sm);
+  font-family: var(--journal-font-family);
+  color: var(--journal-text-primary);
+  background-color: var(--journal-card-bg);
+  transition: border-color var(--journal-transition), box-shadow var(--journal-transition);
+}
+
+.form-input::placeholder {
+  color: var(--journal-text-muted);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--journal-focus-border);
+  box-shadow: 0 0 0 3px var(--journal-focus-ring);
+}
+
+/* --- Стили кнопок --- */
+.button-primary {
+  background-color: var(--journal-focus-border);
+  color: #ffffff;
+  font-size: var(--journal-text-sm);
+  font-weight: var(--journal-font-weight-medium);
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--journal-border-radius);
+  cursor: pointer;
+  transition: background-color var(--journal-transition);
+}
+
+.button-primary:hover {
+  background-color: #2563eb;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--journal-card-padding);
+  border-top: 1px solid var(--journal-card-border);
+}

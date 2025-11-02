@@ -1,11 +1,5 @@
-
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
-
-
 export default function ChestResearchPlaques({
-  expandedPlaque,
-  setExpandedPlaque,
-  textareaRef,
+  insertTextToTextarea,
   setOpenModal,
 }) {
 

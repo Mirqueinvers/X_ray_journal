@@ -8,7 +8,7 @@ const surfaceMapPlural = {
   "резко склерозирована": "резко склерозированы",
 };
 
-export default function ShoulderJointSurfaceModal({ isOpen, onClose, textareaRef }) {
+export default function ShoulderJointSurfaceModal({ isOpen, onClose, insertTextToTextarea }) {
   const [selectedOptions, setSelectedOptions] = useState({
     right: "",
     left: "",
@@ -38,14 +38,6 @@ export default function ShoulderJointSurfaceModal({ isOpen, onClose, textareaRef
       [zoneKey]: option,
     }));
     setExpandedZone(null);
-  };
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
   };
 
   const generateDescription = () => {

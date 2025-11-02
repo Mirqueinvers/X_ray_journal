@@ -2,7 +2,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
-export default function EndplatesModal({ onClose, textareaRef }) {
+export default function EndplatesModal({ onClose, insertTextToTextarea }) {
   const [activeSeverity, setActiveSeverity] = useState(null);
   const [selected, setSelected] = useState({
     умеренно: [],
@@ -65,23 +65,17 @@ export default function EndplatesModal({ onClose, textareaRef }) {
   };
 
 
-  const insertSelected = () => {
-  if (!textareaRef.current) return;
-  const textarea = textareaRef.current;
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const value = textarea.value;
-
+const insertSelected = () => {
+  // ВАША ЛОГИКА ГЕНЕРАЦИИ ТЕКСТА ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ
   let insertText = "";
 
   if (unchanged && shmorl.length === 0) {
     insertText =
-      "Замыкательные пластинки ровные, чёткие, склеротических и деструктивных изменений не выявлено.\n";
+      "Замыкательные пластинки ровные, чёткие, склеротических и деструктивных изменений не выявлено.";
   } else {
     let sclerosisParts = [];
     let shmorlParts = [];
 
-    // --- блок склероза ---
     for (const sev of ["умеренно", "выраженно", "резко"]) {
       const segs = buildSegments(selected[sev]);
       if (segs.length > 0) {
@@ -99,10 +93,9 @@ export default function EndplatesModal({ onClose, textareaRef }) {
     }
 
     if (sclerosisParts.length > 0) {
-      insertText += `Определяется ${sclerosisParts.join(", ")}.\n`;
+      insertText += `Определяется ${sclerosisParts.join(", ")}.`;
     }
 
-    // --- блок грыж Шморля ---
     if (shmorl.length > 0) {
       const grouped = {};
       shmorl.forEach(({ vertebra, side }) => {
@@ -110,7 +103,6 @@ export default function EndplatesModal({ onClose, textareaRef }) {
         grouped[vertebra].push(side);
       });
 
-      // создаём массив описаний позвонков
       const shmorlTexts = Object.entries(grouped).map(([v, sides]) => {
         if (sides.length === 2) {
           return `верхней и нижней замыкательных пластинок тела ${v} позвонка`;
@@ -119,24 +111,18 @@ export default function EndplatesModal({ onClose, textareaRef }) {
         }
       });
 
-      insertText += `Определяется узуративный дефект ${joinWithAnd(shmorlTexts)}.\n`;
-
+      if (insertText) insertText += " ";
+      insertText += `Определяется узуративный дефект ${joinWithAnd(shmorlTexts)}.`;
     }
-
-
-
-    if (!insertText) return;
   }
 
-  const newText = value.substring(0, start) + insertText + value.substring(end);
-  textarea.value = newText;
-
-  textarea.dispatchEvent(new Event("input", { bubbles: true }));
-  textarea.focus();
-  textarea.setSelectionRange(
-    start + insertText.length,
-    start + insertText.length
-  );
+  if (!insertText) return;
+  
+  // --- ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ ---
+  // Добавляем переносы строки и используем пропс для вставки
+  const finalText = `\n${insertText}\n`;
+  insertTextToTextarea(finalText);
+  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
   onClose();
 };

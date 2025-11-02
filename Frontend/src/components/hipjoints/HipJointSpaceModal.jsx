@@ -2,7 +2,7 @@
 // Суставные щели тазобедренных суставов — упрощённая версия (по суставам)
 import React, { useState } from "react";
 
-export default function HipJointSpaceModal({ isOpen, onClose, textareaRef }) {
+export default function HipJointSpaceModal({ isOpen, onClose, insertTextToTextarea }) {
   const [selectedOptions, setSelectedOptions] = useState({
     left: { degree: "", uniformity: "" },
     right: { degree: "", uniformity: "" },
@@ -31,14 +31,6 @@ export default function HipJointSpaceModal({ isOpen, onClose, textareaRef }) {
 
   const isSelected = (zoneKey, field, value) =>
     selectedOptions[zoneKey][field] === value;
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-  };
 
 const generateDescription = () => {
   const sides = {
@@ -193,7 +185,7 @@ const generateDescription = () => {
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
-              insertTextToTextarea(generateDescription());
+              insertTextToTextarea("\n" + generateDescription());
               onClose();
             }}
           >

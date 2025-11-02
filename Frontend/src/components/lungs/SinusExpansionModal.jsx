@@ -1,7 +1,7 @@
 // Frontend/src/components/lungs/SinusExpansionModal.jsx
 import { useState } from "react";
 
-export default function SinusExpansionModal({ onClose, textareaRef }) {
+export default function SinusExpansionModal({ onClose, insertTextToTextarea }) {
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedSides, setSelectedSides] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState({
@@ -16,19 +16,6 @@ export default function SinusExpansionModal({ onClose, textareaRef }) {
   ];
 
   const sideOptions = ["Визуализируется не четко", "Не визуализируется", "Спайка"];
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current 
-        ? current + "\n" + text 
-        : text;
-      
-      // Вызываем событие input для React
-      const event = new Event('input', { bubbles: true });
-      textareaRef.current.dispatchEvent(event);
-    }
-  };
 
   const toggleSide = (side) => {
     setSelectedSides(prev =>
@@ -194,7 +181,7 @@ const generateDescription = () => {
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
-              insertTextToTextarea(generateDescription());
+              insertTextToTextarea("\n" + generateDescription());
               onClose();
             }}
           >

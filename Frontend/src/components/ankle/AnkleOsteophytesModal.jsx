@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { generateDescriptionOsteophytes } from "../generateDescription/AnkleWristElbow/generateDescriptionOsteophytes.js";
 
-export default function AnkleOsteophytesModal({ isOpen, onClose, textareaRef }) {
+export default function AnkleOsteophytesModal({ isOpen, onClose, insertTextToTextarea }) {
   if (!isOpen) return null;
 
   const [selectedAreas, setSelectedAreas] = useState({
@@ -11,14 +11,6 @@ export default function AnkleOsteophytesModal({ isOpen, onClose, textareaRef }) 
     leftMedial: false,
   });
   const [isNormal, setIsNormal] = useState(true);
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-  };
 
   const toggleArea = (area) => {
     setSelectedAreas((prev) => ({
@@ -142,20 +134,20 @@ export default function AnkleOsteophytesModal({ isOpen, onClose, textareaRef }) 
 
         {/* Добавить */}
         <div className="absolute bottom-4 left-4">
-  <button
-    className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
-    onClick={() => {
-      // Генерация описания именно для голеностопного сустава
-      const description = generateDescriptionOsteophytes({
-        type: "ankle",
-        selectedAreas, // объект с { rightLateral, rightMedial, leftLateral, leftMedial }
-      });
-      insertTextToTextarea(description);
-      onClose();
-    }}
-  >
-    Добавить
-  </button>
+          <button
+            className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
+            onClick={() => {
+              // Генерация описания именно для голеностопного сустава
+              const description = "\n" + generateDescriptionOsteophytes({
+                type: "ankle",
+                selectedAreas, // объект с { rightLateral, rightMedial, leftLateral, leftMedial }
+              });
+              insertTextToTextarea(description);
+              onClose();
+            }}
+          >
+            Добавить
+          </button>
         </div>
       </div>
     </div>

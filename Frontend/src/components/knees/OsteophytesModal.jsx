@@ -1,7 +1,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
-export default function OsteophytesModal({ onClose, textareaRef }) {
+export default function OsteophytesModal({ onClose, insertTextToTextarea }) { // 1. Принимаем пропс
   const [selected, setSelected] = useState([]);
 
   const osteophytes = [
@@ -21,6 +21,7 @@ export default function OsteophytesModal({ onClose, textareaRef }) {
     );
   };
 
+  // --- Вся ваша логика генерации текста остается без изменений ---
   const generateInsertText = (selected) => {
     const surfaceMap = { "медиальная": "медиальной", "латеральная": "латеральной" };
     const surfacePluralMap = { "медиальная": "медиальных", "латеральная": "латеральных" };
@@ -62,7 +63,6 @@ export default function OsteophytesModal({ onClose, textareaRef }) {
       });
     });
 
-    // --- Объединяем медиальную и латеральную поверхности одной кости ---
     const mergeSurfacesSameBone = (parts) => {
       const merged = [];
       const used = new Set();
@@ -98,45 +98,24 @@ export default function OsteophytesModal({ onClose, textareaRef }) {
     if (finalParts.length === 2) return `Определяются краевые костные разрастания на ${finalParts.join(" и ")}.`;
     return `Определяются краевые костные разрастания на ${finalParts.slice(0, -1).join(", ")}, ${finalParts[finalParts.length - 1]}.`;
   };
+  // --- Конец вашей логики ---
 
+  // --- ИЗМЕНЕННАЯ ФУНКЦИЯ ---
   const insertSelected = () => {
-    if (!textareaRef.current || selected.length === 0) return;
+    if (selected.length === 0) return;
 
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const value = textarea.value;
+    // 2. Генерируем текст с помощью вашей функции
+    const textToInsert = generateInsertText(selected);
+    
+    // 3. Добавляем перенос строки для лучшего форматирования
+    const finalText = `${textToInsert}`;
 
-    let insertText = generateInsertText(selected);
-
-    // 🟡 исправления текста
-    insertText = insertText
-      .replace(/медиальной поверхности (левой|правой) (\S+) кости и латеральной поверхности \1 \2 кости/g,
-              "медиальной и латеральной поверхностях $1 $2 кости")
-      .replace(/латеральной поверхности (левой|правой) (\S+) кости и медиальной поверхности \1 \2 кости/g,
-              "медиальной и латеральной поверхностях $1 $2 кости")
-      .replace(/медиальных поверхностях бедренной кости/g, "медиальных поверхностях бедренных костей")
-      .replace(/латеральных поверхностях бедренной кости/g, "латеральных поверхностях бедренных костей")
-      .replace(/медиальных поверхностях большеберцовой кости/g, "медиальных поверхностях большеберцовых костей")
-      .replace(/латеральных поверхностях большеберцовой кости/g, "латеральных поверхностях большеберцовых костей")
-      .replace(/медиальных поверхностях бедренной кости и медиальных поверхностях большеберцовой кости/g,
-              "медиальных поверхностях бедренных и большеберцовых костей")
-      .replace(/латеральных поверхностях бедренной кости и латеральных поверхностях большеберцовой кости/g,
-              "латеральных поверхностях бедренных и большеберцовых костей");
-
-    // 🟡 вставка с новой строки
-    const prefix = start === 0 || value[start - 1] === "\n" ? "" : "\n";
-    const newText = value.substring(0, start) + prefix + insertText + "\n" + value.substring(end);
-
-    textarea.value = newText;
-
-    const event = new Event("input", { bubbles: true });
-    textarea.dispatchEvent(event);
-
-    textarea.focus();
-    textarea.setSelectionRange(start + prefix.length + insertText.length + 1, start + prefix.length + insertText.length + 1);
+    // 4. Вызываем пропс для вставки, который придет от ResearchDescriptionModal
+    insertTextToTextarea("\n" + finalText);
+    
     onClose();
   };
+  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
   return (
     <div
@@ -154,7 +133,6 @@ export default function OsteophytesModal({ onClose, textareaRef }) {
           <XMarkIcon className="h-6 w-6" />
         </button>
 
-        {/* Заменяем картинку на фон с двумя коленями */}
         <div className="w-full h-full relative" style={{
             backgroundImage: `url(/images/knee-right.png), url(/images/knee-left.png)`,
             backgroundSize: "contain",

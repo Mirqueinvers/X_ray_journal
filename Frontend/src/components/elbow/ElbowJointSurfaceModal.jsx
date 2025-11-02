@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { generateDescriptionGapSurface } from "../generateDescription/AnkleWristElbow/generateDescriptionGapSurface.js";
 
-export default function ElbowJointSurfaceModal({ isOpen, onClose, textareaRef }) {
+export default function ElbowJointSurfaceModal({ isOpen, onClose, insertTextToTextarea }) {
   if (!isOpen) return null;
 
   const [selectedSides, setSelectedSides] = useState([]);
@@ -17,14 +17,6 @@ export default function ElbowJointSurfaceModal({ isOpen, onClose, textareaRef })
 
   const sideOptions = ["незначительно", "умеренно", "выраженно", "резко"];
   const positionOptions = ["равномерно", "медиально", "латерально"];
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-  };
 
   const toggleSide = (side) => {
     setSelectedSides((prev) => {
@@ -217,22 +209,22 @@ export default function ElbowJointSurfaceModal({ isOpen, onClose, textareaRef })
 
         {/* Добавить */}
         <div className="absolute bottom-4 left-4">
-<button
-  className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
-  onClick={() => {
-    const text = generateDescriptionGapSurface({
-      type: "Elbow", // 🔹 тип сустава — голеностопный
-      selectedOptions,
-      selectedPositions,
-      mode: "surfaces", // или "surfaces", если нужно описывать суставные поверхности
-    });
+          <button
+            className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
+            onClick={() => {
+              const text = generateDescriptionGapSurface({
+                type: "Elbow", // 🔹 тип сустава — голеностопный
+                selectedOptions,
+                selectedPositions,
+                mode: "surfaces", // или "surfaces", если нужно описывать суставные поверхности
+              });
 
-    insertTextToTextarea(text);
-    onClose();
-  }}
->
-  Добавить
-</button>
+              insertTextToTextarea(text);
+              onClose();
+            }}
+          >
+            Добавить
+          </button>
         </div>
       </div>
     </div>

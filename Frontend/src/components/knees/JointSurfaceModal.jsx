@@ -10,7 +10,7 @@ const surfaceMap = {
   "резкие изменения": "резко склерозированы",
 };
 
-export default function JointSurfaceModal({ isOpen, onClose, textareaRef }) {
+export default function JointSurfaceModal({ isOpen, onClose, insertTextToTextarea }) {
   const [selectedOptions, setSelectedOptions] = useState({
     rightMedial: [],
     rightLateral: [],
@@ -50,15 +50,6 @@ const toggleZoneOption = (zoneKey, option) => {
   setExpandedZone(null); // закрываем меню после выбора
 };
 
-
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-  };
 
   if (!isOpen) return null;
 
@@ -122,7 +113,7 @@ const toggleZoneOption = (zoneKey, option) => {
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
               insertTextToTextarea(
-                generateDescriptionKneeGapSurface({
+                "\n" + generateDescriptionKneeGapSurface({
                   mode: "surfaces",
                   selectedOptions, // передаем только выбранные варианты
                 })

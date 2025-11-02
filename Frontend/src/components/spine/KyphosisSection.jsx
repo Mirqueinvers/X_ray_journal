@@ -1,30 +1,18 @@
 // Frontend/src/components/spine/KyphosisSection.jsx
 import React from "react";
 
-export default function KyphosisSection({ textareaRef, setExpandedPlaque }) {
+export default function KyphosisSection({ insertTextToTextarea, setExpandedPlaque }) {
   const options = ["не изменен", "увеличен", "сглажен"];
 
   const insertText = (option) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
+    // Ваша логика формирования текста остается без изменений
     const fullText = `Кифоз грудного отдела позвоночника ${option}.\n`;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = textarea.value;
-
-    const newText = text.substring(0, start) + fullText + text.substring(end);
-    textarea.value = newText;
-
-    const newCursorPosition = start + fullText.length;
-    textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-    textarea.focus();
-
-    const event = new Event("input", { bubbles: true });
-    textarea.dispatchEvent(event);
-
-    setExpandedPlaque(null); // свернуть плашку
+    // Используем пропс для вставки
+    insertTextToTextarea(fullText);
+    
+    // Сворачиваем плашку
+    setExpandedPlaque(null);
   };
 
   return (

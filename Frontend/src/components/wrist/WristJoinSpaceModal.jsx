@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { generateDescriptionGapSurface } from "../generateDescription/AnkleWristElbow/generateDescriptionGapSurface.js";
 
-export default function AnkleJoinSpaceModal({ onClose, textareaRef }) {
+export default function AnkleJoinSpaceModal({ onClose, insertTextToTextarea }) {
   const [selectedSides, setSelectedSides] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState({
     left: [],
@@ -15,14 +15,6 @@ export default function AnkleJoinSpaceModal({ onClose, textareaRef }) {
 
   const sideOptions = ["незначительно", "умеренно", "выраженно", "резко"];
   const positionOptions = ["равномерно", "медиально", "латерально"];
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + text : text;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-  };
 
   const toggleSide = (side) => {
     setSelectedSides((prev) => {

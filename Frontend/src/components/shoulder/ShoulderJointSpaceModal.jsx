@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function ShoulderJointSpaceModal({ isOpen, onClose, textareaRef }) {
+export default function ShoulderJointSpaceModal({ isOpen, onClose, insertTextToTextarea }) {
   const [selectedOptions, setSelectedOptions] = useState({
     left: { degree: "", uniformity: "" },
     right: { degree: "", uniformity: "" },
@@ -35,14 +35,6 @@ export default function ShoulderJointSpaceModal({ isOpen, onClose, textareaRef }
 
   const isSelected = (zoneKey, field, value) =>
     selectedOptions[zoneKey][field] === value;
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-  };
 
   // 🟡 Генерация описания (аналогично тазобедренным суставам)
   const generateDescription = () => {

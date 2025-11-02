@@ -1,7 +1,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
-export default function InstabilityModal({ onClose, textareaRef }) {
+export default function InstabilityModal({ onClose, insertTextToTextarea }) {
   const [mode, setMode] = useState("Норма"); // "Норма" или "Нестабильность"
   const [selectedDirection, setSelectedDirection] = useState(null);
   const [selectedMagnitude, setSelectedMagnitude] = useState(null);
@@ -50,32 +50,29 @@ export default function InstabilityModal({ onClose, textareaRef }) {
     return ranges;
   };
 
-  const insertSelected = () => {
-    if (!textareaRef.current) return;
-    let insertText = "";
+const insertSelected = () => {
+  // ВАША ЛОГИКА ГЕНЕРАЦИИ ТЕКСТА ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ
+  let insertText = "";
 
-    if (mode === "Норма") {
-      insertText = "Соотношение задних отделов тел позвонков не изменено.";
-    } else {
-      if (!selectedDirection || !selectedMagnitude || selectedVertebrae.length === 0) return;
-      const segs = buildSegments(selectedVertebrae);
-      const firstVertebra = selectedVertebrae[0];
-      insertText = `Определяется нестабильность позвонков в сегменте ${segs.join(", ")} за счет смещения ${firstVertebra.toUpperCase()} ${selectedDirection.toLowerCase()} на величину ${selectedMagnitude}.`;
-    }
+  if (mode === "Норма") {
+    insertText = "Соотношение задних отделов тел позвонков не изменено.";
+  } else {
+    if (!selectedDirection || !selectedMagnitude || selectedVertebrae.length === 0) return;
+    const segs = buildSegments(selectedVertebrae);
+    const firstVertebra = selectedVertebrae[0];
+    insertText = `Определяется нестабильность позвонков в сегменте ${segs.join(", ")} за счет смещения ${firstVertebra.toUpperCase()} ${selectedDirection.toLowerCase()} на величину ${selectedMagnitude}.`;
+  }
 
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const value = textarea.value;
-    const newText = value.substring(0, start) + insertText + value.substring(end);
+  if (!insertText) return;
 
-    textarea.value = newText;
-    textarea.dispatchEvent(new Event("input", { bubbles: true }));
-    textarea.focus();
-    textarea.setSelectionRange(start + insertText.length, start + insertText.length);
+  // --- ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ ---
+  // Добавляем перенос строки и используем пропс для вставки
+  const finalText = `\n${insertText}\n`;
+  insertTextToTextarea(finalText);
+  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
-    onClose();
-  };
+  onClose();
+};
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50" onClick={onClose}>

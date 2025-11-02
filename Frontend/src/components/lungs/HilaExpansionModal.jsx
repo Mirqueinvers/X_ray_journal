@@ -1,7 +1,7 @@
 // Frontend/src/components/lungs/HilaExpansionModal.jsx
 import { useState } from "react";
 
-export default function HilaExpansionModal({ onClose, textareaRef }) {
+export default function HilaExpansionModal({ onClose, insertTextToTextarea }) {
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedSides, setSelectedSides] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState({
@@ -16,14 +16,6 @@ export default function HilaExpansionModal({ onClose, textareaRef }) {
   ];
 
   const sideOptions = ["Расширен", "Уплотнен", "Подтянут кверху", "Подтянут книзу"];
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
-      textareaRef.current.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-  };
 
   const toggleSide = (side) => {
     setSelectedSides(prev =>
@@ -180,7 +172,7 @@ const generateDescription = () => {
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
-              insertTextToTextarea(generateDescription());
+              insertTextToTextarea("\n" + generateDescription());
               onClose();
             }}
           >

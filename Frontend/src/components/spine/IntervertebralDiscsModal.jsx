@@ -2,7 +2,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
-export default function IntervertebralDiscsModal({ onClose, textareaRef }) {
+export default function IntervertebralDiscsModal({ onClose, insertTextToTextarea }) {
   const [activeSeverity, setActiveSeverity] = useState(null);
   const [selected, setSelected] = useState({
     умеренно: [],
@@ -47,38 +47,32 @@ export default function IntervertebralDiscsModal({ onClose, textareaRef }) {
     return ranges;
   };
 
-  const insertSelected = () => {
-    if (!textareaRef.current) return;
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const value = textarea.value;
+const insertSelected = () => {
+  // ВАША ЛОГИКА ГЕНЕРАЦИИ ТЕКСТА ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ
+  let insertText = "";
 
-    let insertText = "";
-
-    if (unchanged) {
-      insertText = "Высота пространств межпозвонковых дисков не изменена.\n";
-    } else {
-      let parts = [];
-      for (const sev of ["умеренно", "выраженно", "резко"]) {
-        const segs = buildSegments(selected[sev]);
-        if (segs.length > 0) {
-          parts.push(`${sev} сужена в сегментах ${segs.join(", ")}`);
-        }
+  if (unchanged) {
+    insertText = "Высота пространств межпозвонковых дисков не изменена.";
+  } else {
+    let parts = [];
+    for (const sev of ["умеренно", "выраженно", "резко"]) {
+      const segs = buildSegments(selected[sev]);
+      if (segs.length > 0) {
+        parts.push(`${sev} снижена в сегментах ${segs.join(", ")}`);
       }
-      if (parts.length === 0) return;
-      insertText = `Высота пространств межпозвонковых дисков ${parts.join(", ")}.\n`;
     }
+    if (parts.length === 0) return;
+    insertText = `Высота пространств межпозвонковых дисков ${parts.join(", ")}.`;
+  }
 
-    const newText = value.substring(0, start) + insertText + value.substring(end);
-    textarea.value = newText;
+  // --- ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ ---
+  // Добавляем перенос строки и используем пропс для вставки
+  const finalText = `\n${insertText}\n`;
+  insertTextToTextarea(finalText);
+  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
-    textarea.dispatchEvent(new Event("input", { bubbles: true }));
-    textarea.focus();
-    textarea.setSelectionRange(start + insertText.length, start + insertText.length);
-
-    onClose();
-  };
+  onClose();
+};
 
   return (
     <div

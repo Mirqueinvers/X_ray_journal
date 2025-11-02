@@ -2,7 +2,7 @@
 // Суставные поверхности тазобедренных суставов
 import React, { useState } from "react";
 
-export default function HipJointSurfaceModal({ isOpen, onClose, textareaRef }) {
+export default function HipJointSurfaceModal({ isOpen, onClose, insertTextToTextarea }) {
   const [selectedOptions, setSelectedOptions] = useState({
     left: [],
     right: [],
@@ -34,15 +34,6 @@ export default function HipJointSurfaceModal({ isOpen, onClose, textareaRef }) {
       }
     });
     setExpandedZone(null);
-  };
-
-  // Вставка в textarea
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
   };
 
   // Генерация описания
@@ -131,7 +122,7 @@ const generateDescription = () => {
 
         <div className="absolute bottom-4 left-4">
           <button className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50" onClick={() => {
-            insertTextToTextarea(generateDescription());
+            insertTextToTextarea("\n" + generateDescription());
             onClose();
           }}>
             Добавить

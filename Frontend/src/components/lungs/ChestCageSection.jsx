@@ -2,26 +2,13 @@
 import { useState } from "react";
 import RibsModal from "./RibsModal";
 
-export default function ChestCageSection({ textareaRef, setExpandedPlaque }) {
+export default function ChestCageSection({ insertTextToTextarea, setExpandedPlaque }) {
   const [showRibsModal, setShowRibsModal] = useState(false);
 
   const chestCageOptions = [
     "Норма",
     "Патология"
   ];
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current 
-        ? current + "\n" + text 
-        : text;
-      
-      // Вызываем событие input для React
-      const event = new Event('input', { bubbles: true });
-      textareaRef.current.dispatchEvent(event);
-    }
-  };
 
   return (
     <>
@@ -35,7 +22,7 @@ export default function ChestCageSection({ textareaRef, setExpandedPlaque }) {
               if (option === "Патология") {
                 setShowRibsModal(true);
               } else {
-                insertTextToTextarea("Целостность костей грудной клетки не нарушена.");
+                insertTextToTextarea("\n" + "Целостность костей грудной клетки не нарушена.");
                 setExpandedPlaque(null);
               }
             }}
@@ -48,7 +35,7 @@ export default function ChestCageSection({ textareaRef, setExpandedPlaque }) {
       {showRibsModal && (
         <RibsModal
           onClose={() => setShowRibsModal(false)}
-          textareaRef={textareaRef}
+          insertTextToTextarea={insertTextToTextarea}
         />
       )}
     </>

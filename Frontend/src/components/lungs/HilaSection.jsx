@@ -2,7 +2,7 @@
 import { useState } from "react";
 import HilaExpansionModal from "./HilaExpansionModal";
 
-export default function HilaSection({ textareaRef, setExpandedPlaque }) {
+export default function HilaSection({ insertTextToTextarea, setExpandedPlaque }) {
   const [showExpansionModal, setShowExpansionModal] = useState(false);
   const [selectedHila, setSelectedHila] = useState(null);
 
@@ -10,19 +10,6 @@ export default function HilaSection({ textareaRef, setExpandedPlaque }) {
     "Не расширены",
     "Расширены"
   ];
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current 
-        ? current + "\n" + text 
-        : text;
-      
-      // Вызываем событие input для React
-      const event = new Event('input', { bubbles: true });
-      textareaRef.current.dispatchEvent(event);
-    }
-  };
 
   return (
     <>
@@ -37,7 +24,7 @@ export default function HilaSection({ textareaRef, setExpandedPlaque }) {
                 setShowExpansionModal(true);
               } else {
                 setSelectedHila(option);
-                insertTextToTextarea(`Корни легких ${option.toLowerCase()}, структурные.`);
+                insertTextToTextarea("\n" + `Корни легких ${option.toLowerCase()}, структурные.`);
                 setExpandedPlaque(null);
               }
             }}
@@ -50,7 +37,7 @@ export default function HilaSection({ textareaRef, setExpandedPlaque }) {
       {showExpansionModal && (
         <HilaExpansionModal
           onClose={() => setShowExpansionModal(false)}
-          textareaRef={textareaRef}
+          insertTextToTextarea={insertTextToTextarea}
         />
       )}
     </>

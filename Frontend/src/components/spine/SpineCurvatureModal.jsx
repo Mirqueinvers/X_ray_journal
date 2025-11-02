@@ -1,7 +1,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
-export default function SpineCurvatureModal({ onClose, textareaRef }) {
+export default function SpineCurvatureModal({ onClose, insertTextToTextarea }) {
   const [selected, setSelected] = useState([]);
   const [curveType, setCurveType] = useState("не искривлена"); // по дефолту
   const [cobbAngle, setCobbAngle] = useState("");
@@ -29,65 +29,48 @@ export default function SpineCurvatureModal({ onClose, textareaRef }) {
   };
 
   const insertSelected = () => {
-  if (!textareaRef.current) return;
-
-  const textarea = textareaRef.current;
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const value = textarea.value;
-
+  // ВАША ЛОГИКА ГЕНЕРАЦИИ ТЕКСТА ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ
   let insertText = "";
-
   // --- не искривлена ---
   if (curveType === "не искривлена") {
-    insertText = "Ось позвоночника не искривлена.\n";
+    insertText = "Ось позвоночника не искривлена.";
   } else {
     const sortedSelected = selected.slice().sort(
       (a, b) => allVertebrae.indexOf(a) - allVertebrae.indexOf(b)
     );
-
     // --- C-образно ---
     if (curveType === "C-образно" && selected.length === 3) {
       const from = sortedSelected[0];
       const to = sortedSelected[2];
       const mid = sortedSelected[1];
-
       insertText = `Ось позвоночника ${curveType} искривлена ${cCurveDirection} на уровне ${from}-${to} с высотой в ${mid}`;
       if (cobbAngle.trim() !== "") {
         insertText += `, угол отклонения ${cobbAngle}° по методу Кобба`;
       }
-      insertText += ".\n";
+      insertText += ".";
     }
-
     // --- S-образно ---
     if (curveType === "S-образно" && selected.length === 4) {
       const from = sortedSelected[0];
       const to = sortedSelected[3];
       const mid1 = sortedSelected[1];
       const mid2 = sortedSelected[2];
-
-      insertText = `Позвоночный столб ${curveType} искривлен на уровне ${from}-${to} с высотой искривления в ${mid1} и ${mid2}.\n`;
+      insertText = `Позвоночный столб ${curveType} искривлен на уровне ${from}-${to} с высотой искривления в ${mid1} и ${mid2}.`;
     }
-
     // --- торсия ---
     if (torsion) {
-      
-      insertText = insertText.trim().replace(/\.$/, ""); // убираем точку в конце
+      insertText = insertText.replace(/\.$/, ""); // убираем точку в конце
       insertText += ", определяется торсия позвонков на высоте изгиба.";
     }
   }
 
-  const newText = value.substring(0, start) + insertText + value.substring(end);
-  textarea.value = newText;
+  if (!insertText) return;
 
-  const event = new Event("input", { bubbles: true });
-  textarea.dispatchEvent(event);
-
-  textarea.focus();
-  textarea.setSelectionRange(
-    start + insertText.length,
-    start + insertText.length
-  );
+  // --- ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ ---
+  // Добавляем перенос строки и используем пропс для вставки
+  const finalText = `\n${insertText}\n`;
+  insertTextToTextarea(finalText);
+  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
   onClose();
 };

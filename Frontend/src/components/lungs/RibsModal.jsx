@@ -1,13 +1,14 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
-export default function RibsModal({ onClose, textareaRef }) {
+export default function RibsModal({ onClose, insertTextToTextarea }) { // 1. Принимаем пропс
   const [selectedRibs, setSelectedRibs] = useState([]);
   const [fractureType, setFractureType] = useState(""); 
   const [line, setLine] = useState(""); 
   const [displacement, setDisplacement] = useState(""); 
   const [displacementDegree, setDisplacementDegree] = useState("");
 
+  // ... остальной код вашего состояния (ribsRight, ribsLeft) остается без изменений ...
   const ribsRight = Array.from({ length: 12 }, (_, i) => i + 1);
   const ribsLeft = Array.from({ length: 12 }, (_, i) => i + 1);
 
@@ -38,14 +39,11 @@ export default function RibsModal({ onClose, textareaRef }) {
     return `${ribs.join(", ")} ребер`;
   }
 
+  // --- ИЗМЕНЕННАЯ ФУНКЦИЯ ---
   const insertSelected = () => {
-    if (!textareaRef.current || selectedRibs.length === 0 || !fractureType || !line) return;
+    if (selectedRibs.length === 0 || !fractureType || !line) return;
 
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const value = textarea.value;
-
+    // Сохраняем всю вашу сложную логику генерации текста
     const ribsBySide = { L: [], R: [] };
     selectedRibs.forEach((r) => {
       const [side, num] = r.split("-");
@@ -71,8 +69,8 @@ export default function RibsModal({ onClose, textareaRef }) {
 
     if (fractureType === "Сросшийся") {
       insertText = isSingle
-        ? `\nОпределяется ${fractureTypes[fractureType].single} перелом ${ribsText}, по ${lineForms[line]} линии.\n`
-        : `\nОпределяются ${fractureTypes[fractureType].plural} переломы ${ribsText}, по ${lineForms[line]} линии.\n`;
+        ? `Определяется ${fractureTypes[fractureType].single} перелом ${ribsText}, по ${lineForms[line]} линии.`
+        : `Определяются ${fractureTypes[fractureType].plural} переломы ${ribsText}, по ${lineForms[line]} линии.`;
     } else if (fractureType === "Свежий") {
       let displacementText = "";
       if (displacement === "Без смещения") {
@@ -86,19 +84,19 @@ export default function RibsModal({ onClose, textareaRef }) {
       }
 
       insertText = isSingle
-        ? `\nОпределяется ${fractureTypes[fractureType].single} перелом ${ribsText}, по ${lineForms[line]} линии, ${displacementText}.\n`
-        : `\nОпределяются ${fractureTypes[fractureType].plural} переломы ${ribsText}, по ${lineForms[line]} линии, ${displacementText}.\n`;
+        ? `Определяется ${fractureTypes[fractureType].single} перелом ${ribsText}, по ${lineForms[line]} линии, ${displacementText}.`
+        : `Определяются ${fractureTypes[fractureType].plural} переломы ${ribsText}, по ${lineForms[line]} линии, ${displacementText}.`;
     }
 
-    const newText = value.substring(0, start) + insertText + value.substring(end);
-    textarea.value = newText;
+    // Добавляем переносы строки для лучшего форматирования
+    const finalText = `${insertText}`;
 
-    const event = new Event("input", { bubbles: true });
-    textarea.dispatchEvent(event);
-    textarea.focus();
-    textarea.setSelectionRange(start + insertText.length, start + insertText.length);
+    // 2. Используем пропс для вставки
+    insertTextToTextarea("\n" + finalText);
+    
     onClose();
   };
+  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
@@ -113,9 +111,9 @@ export default function RibsModal({ onClose, textareaRef }) {
           <XMarkIcon className="h-6 w-6" />
         </button>
 
+        {/* ... остальной JSX остается без изменений ... */}
         <h2 className="text-yellow-300 text-lg mb-4">Выберите рёбра</h2>
 
-        {/* Левое и правое */}
         <div className="flex gap-8 mb-6">
           <div>
             <h3 className="text-yellow-400 mb-2">Правые рёбра</h3>
@@ -156,7 +154,6 @@ export default function RibsModal({ onClose, textareaRef }) {
           </div>
         </div>
 
-        {/* Состояние перелома */}
         <h3 className="text-yellow-300 mb-2">Состояние перелома</h3>
         <div className="flex gap-4 mb-4">
           {["Сросшийся", "Свежий"].map((type) => (
@@ -178,7 +175,6 @@ export default function RibsModal({ onClose, textareaRef }) {
           ))}
         </div>
 
-        {/* Если выбран "Свежий" */}
         {fractureType === "Свежий" && (
           <>
             <h3 className="text-yellow-300 mb-2">Смещение</h3>
@@ -201,7 +197,6 @@ export default function RibsModal({ onClose, textareaRef }) {
               ))}
             </div>
 
-            {/* Если выбран "Со смещением" */}
             {displacement === "Со смещением" && (
               <>
                 <h3 className="text-yellow-300 mb-2">Величина смещения</h3>
@@ -230,7 +225,6 @@ export default function RibsModal({ onClose, textareaRef }) {
           </>
         )}
 
-        {/* Линия грудной клетки */}
         <h3 className="text-yellow-300 mb-2">Линия грудной клетки</h3>
         <div className="flex flex-wrap gap-4 mb-6">
           {Object.keys(lineForms).map((ln) => (
@@ -248,7 +242,6 @@ export default function RibsModal({ onClose, textareaRef }) {
           ))}
         </div>
 
-        {/* Добавить */}
         <button
           onClick={insertSelected}
           disabled={

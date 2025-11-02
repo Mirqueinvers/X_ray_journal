@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { generateDescriptionUniversalOsteophytes } from "../generateDescription/HandFoot/generateDescriptionOsteophytes";
 
 
-export default function HandOsteophytesModal({ isOpen, onClose, textareaRef }) {
+export default function HandOsteophytesModal({ isOpen, onClose, insertTextToTextarea }) {
   const [selectedOptions, setSelectedOptions] = useState({
     // Правая кисть
     rightCmc1: {}, rightCmc2: {}, rightCmc3: {}, rightCmc4: {}, rightCmc5: {},
@@ -140,29 +140,26 @@ export default function HandOsteophytesModal({ isOpen, onClose, textareaRef }) {
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
-              if (textareaRef?.current) {
-                const textarea = textareaRef.current;
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                const textBefore = textarea.value.substring(0, start);
-                const textAfter = textarea.value.substring(end);
-                const insertText = "\n" + generateDescriptionUniversalOsteophytes({
-                  jointMap,
-                  selectedOptions,
-                  type: "hand", // или "foot"
-                });
-                textarea.value = textBefore + insertText + textAfter;
-                const cursorPos = start + insertText.length;
-                textarea.selectionStart = textarea.selectionEnd = cursorPos;
-                textarea.dispatchEvent(new Event("input", { bubbles: true }));
-              }
+              // --- ИЗМЕНЕННАЯ ЛОГИКА ВСТАВКИ ---
+              // Сохраняем вашу логику генерации текста
+              const generatedText = generateDescriptionUniversalOsteophytes({
+                jointMap,
+                selectedOptions,
+                type: "hand",
+              });
+
+              // Добавляем перенос строки для лучшего форматирования
+              const finalText = `\n${generatedText}`;
+
+              // Используем пропс для вставки
+              insertTextToTextarea(finalText);
+              // --- КОНЕЦ ИЗМЕНЕНИЙ ---
+
               onClose();
             }}
           >
             Добавить
           </button>
-
-
         </div>
       </div>
     </div>

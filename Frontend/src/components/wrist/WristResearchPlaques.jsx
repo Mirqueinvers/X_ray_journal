@@ -7,7 +7,6 @@ import WristParaarticularTissuesSection from "../general/ParaarticularTissuesSec
 export default function AnkleResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  textareaRef,
   setOpenModal,
   insertTextToTextarea,
 }) {
@@ -123,7 +122,7 @@ export default function AnkleResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <WristCongruencySection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -153,7 +152,7 @@ export default function AnkleResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <WristIntegritySection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -183,7 +182,7 @@ export default function AnkleResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <WristParaarticularTissuesSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}

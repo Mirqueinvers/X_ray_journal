@@ -1,7 +1,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
-export default function SpineModal({ onClose, textareaRef }) {
+export default function SpineModal({ onClose, insertTextToTextarea }) {
   const [selected, setSelected] = useState([]);
 
   // Группы позвонков
@@ -24,37 +24,26 @@ export default function SpineModal({ onClose, textareaRef }) {
     }
   };
 
-  const insertSelected = () => {
-    if (!textareaRef.current || selected.length !== 2) return;
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const value = textarea.value;
+const insertSelected = () => {
+  if (selected.length !== 2) return;
 
-    const firstIndex = allVertebrae.indexOf(selected[0]);
-    const secondIndex = allVertebrae.indexOf(selected[1]);
-    const [from, to] =
-      firstIndex < secondIndex
-        ? [selected[0], selected[1]]
-        : [selected[1], selected[0]];
+  // ВАША ЛОГИКА ГЕНЕРАЦИИ ТЕКСТА ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ
+  const firstIndex = allVertebrae.indexOf(selected[0]);
+  const secondIndex = allVertebrae.indexOf(selected[1]);
+  const [from, to] =
+    firstIndex < secondIndex
+      ? [selected[0], selected[1]]
+      : [selected[1], selected[0]];
+  const insertText = `Позвоночный столб визуализируется на уровне ${from}-${to}.`;
 
-    const insertText = `Позвоночный столб визуализируется на уровне ${from}-${to}.\n`;
+  // --- ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ ---
+  // Добавляем перенос строки и используем пропс для вставки
+  const finalText = `\n${insertText}\n`;
+  insertTextToTextarea(finalText);
+  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
-    const newText =
-      value.substring(0, start) + insertText + value.substring(end);
-    textarea.value = newText;
-
-    const event = new Event("input", { bubbles: true });
-    textarea.dispatchEvent(event);
-
-    textarea.focus();
-    textarea.setSelectionRange(
-      start + insertText.length,
-      start + insertText.length
-    );
-
-    onClose();
-  };
+  onClose();
+};
 
   return (
     <div

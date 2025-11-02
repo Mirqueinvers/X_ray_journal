@@ -1,20 +1,12 @@
 import { useState } from "react";
 
-export default function FlatfootModal({ isOpen, onClose, textareaRef }) {
+export default function FlatfootModal({ isOpen, onClose, insertTextToTextarea }) {
   if (!isOpen) return null;
 
   const [values, setValues] = useState({
     right: { angle: "", height: "" },
     left: { angle: "", height: "" },
   });
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + text : text;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-  };
 
   // Функция определения степени по углу
   const getDegreeByAngle = (angle) => {

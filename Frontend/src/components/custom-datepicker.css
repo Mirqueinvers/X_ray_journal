@@ -1,17 +1,17 @@
 .react-datepicker__header {
-  background-color: #1f1f1f; /* тёмный фон заголовка */
-  border-bottom: 1px solid #facc15; /* желтая рамка */
+  background-color: #ffffff; /* тёмный фон заголовка */
+  border-bottom: 1px solid #000000; /* желтая рамка */
 }
 
 .react-datepicker__current-month,
 .react-datepicker__day-name {
-  color: #facc15; /* желтый текст */
+  color: #000000; /* желтый текст */
 }
 
 .react-datepicker__day--selected,
 .react-datepicker__day--keyboard-selected {
-  background-color: #facc15 !important; /* выбранная дата */
-  color: #1f1f1f !important; /* текст выбранной даты */
+  background-color: #000000 !important; /* выбранная дата */
+  color: #ffffff !important; /* текст выбранной даты */ 
 }
 
 .react-datepicker__day:hover {
@@ -24,5 +24,5 @@
 }
 
 .react-datepicker__navigation-icon::before {
-  border-color: #facc15; /* стрелки */
+  border-color: #8a8a8a; /* стрелки */
 }

@@ -1,7 +1,5 @@
 // Frontend/src/components/lungs/MediastinumSection.jsx
-import { useState } from "react";
-
-export default function MediastinumSection({ textareaRef, setExpandedPlaque }) {
+export default function MediastinumSection({ insertTextToTextarea, setExpandedPlaque }) {
   const mediastinumOptions = [
     { label: "Не расширено", text: "не расширена" },
     { label: "Расширено в правых отделах", text: "расширена в правых отделах" },
@@ -9,21 +7,8 @@ export default function MediastinumSection({ textareaRef, setExpandedPlaque }) {
     { label: "Расширено верхнее средостение", text: "расширена в верхних отделах" }
   ];
 
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current
-        ? current + "\n" + text
-        : text;
-
-      // триггерим событие input для React
-      const event = new Event("input", { bubbles: true });
-      textareaRef.current.dispatchEvent(event);
-    }
-  };
-
   const handleOptionClick = (option) => {
-    insertTextToTextarea(`Тень средостения ${option.text}.`);
+    insertTextToTextarea("\n" + `Тень средостения ${option.text}.`);
     setExpandedPlaque(null);
   };
 

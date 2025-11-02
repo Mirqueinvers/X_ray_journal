@@ -1,17 +1,14 @@
 import React from "react";
 
-export default function ParaarticularTissuesSection({ textareaRef, setExpandedPlaque }) {
+export default function ParaarticularTissuesSection({ textareaRef, setExpandedPlaque, insertTextToTextarea }) { // 1. Принимаем пропс
   // Варианты параартикулярных тканей
   const paraarticularOptions = [
     "Без изменений",
     "Изменения",
   ];
 
-  // Вставка текста в textarea
+  // --- ИЗМЕНЕННЯ ФУНКЦИЯ ---
   const insertParaarticularText = (option) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
     let fullText = "";
     if (option === "Без изменений") {
       fullText = "\nПараартикулярные ткани не имеют рентгено-позитивных признаков изменений.";
@@ -19,23 +16,13 @@ export default function ParaarticularTissuesSection({ textareaRef, setExpandedPl
       fullText = "\nОпределяются образования костной плотности в параартикулярных тканях.";
     }
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = textarea.value;
-
-    const newText = text.substring(0, start) + fullText + text.substring(end);
-    textarea.value = newText;
-
-    const newCursorPosition = start + fullText.length;
-    textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-    textarea.focus();
-
-    const event = new Event("input", { bubbles: true });
-    textarea.dispatchEvent(event);
+    // 2. Вызываем пропс для вставки
+    insertTextToTextarea(fullText);
 
     // сворачиваем плашку
     setExpandedPlaque(null);
   };
+  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
   return (
     <div className="ml-6 mt-1 space-y-1">

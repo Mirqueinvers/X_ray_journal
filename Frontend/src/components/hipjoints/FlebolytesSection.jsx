@@ -1,20 +1,15 @@
 // Frontend/src/components/hipjoints/FlebolytesSection.jsx
 import React from "react";
 
-export default function FlebolytesSection({ textareaRef }) {
+export default function FlebolytesSection({ textareaRef, insertTextToTextarea }) { // 1. Принимаем пропс
   const insertText = () => {
-    if (textareaRef?.current) {
-      const textarea = textareaRef.current;
-      const textToInsert = "\nВ проекции полости малого таза определяются единичные тени флеболитов.";
-      
-      const current = textarea.value;
-      textarea.value = current ? current + textToInsert : textToInsert;
-      textarea.focus();
-      
-      const event = new Event("input", { bubbles: true });
-      textarea.dispatchEvent(event);
-    }
+    // Ваша логика формирования текста остается без изменений
+    const textToInsert = "\nВ проекции полости малого таза определяются единичные тени флеболитов.";
+    
+    // 2. Используем пропс для вставки
+    insertTextToTextarea(textToInsert);
   };
+  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
   return (
     <div>

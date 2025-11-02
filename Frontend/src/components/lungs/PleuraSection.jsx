@@ -2,7 +2,7 @@
 import { useState } from "react";
 import PleuraExpansionModal from "./PleuraExpansionModal";
 
-export default function PleuraSection({ textareaRef, setExpandedPlaque }) {
+export default function PleuraSection({ insertTextToTextarea, setExpandedPlaque }) {
   const [showExpansionModal, setShowExpansionModal] = useState(false);
   const [selectedPleura, setSelectedPleura] = useState(null);
 
@@ -10,19 +10,6 @@ export default function PleuraSection({ textareaRef, setExpandedPlaque }) {
     "Без особенностей",
     "Патология"
   ];
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current 
-        ? current + "\n" + text 
-        : text;
-      
-      // Вызываем событие input для React
-      const event = new Event('input', { bubbles: true });
-      textareaRef.current.dispatchEvent(event);
-    }
-  };
 
   return (
     <>
@@ -37,7 +24,7 @@ export default function PleuraSection({ textareaRef, setExpandedPlaque }) {
                 setShowExpansionModal(true);
               } else {
                 setSelectedPleura(option);
-                insertTextToTextarea(`Плевра куполообразной формы, расположена обычно.`);
+                insertTextToTextarea("\n" + `Плевра куполообразной формы, расположена обычно.`);
                 setExpandedPlaque(null);
               }
             }}
@@ -50,7 +37,7 @@ export default function PleuraSection({ textareaRef, setExpandedPlaque }) {
       {showExpansionModal && (
         <PleuraExpansionModal
           onClose={() => setShowExpansionModal(false)}
-          textareaRef={textareaRef}
+          insertTextToTextarea={insertTextToTextarea}
         />
       )}
     </>

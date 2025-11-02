@@ -16,7 +16,7 @@ const surfaceMap = {
 export default function ShoulderAcromioclavicularModal({
   isOpen,
   onClose,
-  textareaRef,
+  insertTextToTextarea,
 }) {
   const [leftData, setLeftData] = useState({
     isNormal: true,
@@ -92,14 +92,6 @@ export default function ShoulderAcromioclavicularModal({
           ? prev.osteophytes.filter((item) => item !== location)
           : [...prev.osteophytes, location],
       }));
-    }
-  };
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
     }
   };
 

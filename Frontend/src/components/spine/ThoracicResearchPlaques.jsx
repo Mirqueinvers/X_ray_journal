@@ -8,7 +8,6 @@ import ThoracicKyphosisSection from "./KyphosisSection";
 export default function ThoracicResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  textareaRef,
   setOpenModal,
   insertTextToTextarea,
 }) {
@@ -170,7 +169,7 @@ export default function ThoracicResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <LumbarIntegritySection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -196,7 +195,7 @@ export default function ThoracicResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <LumbarParaarticularTissuesSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -222,7 +221,7 @@ export default function ThoracicResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <ThoracicKyphosisSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}

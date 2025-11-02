@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { generateDescriptionUniversalCongruence } from "../generateDescription/HandFoot/generateDescriptionCongruence";
 
-export default function HandCongruencyModal({ isOpen, onClose, textareaRef }) {
+export default function HandCongruencyModal({ isOpen, onClose, insertTextToTextarea }) {
   const [mode, setMode] = useState("Не нарушена"); // новая плашка активна по дефолту
 
   const [selectedOptions, setSelectedOptions] = useState({
@@ -74,71 +74,6 @@ export default function HandCongruencyModal({ isOpen, onClose, textareaRef }) {
       newJoint.конгруэнтность = !newJoint.конгруэнтность;
       return { ...prev, [key]: newJoint };
     });
-  };
-
-  const generateDescription = (selectedOptions, jointMap) => {
-    const handNames = { right: "правой", left: "левой" };
-    const jointGroups = {
-      Mcp: { plural: "пястно-фаланговых суставах", single: "пястно-фаланговом суставе" },
-      Pip: { plural: "проксимальных межфаланговых суставах", single: "проксимальном межфаланговом суставе" },
-      Dip: { plural: "дистальных межфаланговых суставах", single: "дистальном межфаланговом суставе" },
-      Cmc: { plural: "пястно-запястных суставах", single: "пястно-запястном суставе" },
-      Wrist: { plural: "лучезапястных суставах", single: "лучезапястном суставе" },
-      Ip: { plural: "межфаланговых суставах I пальца", single: "межфаланговом суставе I пальца" },
-    };
-
-    const romanToNum = { I: 1, II: 2, III: 3, IV: 4, V: 5 };
-    const numToRoman = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V" };
-
-    const compressFingers = (labels) => {
-      const nums = labels.map((l) => romanToNum[l]).filter(Boolean).sort((a, b) => a - b);
-      if (!nums.length) return "";
-      const ranges = [];
-      let start = nums[0],
-        end = nums[0];
-      for (let i = 1; i <= nums.length; i++) {
-        if (nums[i] === end + 1) end = nums[i];
-        else {
-          ranges.push(start === end ? numToRoman[start] : `${numToRoman[start]}–${numToRoman[end]}`);
-          start = nums[i];
-          end = nums[i];
-        }
-      }
-      return ranges.join(", ");
-    };
-
-    const handGroups = {};
-    ["right", "left"].forEach((hand) => {
-      jointMap
-        .filter((j) => j.key.startsWith(hand))
-        .forEach((j) => {
-          const joint = selectedOptions[j.key];
-          if (!joint || !joint.конгруэнтность) return;
-          const type = Object.keys(jointGroups).find((t) => j.key.includes(t));
-          if (!type) return;
-          handGroups[hand] = handGroups[hand] || {};
-          handGroups[hand][type] = handGroups[hand][type] || [];
-          handGroups[hand][type].push(j.label);
-        });
-    });
-
-    const handParts = [];
-    Object.entries(handGroups).forEach(([hand, types]) => {
-      const typeParts = [];
-      Object.entries(types).forEach(([type, labels]) => {
-        const joint = jointGroups[type];
-        const fingers = compressFingers(labels);
-        if (type === "Ip" || labels.length === 1)
-          typeParts.push(`${joint.single} ${handNames[hand]} кисти`);
-        else typeParts.push(`${fingers} ${joint.plural} ${handNames[hand]} кисти`);
-      });
-      if (typeParts.length) handParts.push(typeParts.join(", "));
-    });
-
-    if (!handParts.length)
-      return "Нарушение конгруэнтности суставов не выявлено.";
-
-    return `Нарушена конгруэнтность в ${handParts.join("; ")}.`;
   };
 
   if (!isOpen) return null;
@@ -240,22 +175,21 @@ export default function HandCongruencyModal({ isOpen, onClose, textareaRef }) {
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
-              if (textareaRef?.current) {
-                const textarea = textareaRef.current;
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                const textBefore = textarea.value.substring(0, start);
-                const textAfter = textarea.value.substring(end);
-                const insertText = generateDescriptionUniversalCongruence({
+              // --- ИЗМЕНЕННАЯ ЛОГИКА ВСТАВКИ ---
+              // Используем вашу локальную функцию для генерации текста
+              const generatedText = generateDescriptionUniversalCongruence({
                   jointMap,
                   selectedOptions,
                   type: "hand", // или "foot"
                 });
-                textarea.value = textBefore + insertText + textAfter;
-                const cursorPos = start + insertText.length;
-                textarea.selectionStart = textarea.selectionEnd = cursorPos;
-                textarea.dispatchEvent(new Event("input", { bubbles: true }));
-              }
+
+              // Добавляем перенос строки для лучшего форматирования
+              const finalText = `\n${generatedText}`;
+
+              // Используем пропс для вставки
+              insertTextToTextarea(finalText);
+              // --- КОНЕЦ ИЗМЕНЕНИЙ ---
+
               onClose();
             }}
           >

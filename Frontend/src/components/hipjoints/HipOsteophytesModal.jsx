@@ -2,7 +2,7 @@
 // Остеофиты тазобедренных суставов (без выпадающих плашек)
 import React, { useState } from "react";
 
-export default function HipOsteophytesModal({ isOpen, onClose, textareaRef }) {
+export default function HipOsteophytesModal({ isOpen, onClose, insertTextToTextarea }) {
   const [selectedZones, setSelectedZones] = useState([]);
 
   // Зоны для остеофитов
@@ -19,15 +19,6 @@ export default function HipOsteophytesModal({ isOpen, onClose, textareaRef }) {
     setSelectedZones((prev) =>
       prev.includes(zoneKey) ? prev.filter((z) => z !== zoneKey) : [...prev, zoneKey]
     );
-  };
-
-  // Вставка в textarea
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
   };
 
   // Генерация описания
@@ -163,7 +154,7 @@ const generateDescription = () => {
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
-              insertTextToTextarea(generateDescription());
+              insertTextToTextarea("\n" + generateDescription());
               onClose();
             }}
           >

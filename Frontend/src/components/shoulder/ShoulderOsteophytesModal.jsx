@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function ShoulderOsteophytesModal({ isOpen, onClose, textareaRef }) {
+export default function ShoulderOsteophytesModal({ isOpen, onClose, insertTextToTextarea }) {
   const [selectedZones, setSelectedZones] = useState({
     rightUpper: false,
     rightLower: false,
@@ -20,14 +20,6 @@ export default function ShoulderOsteophytesModal({ isOpen, onClose, textareaRef 
       ...prev,
       [zoneKey]: !prev[zoneKey],
     }));
-  };
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
   };
 
   const generateDescription = () => {

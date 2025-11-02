@@ -34,7 +34,7 @@ export default function HandResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  insertTextToTextarea(                    
+                  insertTextToTextarea( "\n" +                    
                     [
                       "Суставные щели мелких суставов кистей сохранены, равномерные.",
                       "Суставные поверхности ровные, чёткие, без признаков деформации.",
@@ -140,7 +140,7 @@ export default function HandResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <HandIntegritySection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -170,7 +170,7 @@ export default function HandResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <HandParaarticularTissuesSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}

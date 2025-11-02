@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { generateDescriptionUniversalCombined } from "../generateDescription/HandFoot/generateDescriptionUniversalCombined";
 
-export default function HandJointSurfaceModal({ isOpen, onClose, textareaRef }) {
+export default function HandJointSurfaceModal({ isOpen, onClose, insertTextToTextarea }) {
   const degrees = ["Не изменены", "Незначительно", "Умеренно", "Выраженно"];
 
   const [activeDegree, setActiveDegree] = useState(degrees[0]);
@@ -150,36 +150,28 @@ export default function HandJointSurfaceModal({ isOpen, onClose, textareaRef }) 
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
-              if (textareaRef?.current) {
-                const textarea = textareaRef.current;
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                const textBefore = textarea.value.substring(0, start);
-                const textAfter = textarea.value.substring(end);
+              // --- ИЗМЕНЕННАЯ ЛОГИКА ВСТАВКИ ---
+              let insertText = "";
 
-                let insertText = "";
-
-                if (activeDegree === "Не изменены") {
-                  insertText = "Суставные поверхности ровные, чёткие, без признаков деформации.";
-                } else {
-                  insertText = generateDescriptionUniversalCombined({
-                    jointMap,
-                    selectedOptions,
-                    type: "hand",
-                    mode: "surfaces",
-                  });
-                }
-
-                // Добавляем перенос строки, если перед вставкой нет его
-                if (textBefore.length > 0 && !textBefore.endsWith("\n")) {
-                  insertText = "\n" + insertText;
-                }
-
-                textarea.value = textBefore + insertText + textAfter;
-                const cursorPos = start + insertText.length;
-                textarea.selectionStart = textarea.selectionEnd = cursorPos;
-                textarea.dispatchEvent(new Event("input", { bubbles: true }));
+              if (activeDegree === "Не изменены") {
+                insertText = "Суставные поверхности мелких суставов кистей без изменений.";
+              } else {
+                // Сохраняем всю вашу сложную логику генерации текста
+                insertText = generateDescriptionUniversalCombined({
+                  jointMap,
+                  selectedOptions,
+                  type: "hand",
+                  mode: "surfaces",
+                });
               }
+              
+              // Добавляем перенос строки для лучшего форматирования
+              const finalText = `\n${insertText}`;
+
+              // 2. Используем пропс для вставки
+              insertTextToTextarea(finalText);
+              // --- КОНЕЦ ИЗМЕНЕНИЙ ---
+
               onClose();
             }}
           >

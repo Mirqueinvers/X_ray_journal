@@ -6,7 +6,6 @@ import NasalSeptumSection from "./NasalSeptumSection";
 export default function ParanasalResearchPlaques({
   expandedPlaque,
   setExpandedPlaque,
-  textareaRef,
   setOpenModal,
   insertTextToTextarea,
 }) {
@@ -28,7 +27,7 @@ export default function ParanasalResearchPlaques({
                 className="w-full p-2 bg-gray-700 border border-yellow-500 rounded text-yellow-200 cursor-pointer hover:bg-gray-600 flex justify-between items-center"
                 onClick={(e) => {
                   e.stopPropagation();
-                  insertTextToTextarea(                    
+                  insertTextToTextarea( "\n" +               
                     [
                       "Лобные и гайморовы пазухи прозрачные, их контуры четкие ровные, слизистая не утолщена, пневматизация не изменена, патологических теней в проекции пазух не визуализируется.",
                       "Носовые ходы свободны.",
@@ -82,7 +81,7 @@ export default function ParanasalResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <NasalPassagesSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}
@@ -112,7 +111,7 @@ export default function ParanasalResearchPlaques({
 
               {expandedPlaque === plaque && (
                 <NasalSeptumSection
-                  textareaRef={textareaRef}
+                  insertTextToTextarea={insertTextToTextarea}
                   setExpandedPlaque={setExpandedPlaque}
                 />
               )}

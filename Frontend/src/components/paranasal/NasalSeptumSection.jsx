@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function NasalSeptumSection({ textareaRef, setExpandedPlaque }) {
+export default function NasalSeptumSection({ insertTextToTextarea, setExpandedPlaque }) {
   // Варианты состояния носовой перегородки
   const nasalSeptumOptions = [
     "Не искривлена",
@@ -12,30 +12,18 @@ export default function NasalSeptumSection({ textareaRef, setExpandedPlaque }) {
     "Гипертрофия носовых раковин",
   ];
 
-  // Вставка текста в textarea
+  // --- ИЗMЕНЕННЯ ФУНКЦИЯ ---
   const insertNasalSeptumText = (option) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
+    // Ваша логика формирования текста остается без изменений
     const fullText = `\nНосовая перегородка ${option.toLowerCase()}.`;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = textarea.value;
-
-    const newText = text.substring(0, start) + fullText + text.substring(end);
-    textarea.value = newText;
-
-    const newCursorPosition = start + fullText.length;
-    textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-    textarea.focus();
-
-    const event = new Event("input", { bubbles: true });
-    textarea.dispatchEvent(event);
+    // 2. Используем пропс для вставки
+    insertTextToTextarea(fullText);
     
-    // Добавляем вызов для сворачивания плашки
+    // Сворачиваем плашку после выбора
     setExpandedPlaque(null);
   };
+  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
   return (
     <div className="ml-6 mt-1 space-y-1">

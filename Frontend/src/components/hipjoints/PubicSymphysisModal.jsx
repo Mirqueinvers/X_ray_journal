@@ -1,7 +1,7 @@
 // Frontend/src/components/hipjoints/PubicSymphysisModal.jsx
 import React, { useState } from "react";
 
-export default function PubicSymphysisModal({ isOpen, onClose, textareaRef }) {
+export default function PubicSymphysisModal({ isOpen, onClose, insertTextToTextarea }) {
   const [selectedOptions, setSelectedOptions] = useState({
     symmetry: "",
     osteophytes: [],
@@ -34,17 +34,9 @@ export default function PubicSymphysisModal({ isOpen, onClose, textareaRef }) {
     setSelectedOptions(prev => ({ ...prev, surfaces: option }));
   };
 
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
-      textareaRef.current.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-  };
-
 const generateDescription = () => {
   // Если выбрана Норма
-  if (isNormal) return "Лонное сочленение симметрично";
+  if (isNormal) return "Лонное сочленение симметрично.";
 
   // Начало описания
   let description = "Лонное сочленение";
@@ -192,7 +184,7 @@ const generateDescription = () => {
             <button 
               className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
               onClick={() => {
-                insertTextToTextarea(generateDescription());
+                insertTextToTextarea("\n" + generateDescription());
                 onClose();
               }}
             >

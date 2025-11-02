@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { generateDescriptionUniversalCombined } from "../generateDescription/HandFoot/generateDescriptionUniversalCombined";
 
-export default function HandJointSpaceModal({ isOpen, onClose, textareaRef }) {
+export default function HandJointSpaceModal({ isOpen, onClose, insertTextToTextarea }) {
   const degrees = ["Не изменены", "Незначительно", "Умеренно", "Выраженно", "Резко"];
 
 
@@ -148,40 +148,31 @@ export default function HandJointSpaceModal({ isOpen, onClose, textareaRef }) {
         <div className="absolute bottom-4 left-4">
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
-              onClick={() => {
-                if (textareaRef?.current) {
-                  const textarea = textareaRef.current;
-                  const start = textarea.selectionStart;
-                  const end = textarea.selectionEnd;
-                  const textBefore = textarea.value.substring(0, start);
-                  const textAfter = textarea.value.substring(end);
+            onClick={() => {
+              // --- ИЗМЕНЕННАЯ ЛОГИКА ВСТАВКИ ---
+              let insertText = "";
 
-                  let insertText = "";
+              if (activeDegree === "Не изменены") {
+                insertText = "Суставные щели мелких суставов кистей сохранены, равномерные.";
+              } else {
+                // Сохраняем всю вашу сложную логику генерации текста
+                insertText = generateDescriptionUniversalCombined({
+                  jointMap,
+                  selectedOptions,
+                  type: "hand",
+                  mode: "gaps",
+                });
+              }
+              
+              // Добавляем перенос строки для лучшего форматирования
+              const finalText = `\n${insertText}`;
 
-                  if (activeDegree === "Не изменены") {
-                    insertText = "Суставные щели мелких суставов кистей сохранены, равномерные.";
-                  } else {
-                    insertText = generateDescriptionUniversalCombined({
-                      jointMap,
-                      selectedOptions,
-                      type: "hand",
-                      mode: "gaps",
-                    });
-                  }
+              // 2. Используем пропс для вставки
+              insertTextToTextarea(finalText);
+              // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
-                  if (textBefore.length > 0 && !textBefore.endsWith("\n")) {
-                    insertText = "\n" + insertText;
-                  }
-
-                  textarea.value = textBefore + insertText + textAfter;
-
-                  const cursorPos = start + insertText.length;
-                  textarea.selectionStart = textarea.selectionEnd = cursorPos;
-                  textarea.dispatchEvent(new Event("input", { bubbles: true }));
-                }
-                onClose();
-              }}
-
+              onClose();
+            }}
           >
             Добавить
           </button>

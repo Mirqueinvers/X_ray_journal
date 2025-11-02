@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { generateDescriptionUniversalOsteophytes } from "../generateDescription/HandFoot/generateDescriptionOsteophytes";
 
 
-export default function FootOsteophytesModal({ isOpen, onClose, textareaRef }) {
+export default function FootOsteophytesModal({ isOpen, onClose, insertTextToTextarea }) {
   const [selectedOptions, setSelectedOptions] = useState({
     // Правая стопа
     rightTmt1: {}, rightTmt2: {}, rightTmt3: {}, rightTmt4: {}, rightTmt5: {},
@@ -110,21 +110,21 @@ export default function FootOsteophytesModal({ isOpen, onClose, textareaRef }) {
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
-              if (textareaRef?.current) {
-                const textarea = textareaRef.current;
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                const textBefore = textarea.value.substring(0, start);
-                const textAfter = textarea.value.substring(end);
-                const insertText = "\n" + generateDescriptionUniversalOsteophytes({
-                    jointMap,
-                    selectedOptions,
-                    type: "foot", // или "foot"
-                  });  
-                textarea.value = textBefore + insertText + textAfter;
-                textarea.selectionStart = textarea.selectionEnd = start + insertText.length;
-                textarea.dispatchEvent(new Event("input", { bubbles: true }));
-              }
+              // --- ИЗМЕНЕННАЯ ЛОГИКА ВСТАВКИ ---
+              // Сохраняем вашу логику генерации текста
+              const generatedText = generateDescriptionUniversalOsteophytes({
+                jointMap,
+                selectedOptions,
+                type: "foot",
+              });
+
+              // Добавляем перенос строки для лучшего форматирования
+              const finalText = `\n${generatedText}`;
+
+              // Используем пропс для вставки
+              insertTextToTextarea(finalText);
+              // --- КОНЕЦ ИЗМЕНЕНИЙ ---
+
               onClose();
             }}
           >

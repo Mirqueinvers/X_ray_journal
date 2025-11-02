@@ -1,7 +1,7 @@
 // Frontend/src/components/lungs/PleuraExpansionModal.jsx
 import { useState } from "react";
 
-export default function PleuraExpansionModal({ onClose, textareaRef }) {
+export default function PleuraExpansionModal({ onClose, insertTextToTextarea }) {
   const [selectedSides, setSelectedSides] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState({
     left: [],
@@ -9,14 +9,6 @@ export default function PleuraExpansionModal({ onClose, textareaRef }) {
   });
 
   const sideOptions = ["Уплощена", "Спайка", "Релаксация", "Не четкая"];
-
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current ? current + "\n" + text : text;
-      textareaRef.current.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-  };
 
   const toggleSide = (side) => {
     setSelectedSides(prev =>
@@ -171,7 +163,7 @@ const generateDescription = () => {
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
-              insertTextToTextarea(generateDescription());
+              insertTextToTextarea("\n" + generateDescription());
               onClose();
             }}
           >

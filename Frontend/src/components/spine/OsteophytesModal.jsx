@@ -2,7 +2,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
-export default function OsteophytesModal({ onClose, textareaRef }) {
+export default function OsteophytesModal({ onClose, insertTextToTextarea }) {
   const [activeSurface, setActiveSurface] = useState("передние");
   const [selected, setSelected] = useState({
     передние: [],
@@ -44,35 +44,23 @@ export default function OsteophytesModal({ onClose, textareaRef }) {
     return ranges;
   };
 
-  const insertSelected = () => {
-    if (!textareaRef.current) return;
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const value = textarea.value;
+const insertSelected = () => {
+  // Вся ваша логика генерации текста остается без изменений
+  let parts = [];
+  if (selected.передние.length > 0) {
+    parts.push(`по передним поверхностям тел ${buildSegments(selected.передние).join(", ")}`);
+  }
+  if (selected.боковые.length > 0) {
+    parts.push(`и боковым поверхностям тел ${buildSegments(selected.боковые).join(", ")}`);
+  }
+  if (parts.length === 0) return;
+  const insertText = `Определяются краевые костные разрастания ${parts.join(" ")}.`;
 
-    let parts = [];
-
-    if (selected.передние.length > 0) {
-      parts.push(`по передним поверхностям тел ${buildSegments(selected.передние).join(", ")}`);
-    }
-    if (selected.боковые.length > 0) {
-      parts.push(`и боковым поверхностям тел ${buildSegments(selected.боковые).join(", ")}`);
-    }
-
-    if (parts.length === 0) return;
-
-    const insertText = `Определяются краевые костные разрастания ${parts.join(" ")}.\n`;
-
-    const newText = value.substring(0, start) + insertText + value.substring(end);
-    textarea.value = newText;
-
-    textarea.dispatchEvent(new Event("input", { bubbles: true }));
-    textarea.focus();
-    textarea.setSelectionRange(start + insertText.length, start + insertText.length);
-
-    onClose();
-  };
+  // Используем пропс для вставки
+  insertTextToTextarea(insertText);
+  
+  onClose();
+};
 
   return (
     <div

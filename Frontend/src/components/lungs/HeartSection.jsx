@@ -1,7 +1,5 @@
 // Frontend/src/components/lungs/HeartSection.jsx
-import { useState } from "react";
-
-export default function HeartSection({ textareaRef, setExpandedPlaque }) {
+export default function HeartSection({ insertTextToTextarea, setExpandedPlaque }) {
   const heartOptions = [
     { label: "не расширена", text: "в пределах возрастной нормы" },
     { label: "расширена слева", text: "расширена преимущественно за счет левых отделов" },
@@ -9,21 +7,8 @@ export default function HeartSection({ textareaRef, setExpandedPlaque }) {
     { label: "расширена с двух сторон", text: "расширена за счет правых и левых отделов" }
   ];
 
-  const insertTextToTextarea = (text) => {
-    if (textareaRef?.current) {
-      const current = textareaRef.current.value;
-      textareaRef.current.value = current 
-        ? current + "\n" + text 
-        : text;
-      
-      // Вызываем событие input для React
-      const event = new Event("input", { bubbles: true });
-      textareaRef.current.dispatchEvent(event);
-    }
-  };
-
   const handleOptionClick = (option) => {
-    insertTextToTextarea(`Тень сердца ${option.text}.`);
+    insertTextToTextarea("\n" + `Тень сердца ${option.text}.`);
     setExpandedPlaque(null);
   };
 

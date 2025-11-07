@@ -14,9 +14,36 @@ export default function DiagnosisModal({ onClose, insertTextToTextarea, patientN
 
   const handleAdd = () => {
     if (diagnosisText.trim() !== "") {
-      insertTextToTextarea("\n\n"+ "Диагноз: " + diagnosisText.trim());
+      insertTextToTextarea("\n\n" + "Диагноз: " + diagnosisText.trim());
       setDiagnosisText("");
       onClose();
+    }
+  };
+
+  // ИЗМЕНЕННЯ ФУНКЦИЯ
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      // Для Enter: предотвращаем поведение по умолчанию и вспытие
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Вставляем перенос строки вручную
+
+      const textarea = e.target;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const newText = diagnosisText.substring(0, start) + "\n" + diagnosisText.substring(end);
+      setDiagnosisText(newText);
+
+      // Возвращаем курсор в правильную позицию
+
+      setTimeout(() => {
+        textarea.selectionStart = textarea.selectionEnd = start + 1;
+      }, 0);
+    } else if (e.key === ' ') { // Для пробела
+      // Предотвращаем вспытие, но разрешаем действие по умолчанию (вставку пробела)
+      e.stopPropagation();
+      // НЕ нужно вызывать preventDefault(), чтобы позволить браузеру вставить пробел
     }
   };
 
@@ -52,6 +79,7 @@ export default function DiagnosisModal({ onClose, insertTextToTextarea, patientN
             rows={4}
             value={diagnosisText}
             onChange={(e) => setDiagnosisText(e.target.value)}
+            onKeyDown={handleKeyDown} // <-- ДОБАВЬТЕ ЭТУ СТРОКУ
             placeholder="Введите диагноз..."
             className="w-full bg-gray-100 rounded-md px-3 py-2 text-sm text-gray-800
                        focus:outline-none focus:ring-4 focus:ring-gray-300 focus:border-gray-300 transition-all resize-none"

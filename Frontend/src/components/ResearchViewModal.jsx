@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { XMarkIcon, CheckIcon, PencilIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, CheckIcon, PencilIcon, ClipboardIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import API_BASE from "./api";
 
@@ -11,6 +11,15 @@ export default function ResearchViewModal({ researchId, description: initialDesc
   const [isEditing, setIsEditing] = useState(false);
   const [originalDescription, setOriginalDescription] = useState(initialDescription || "");
   const textareaRef = useRef(null);
+
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(`\n\n${description}\n`).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1000); // через 1 секунду возвращаем иконку
+    });
+  };
 
   useEffect(() => {
     if (!researchId) return;
@@ -127,13 +136,28 @@ export default function ResearchViewModal({ researchId, description: initialDesc
               {/* Кнопки управления */}
               <div className="mt-6 flex gap-3">
                 {!isEditing ? (
-                  <button
-                    onClick={handleEdit}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 transition"
-                  >
-                    <PencilIcon className="h-5 w-5" />
-                    Редактировать
-                  </button>
+                  <>
+                    <button
+                      onClick={handleEdit}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 transition"
+                    >
+                      <PencilIcon className="h-5 w-5" />
+                      Редактировать
+                    </button>
+
+                    <button
+                      onClick={handleCopy}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-100 transition"
+                      title="Копировать описание"
+                    >
+                      {copied ? (
+                        <CheckIcon className="h-5 w-5 text-green-500" />
+                      ) : (
+                        <ClipboardIcon className="h-5 w-5 text-gray-400" />
+                      )}
+                      {copied ? "Скопировано" : "Копировать"}
+                    </button>
+                  </>
                 ) : (
                   <>
                     <button

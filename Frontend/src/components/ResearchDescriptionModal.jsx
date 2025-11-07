@@ -93,6 +93,54 @@ export default function ResearchDescriptionModal({
     }
   };
 
+  // ИЗМЕНенная функция
+  const handleTextareaKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      // Для Enter: предотвращаем поведение по умолчанию и всплытие
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Вставляем перенос строки вручную
+      const textarea = e.target;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      
+      
+      setText((currentText) => {
+        const newText = currentText.substring(0, start) + "\n" + currentText.substring(end);
+        
+        // Возвращаем курсор в правильную позицию после обновления состояния
+        setTimeout(() => {
+          textarea.selectionStart = textarea.selectionEnd = start + 1;
+        }, 0);
+        
+        return newText;
+      });
+    } else if (e.key === ' ') { // Для пробела
+      // Предотвращаем всплытие, поведение по умолчанию, но разрешаем вставку пробела
+
+      e.stopPropagation();
+      // НЕ нужно вызывать preventDefault(), чтобы позволить браузеру вставить пробел
+
+      // Вставляем пробел вручную, чтобы быть уверены, в поведении
+      const textarea = e.target;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      
+      setText((currentText) => {
+        const newText = currentText.substring(0, start) + " " + currentText.substring(end);
+        
+        // Возвращаем курсор в правильную позицию после обновления состояния
+
+        setTimeout(() => {
+          textarea.selectionStart = textarea.selectionEnd = start + 1;
+        }, 0);
+        
+        return newText;
+      });
+    }
+  };
+
   const researchMap = {
     "Рентгенография коленных суставов": ResearchPlaques.KneeResearchPlaques,
     "Рентгенография левого коленного сустава": ResearchPlaques.KneeResearchPlaques,
@@ -152,6 +200,7 @@ export default function ResearchDescriptionModal({
               ref={textareaRef}
               value={text}
               onChange={(e) => setText(e.target.value)}
+              onKeyDown={handleTextareaKeyDown} // <-- Обработчик уже добавлен
               placeholder="Введите описание исследования..."
               className="flex-1 resize-none bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
             />

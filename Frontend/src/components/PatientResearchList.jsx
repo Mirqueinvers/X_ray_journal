@@ -171,5 +171,5 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
         />
       )}
     </div>
-  );
+  );я
 }

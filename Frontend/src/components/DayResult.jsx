@@ -13,6 +13,7 @@ export default function DayResult({
   deletePatient,
   formatBirthDate,
   onEditResearch,
+  
 }) {
   const [copiedId, setCopiedId] = useState(null);
 
@@ -105,6 +106,9 @@ export default function DayResult({
     setTimeout(() => setCopiedId(null), 1000);
   };
 
+
+
+
   return (
     <div className="mb-8 w-full">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
@@ -133,6 +137,7 @@ export default function DayResult({
                 onDeleteResearch={handleDeleteResearch}
                 onEditResearch={onEditResearch}
                 onIssueResearch={handleIssueResearch}
+                groupByDate={false}
               />
             ))}
           </div>

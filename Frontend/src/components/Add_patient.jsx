@@ -387,6 +387,7 @@ try {
       <VisitDatePicker
         visitDate={visitDate}
         setVisitDate={setVisitDate}
+        patientsOnDate={patientsOnDate}
       />
 
       {/* Список пациентов и их исследований на выбранную дату */}
@@ -402,6 +403,7 @@ try {
         formatBirthDate={formatBirthDate}
         fetchPatientsByDate={() => fetchPatientsAndVisits(visitDate)}
         onEditResearch={openEditResearchModal}
+        
       />
 
 

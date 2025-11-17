@@ -2,7 +2,13 @@
 // Суставные щели тазобедренных суставов — упрощённая версия (по суставам)
 import React, { useState } from "react";
 
-export default function HipJointSpaceModal({ isOpen, onClose, insertTextToTextarea }) {
+export default function HipJointSpaceModal({ 
+  isOpen, 
+  onClose, 
+  insertTextToTextarea,
+  // НОВЫЙ пропс для эндопротеза
+  hasEndoprosthesis = false
+}) {
   const [selectedOptions, setSelectedOptions] = useState({
     left: { degree: "", uniformity: "" },
     right: { degree: "", uniformity: "" },
@@ -50,24 +56,41 @@ const generateDescription = () => {
   });
 
   // Если ничего не выбрано
-  if (!desc.right && !desc.left)
-    return "Суставные щели тазобедренных суставов равномерной высоты.";
+  if (!desc.right && !desc.left) {
+    return hasEndoprosthesis 
+      ? "Суставная щель равномерной высоты."
+      : "Суставные щели тазобедренных суставов равномерной высоты.";
+  }
 
   // Если оба выбраны и одинаковые
   if (desc.right && desc.left && desc.right === desc.left) {
-    return `Суставные щели тазобедренных суставов ${desc.right} сужены.`;
+    if (hasEndoprosthesis) {
+      return `Суставная щель ${desc.right} сужена.`;
+    } else {
+      return `Суставные щели тазобедренных суставов ${desc.right} сужены.`;
+    }
   }
 
   // Если оба выбраны, но разные
   if (desc.right && desc.left) {
-    return `Суставная щель правого тазобедренного сустава ${desc.right} сужена; левого — ${desc.left} сужена.`;
+    if (hasEndoprosthesis) {
+      return `Суставная щель правого тазобедренного сустава ${desc.right} сужена; левого — ${desc.left} сужена.`;
+    } else {
+      return `Суставная щель правого тазобедренного сустава ${desc.right} сужена; левого — ${desc.left} сужена.`;
+    }
   }
 
   // Если выбран только один сустав
-  if (desc.right)
-    return `Суставная щель правого тазобедренного сустава ${desc.right} сужена.`;
-  if (desc.left)
-    return `Суставная щель левого тазобедренного сустава ${desc.left} сужена.`;
+  if (desc.right) {
+    return hasEndoprosthesis
+      ? `Суставная щель ${desc.right} сужена.`
+      : `Суставная щель правого тазобедренного сустава ${desc.right} сужена.`;
+  }
+  if (desc.left) {
+    return hasEndoprosthesis
+      ? `Суставная щель ${desc.left} сужена.`
+      : `Суставная щель левого тазобедренного сустава ${desc.left} сужена.`;
+  }
 
   return "";
 };

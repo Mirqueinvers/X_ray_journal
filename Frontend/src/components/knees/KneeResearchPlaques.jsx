@@ -33,7 +33,10 @@ export default function KneeResearch({
   expandedPlaque,
   setExpandedPlaque,
   setOpenModal,
-  insertTextToTextarea
+  insertTextToTextarea,
+  // НОВЫЕ пропсы для эндопротеза
+  hasEndoprosthesis,
+  setHasEndoprosthesis
 }) {
   return (
     <ResearchPlaques
@@ -42,6 +45,9 @@ export default function KneeResearch({
       setExpandedPlaque={setExpandedPlaque}
       setOpenModal={setOpenModal}
       insertTextToTextarea={insertTextToTextarea}
+      // НОВОЕ: Передаем пропсы эндопротеза
+      hasEndoprosthesis={hasEndoprosthesis}
+      setHasEndoprosthesis={setHasEndoprosthesis}
     />
   );
 }

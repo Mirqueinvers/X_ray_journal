@@ -120,7 +120,7 @@ const insertSelected = () => {
   
   // --- ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ ---
   // Добавляем переносы строки и используем пропс для вставки
-  const finalText = `\n${insertText}\n`;
+  const finalText = `\n${insertText}`;
   insertTextToTextarea(finalText);
   // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 

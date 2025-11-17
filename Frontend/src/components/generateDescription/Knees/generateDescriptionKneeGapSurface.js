@@ -49,7 +49,11 @@ const modeMaps = {
   },
 };
 
-export const generateDescriptionKneeGapSurface = ({ selectedOptions, mode = "gaps" }) => {
+export const generateDescriptionKneeGapSurface = ({ 
+  selectedOptions, 
+  mode = "gaps",
+  hasEndoprosthesis = false 
+}) => {
   const perKnee = { left: {}, right: {} };
   let totalSelected = 0;
 
@@ -75,6 +79,86 @@ export const generateDescriptionKneeGapSurface = ({ selectedOptions, mode = "gap
   const descriptions = [];
   const usedParts = new Set();
 
+  // НОВОЕ: Отдельная логика для эндопротеза
+  if (hasEndoprosthesis) {
+    if (mode === "gaps") {
+      // Логика для суставных щелей с эндопротезом
+      const singleMap = modeMaps.gaps.single;
+
+      ["медиальном", "латеральном"].forEach((part) => {
+        const left = perKnee.left[part];
+        const right = perKnee.right[part];
+        if (left && right && left === right) {
+          const partText = part === "медиальном" ? "медиальных" : "латеральных";
+          descriptions.push(`${singleMap[left]} в ${partText} отделах`);
+          usedParts.add(part);
+        }
+      });
+
+      ["медиальном", "латеральном"].forEach((part) => {
+        if (usedParts.has(part)) return;
+        const left = perKnee.left[part];
+        const right = perKnee.right[part];
+        if (left && right && left !== right) {
+          descriptions.push(
+            `${singleMap[right]} в ${part} отделе, ${singleMap[left]} в ${part} отделе`
+          );
+          usedParts.add(part);
+        }
+      });
+
+      ["left", "right"].forEach((knee) => {
+        const kneeParts = perKnee[knee];
+        Object.keys(kneeParts)
+          .filter((part) => !usedParts.has(part))
+          .forEach((part) => {
+            descriptions.push(`${singleMap[kneeParts[part]]} в ${part} отделе`);
+          });
+      });
+
+      return `${modeMaps.gaps.firstPhrase.single} ${descriptions.join(", ")}.`;
+    }
+
+    if (mode === "surfaces") {
+      // Логика для суставных поверхностей с эндопротезом
+      const pluralMap = modeMaps.surfaces.plural;
+
+      ["медиальном", "латеральном"].forEach((part) => {
+        const left = perKnee.left[part];
+        const right = perKnee.right[part];
+        if (left && right && left === right) {
+          const partText = part === "медиальном" ? "медиальных" : "латеральных";
+          descriptions.push(`${pluralMap[left]} в ${partText} отделах`);
+          usedParts.add(part);
+        }
+      });
+
+      ["медиальном", "латеральном"].forEach((part) => {
+        if (usedParts.has(part)) return;
+        const left = perKnee.left[part];
+        const right = perKnee.right[part];
+        if (left && right && left !== right) {
+          descriptions.push(
+            `${pluralMap[right]} в ${part} отделе, ${pluralMap[left]} в ${part} отделе`
+          );
+          usedParts.add(part);
+        }
+      });
+
+      ["left", "right"].forEach((knee) => {
+        const kneeParts = perKnee[knee];
+        Object.keys(kneeParts)
+          .filter((part) => !usedParts.has(part))
+          .forEach((part) => {
+            descriptions.push(`${pluralMap[kneeParts[part]]} в ${part} отделе`);
+          });
+      });
+
+      return `${modeMaps.surfaces.firstPhrase.plural} ${descriptions.join(", ")}.`;
+    }
+  }
+
+  // СУЩЕСТВУЮЩАЯ ЛОГИКА БЕЗ ИЗМЕНЕНИЙ
   if (mode === "gaps") {
     // ===============================
     // Суставные щели — старая логика
@@ -161,4 +245,3 @@ export const generateDescriptionKneeGapSurface = ({ selectedOptions, mode = "gap
     return `${modeMaps.surfaces.firstPhrase.plural} ${descriptions.join(", ")}.`;
   }
 };
-

@@ -4,7 +4,7 @@ export default function KyphosisSection({ insertTextToTextarea, setExpandedPlaqu
   const options = ["не изменен", "увеличен", "сглажен"];
 
   const insertText = (option) => {
-    insertTextToTextarea(`Кифоз грудного отдела позвоночника ${option}.\n`);
+    insertTextToTextarea(`Кифоз грудного отдела позвоночника ${option}.`);
     setExpandedPlaque(null);
   };
 

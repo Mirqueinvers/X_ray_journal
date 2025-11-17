@@ -9,7 +9,9 @@ export default function ResearchDescriptionModal({
   description,
   selectedResearch,
   researchId,
-  setTextareaRef
+  setTextareaRef,
+  // НОВЫЙ ПРОП: callback для обновления после сохранения
+  onDescriptionSaved
 }) {
   const [expandedPlaque, setExpandedPlaque] = useState(null);
   const [selectedSubItem, setSelectedSubItem] = useState(null);
@@ -23,6 +25,9 @@ export default function ResearchDescriptionModal({
   const textareaRef = useRef(null);
   const [insertionData, setInsertionData] = useState(null);
   const [isNestedModalOpen, setIsNestedModalOpen] = useState(false);
+
+  // НОВОЕ: Состояние для эндопротеза
+  const [hasEndoprosthesis, setHasEndoprosthesis] = useState(false);
 
   useEffect(() => setText(description || ""), [description]);
   useEffect(() => {
@@ -60,6 +65,51 @@ export default function ResearchDescriptionModal({
     setInsertionData({ textToInsert, start, end });
   };
 
+  // НОВАЯ ФУНКЦИЯ: Обработчик клавиш для текстового поля
+  const handleTextareaKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      // Для Enter: предотвращаем поведение по умолчанию и всплытие
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Вставляем перенос строки вручную
+      const textarea = e.target;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      
+      setText((currentText) => {
+        const newText = currentText.substring(0, start) + "\n" + currentText.substring(end);
+        
+        // Возвращаем курсор в правильную позицию после обновления состояния
+        setTimeout(() => {
+          textarea.selectionStart = textarea.selectionEnd = start + 1;
+        }, 0);
+        
+        return newText;
+      });
+    } else if (e.key === ' ') { // Для пробела
+      // Предотвращаем всплытие, но разрешаем вставку пробела
+      e.stopPropagation();
+      // НЕ вызываем preventDefault(), чтобы позволить браузеру вставить пробел
+
+      // Вставляем пробел вручную, чтобы быть уверенными в поведении
+      const textarea = e.target;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      
+      setText((currentText) => {
+        const newText = currentText.substring(0, start) + " " + currentText.substring(end);
+        
+        // Возвращаем курсор в правильную позицию после обновления состояния
+        setTimeout(() => {
+          textarea.selectionStart = textarea.selectionEnd = start + 1;
+        }, 0);
+        
+        return newText;
+      });
+    }
+  };
+
   const handleOpenModal = (modalName) => {
     setIsNestedModalOpen(true);
     setOpenModal(modalName);
@@ -83,6 +133,21 @@ export default function ResearchDescriptionModal({
       if (data.success) {
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 2000);
+        
+        // НОВОЕ: Обновляем локальное состояние и вызываем callback
+        const updatedResearch = {
+          id: researchId,
+          description: textToSave,
+          // можно добавить другие поля, которые нужно обновить
+        };
+        
+        // Если есть callback, вызываем его
+        if (onDescriptionSaved) {
+          onDescriptionSaved(updatedResearch);
+        } else {
+          // Если нет callback, просто закрываем модальное окно
+          onClose();
+        }
       } else {
         console.error("Ошибка сохранения:", data.error);
       }
@@ -90,54 +155,6 @@ export default function ResearchDescriptionModal({
       console.error("Ошибка запроса:", err);
     } finally {
       setSaving(false);
-    }
-  };
-
-  // ИЗМЕНенная функция
-  const handleTextareaKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      // Для Enter: предотвращаем поведение по умолчанию и всплытие
-      e.preventDefault();
-      e.stopPropagation();
-
-      // Вставляем перенос строки вручную
-      const textarea = e.target;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      
-      
-      setText((currentText) => {
-        const newText = currentText.substring(0, start) + "\n" + currentText.substring(end);
-        
-        // Возвращаем курсор в правильную позицию после обновления состояния
-        setTimeout(() => {
-          textarea.selectionStart = textarea.selectionEnd = start + 1;
-        }, 0);
-        
-        return newText;
-      });
-    } else if (e.key === ' ') { // Для пробела
-      // Предотвращаем всплытие, поведение по умолчанию, но разрешаем вставку пробела
-
-      e.stopPropagation();
-      // НЕ нужно вызывать preventDefault(), чтобы позволить браузеру вставить пробел
-
-      // Вставляем пробел вручную, чтобы быть уверены, в поведении
-      const textarea = e.target;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      
-      setText((currentText) => {
-        const newText = currentText.substring(0, start) + " " + currentText.substring(end);
-        
-        // Возвращаем курсор в правильную позицию после обновления состояния
-
-        setTimeout(() => {
-          textarea.selectionStart = textarea.selectionEnd = start + 1;
-        }, 0);
-        
-        return newText;
-      });
     }
   };
 
@@ -200,7 +217,7 @@ export default function ResearchDescriptionModal({
               ref={textareaRef}
               value={text}
               onChange={(e) => setText(e.target.value)}
-              onKeyDown={handleTextareaKeyDown} // <-- Обработчик уже добавлен
+              onKeyDown={handleTextareaKeyDown} // <-- Теперь функция определена
               placeholder="Введите описание исследования..."
               className="flex-1 resize-none bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
             />
@@ -238,6 +255,9 @@ export default function ResearchDescriptionModal({
                 textareaRef={textareaRef}
                 setOpenModal={handleOpenModal}
                 insertTextToTextarea={insertTextToTextarea}
+                // НОВОЕ: Передаем состояние эндопротеза
+                hasEndoprosthesis={hasEndoprosthesis}
+                setHasEndoprosthesis={setHasEndoprosthesis}
               />
             )}
           </div>
@@ -256,6 +276,8 @@ export default function ResearchDescriptionModal({
                 textareaRef={textareaRef}
                 spineRegion={region}
                 insertTextToTextarea={insertTextToTextarea}
+                // НОВОЕ: Передаем состояние эндопротеза
+                hasEndoprosthesis={hasEndoprosthesis}
               />
             );
           }
@@ -268,6 +290,8 @@ export default function ResearchDescriptionModal({
               onClose={handleCloseNestedModal}
               textareaRef={textareaRef}
               insertTextToTextarea={insertTextToTextarea}
+              // НОВОЕ: Передаем состояние эндопротеза
+              hasEndoprosthesis={hasEndoprosthesis}
             />
           );
         })()}

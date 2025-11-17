@@ -4,7 +4,8 @@ import ResearchTypeModal from './ResearchTypeModal';
 import ResearchDescriptionModal from './ResearchDescriptionModal';
 import ResearchViewModal from './ResearchViewModal';
 
-export default function PatientResearchList({ patientId, researches, onEdit, onDelete, onIssue }) {
+export default function PatientResearchList({ patientId, researches, onEdit, onDelete, onIssue,   // НОВЫЙ ПРОП: функция обновления исследования
+  onUpdateResearch }) {
   const [issuedResearchIds, setIssuedResearchIds] = useState([]);
   const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
@@ -19,6 +20,17 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
     const issuedIds = researches?.filter(r => r.issued_on_hands).map(r => r.id) || [];
     setIssuedResearchIds(issuedIds);
   }, [researches]);
+
+    // НОВАЯ ФУНКЦИЯ: обработчик успешного сохранения описания
+  const handleDescriptionSaved = (updatedResearch) => {
+    // Вызываем callback для обновления состояния в родительском компоненте
+    if (onUpdateResearch) {
+      onUpdateResearch(updatedResearch);
+    }
+    // Закрываем модальное окно
+    setIsDescriptionModalOpen(false);
+    setTempDescription("");
+  };
 
   const handleIssue = (researchId) => {
     const isCurrentlyIssued =
@@ -160,6 +172,8 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
           description={tempDescription || selectedDescription}
           researchId={selectedResearchId}
           setTextareaRef={setTextareaRef}
+                    // НОВЫЙ ПРОП: передаем callback для обновления после сохранения
+          onDescriptionSaved={handleDescriptionSaved}
         />
       )}
 
@@ -171,5 +185,5 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
         />
       )}
     </div>
-  );я
+  );
 }

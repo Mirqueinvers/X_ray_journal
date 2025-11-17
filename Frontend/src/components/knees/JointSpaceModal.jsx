@@ -3,7 +3,13 @@
 import React, { useState } from "react";
 import { generateDescriptionKneeGapSurface } from "../generateDescription/Knees/generateDescriptionKneeGapSurface";
 
-export default function JointSpaceSection({ isOpen, onClose, insertTextToTextarea }) { // 1. Принимаем insertTextToTextarea
+export default function JointSpaceSection({ 
+  isOpen, 
+  onClose, 
+  insertTextToTextarea,
+  // НОВЫЙ пропс для эндопротеза
+  hasEndoprosthesis = false
+}) {
   const [selectedOptions, setSelectedOptions] = useState({
     leftMedial: [],
     leftLateral: [],
@@ -150,12 +156,13 @@ export default function JointSpaceSection({ isOpen, onClose, insertTextToTextare
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
-              // 3. ИСПОЛЬЗУЕМ пропс insertTextToTextarea, который пришел от ResearchDescriptionModal
+              // НОВОЕ: Передаем hasEndoprosthesis в генератор
               insertTextToTextarea(
                 "\n" + generateDescriptionKneeGapSurface({
                   mode: "gaps",
                   selectedOptions,
-                  selectedPositions
+                  selectedPositions,
+                  hasEndoprosthesis
                 })
               );
               onClose();

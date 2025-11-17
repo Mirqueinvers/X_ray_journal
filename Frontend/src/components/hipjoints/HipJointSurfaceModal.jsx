@@ -2,7 +2,13 @@
 // Суставные поверхности тазобедренных суставов
 import React, { useState } from "react";
 
-export default function HipJointSurfaceModal({ isOpen, onClose, insertTextToTextarea }) {
+export default function HipJointSurfaceModal({ 
+  isOpen, 
+  onClose, 
+  insertTextToTextarea,
+  // НОВЫЙ пропс для эндопротеза
+  hasEndoprosthesis = false
+}) {
   const [selectedOptions, setSelectedOptions] = useState({
     left: [],
     right: [],
@@ -42,20 +48,34 @@ const generateDescription = () => {
   const rightOption = selectedOptions.right[0];
 
   if (!leftOption && !rightOption) {
-    return "Суставные поверхности тазобедренных суставов без патологических изменений.";
+    return hasEndoprosthesis
+      ? "Суставные поверхности без патологических изменений."
+      : "Суставные поверхности тазобедренных суставов без патологических изменений.";
   }
 
   let description = "";
 
   if (leftOption && rightOption && leftOption === rightOption) {
-    description = `Суставные поверхности тазобедренных суставов ${leftOption} преимущественно в области крыш вертлужных впадин.`;
+    if (hasEndoprosthesis) {
+      description = `Суставные поверхности ${leftOption} преимущественно в области крыш вертлужных впадин.`;
+    } else {
+      description = `Суставные поверхности тазобедренных суставов ${leftOption} преимущественно в области крыш вертлужных впадин.`;
+    }
   } else {
     if (rightOption && leftOption) {
-      description = `Суставная поверхность правого тазобедренного сустава ${rightOption} преимущественно в области крыши вертлужной впадины, левого тазобедренного сустава ${leftOption} преимущественно в области крыши вертлужной впадины.`;
+      if (hasEndoprosthesis) {
+        description = `Суставные поверхности правого тазобедренного сустава ${rightOption} преимущественно в области крыши вертлужной впадины, левого ${leftOption} преимущественно в области крыши вертлужной впадины.`;
+      } else {
+        description = `Суставные поверхности правого тазобедренного сустава ${rightOption} преимущественно в области крыши вертлужной впадины, левого ${leftOption} преимущественно в области крыши вертлужной впадины.`;
+      }
     } else if (rightOption) {
-      description = `Суставная поверхность правого тазобедренного сустава ${rightOption} преимущественно в области крыши вертлужной впадины.`;
+      description = hasEndoprosthesis
+        ? `Суставные поверхности ${rightOption} преимущественно в области крыши вертлужной впадины.`
+        : `Суставные поверхности правого тазобедренного сустава ${rightOption} преимущественно в области крыши вертлужной впадины.`;
     } else if (leftOption) {
-      description = `Суставная поверхность левого тазобедренного сустава ${leftOption} преимущественно в области крыши вертлужной впадины.`;
+      description = hasEndoprosthesis
+        ? `Суставные поверхности ${leftOption} преимущественно в области крыши вертлужной впадины.`
+        : `Суставные поверхности левого тазобедренного сустава ${leftOption} преимущественно в области крыши вертлужной впадины.`;
     }
   }
 

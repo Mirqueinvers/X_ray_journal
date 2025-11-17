@@ -10,6 +10,9 @@ export default function HipResearchPlaques({
   setExpandedPlaque,
   setOpenModal,
   insertTextToTextarea,
+  // НОВЫЕ пропсы для эндопротеза
+  hasEndoprosthesis,
+  setHasEndoprosthesis
 }) {
   const plaques = [
     { label: "Эндопротез", type: "expandable", component: HipEndoprosthesisSection },
@@ -46,6 +49,9 @@ export default function HipResearchPlaques({
       setExpandedPlaque={setExpandedPlaque}
       setOpenModal={setOpenModal}
       insertTextToTextarea={insertTextToTextarea}
+      // НОВОЕ: Передаем пропсы эндопротеза
+      hasEndoprosthesis={hasEndoprosthesis}
+      setHasEndoprosthesis={setHasEndoprosthesis}
     />
   );
 }

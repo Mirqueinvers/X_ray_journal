@@ -8,7 +8,7 @@ import {
   TrashIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import { useState } from "react";
+
 import PatientResearchList from "./PatientResearchList";
 
 export default function PatientCard({
@@ -28,6 +28,8 @@ export default function PatientCard({
   onDeleteResearch,
   onIssueResearch,
   groupByDate = false, // новый проп для управления группировкой
+   // НОВЫЙ ПРОП: функция обновления исследования
+  onUpdateResearch,
 }) {
   // Функция группировки исследований по дате
   const groupResearchesByDate = (researchList) => {
@@ -190,6 +192,8 @@ export default function PatientCard({
                       onDelete={onDeleteResearch}
                       onEdit={onEditResearch}
                       onIssue={onIssueResearch}
+                      // НОВЫЙ ПРОП: передаем функцию обновления исследования
+                      onUpdateResearch={onUpdateResearch}
                     />
                   </div>
                 </div>
@@ -205,6 +209,8 @@ export default function PatientCard({
             onDelete={onDeleteResearch}
             onEdit={onEditResearch}
             onIssue={onIssueResearch}
+            // НОВЫЙ ПРОП: передаем функцию обновления исследования
+            onUpdateResearch={onUpdateResearch}
           />
         )}
       </div>

@@ -6,6 +6,9 @@ export default function ResearchPlaques({
   setExpandedPlaque,
   setOpenModal,
   insertTextToTextarea,
+  // НОВЫЕ пропсы для эндопротеза
+  hasEndoprosthesis,
+  setHasEndoprosthesis,
 }) {
   return (
     <div className="mt-4 space-y-2">
@@ -37,6 +40,9 @@ export default function ResearchPlaques({
               <plaque.component
                 insertTextToTextarea={insertTextToTextarea}
                 setExpandedPlaque={setExpandedPlaque}
+                // НОВОЕ: Передаем пропсы эндопротеза
+                hasEndoprosthesis={hasEndoprosthesis}
+                setHasEndoprosthesis={setHasEndoprosthesis}
               />
             )}
           </div>

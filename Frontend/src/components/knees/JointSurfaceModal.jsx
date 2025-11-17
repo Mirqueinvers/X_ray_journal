@@ -10,7 +10,13 @@ const surfaceMap = {
   "резкие изменения": "резко склерозированы",
 };
 
-export default function JointSurfaceModal({ isOpen, onClose, insertTextToTextarea }) {
+export default function JointSurfaceModal({ 
+  isOpen, 
+  onClose, 
+  insertTextToTextarea,
+  // НОВЫЙ пропс для эндопротеза
+  hasEndoprosthesis = false
+}) {
   const [selectedOptions, setSelectedOptions] = useState({
     rightMedial: [],
     rightLateral: [],
@@ -28,28 +34,26 @@ export default function JointSurfaceModal({ isOpen, onClose, insertTextToTextare
     "резкие изменения",
   ];
 
-    const zones = [
-      { key: "rightLateral", name: "Правый латеральный", position: { top: "28%", left: "22%" } },
-      { key: "rightMedial", name: "Правый медиальный", position: { top: "28%", left: "36%" } },
-      
-      { key: "leftMedial", name: "Левый медиальный", position: { top: "28%", left: "56.5%" } },
-      { key: "leftLateral", name: "Левый латеральный", position: { top: "28%", left: "70.5%" } },
-    ];
+  const zones = [
+    { key: "rightLateral", name: "Правый латеральный", position: { top: "28%", left: "22%" } },
+    { key: "rightMedial", name: "Правый медиальный", position: { top: "28%", left: "36%" } },
+    { key: "leftMedial", name: "Левый медиальный", position: { top: "28%", left: "56.5%" } },
+    { key: "leftLateral", name: "Левый латеральный", position: { top: "28%", left: "70.5%" } },
+  ];
 
-const toggleZoneOption = (zoneKey, option) => {
-  setSelectedOptions((prev) => {
-    const currentOption = prev[zoneKey]?.[0];
-    if (currentOption === option) {
-      // Если кликнули на уже выбранный вариант — снимаем выбор
-      return { ...prev, [zoneKey]: [] };
-    } else {
-      // Иначе выбираем новый вариант
-      return { ...prev, [zoneKey]: [option] };
-    }
-  });
-  setExpandedZone(null); // закрываем меню после выбора
-};
-
+  const toggleZoneOption = (zoneKey, option) => {
+    setSelectedOptions((prev) => {
+      const currentOption = prev[zoneKey]?.[0];
+      if (currentOption === option) {
+        // Если кликнули на уже выбранный вариант — снимаем выбор
+        return { ...prev, [zoneKey]: [] };
+      } else {
+        // Иначе выбираем новый вариант
+        return { ...prev, [zoneKey]: [option] };
+      }
+    });
+    setExpandedZone(null); // закрываем меню после выбора
+  };
 
   if (!isOpen) return null;
 
@@ -112,10 +116,12 @@ const toggleZoneOption = (zoneKey, option) => {
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
+              // НОВОЕ: Передаем hasEndoprosthesis в генератор
               insertTextToTextarea(
                 "\n" + generateDescriptionKneeGapSurface({
                   mode: "surfaces",
-                  selectedOptions, // передаем только выбранные варианты
+                  selectedOptions,
+                  hasEndoprosthesis
                 })
               );
               onClose();
@@ -123,7 +129,6 @@ const toggleZoneOption = (zoneKey, option) => {
           >
             Добавить
           </button>
-
         </div>
       </div>
     </div>

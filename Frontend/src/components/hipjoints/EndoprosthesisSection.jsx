@@ -1,16 +1,32 @@
-import React from "react";
 import PlaqueButton from "../ui/PlaqueButton";
 
-export default function EndoprosthesisSection({ setExpandedPlaque, insertTextToTextarea }) {
+export default function EndoprosthesisSection({ 
+  setExpandedPlaque, 
+  insertTextToTextarea,
+  setHasEndoprosthesis
+}) {
   const endoprosthesisOptions = [
     "левого тазобедренного сустава",
     "правого тазобедренного сустава",
   ];
 
   const insertEndoprosthesisText = (option) => {
-    const fullText = `\nОпределяется эндопротез ${option} при удовлетворительном стоянии металлоконструкции.`;
-    insertTextToTextarea(fullText);
-    setExpandedPlaque(null); // сворачиваем блок после выбора
+    let fullText = `\nОпределяется эндопротез ${option} при удовлетворительном стоянии металлоконструкции.`;
+    let additionalText = "";
+    
+    // Определяем противоположный сустав
+    if (option === "правого тазобедренного сустава") {
+      additionalText = "\nЛевый тазобедренный сустав:";
+    } else if (option === "левого тазобедренного сустава") {
+      additionalText = "\nПравый тазобедренный сустав:";
+    }
+    
+    // Устанавливаем состояние эндопротеза
+    setHasEndoprosthesis(true);
+    
+    // Вставляем основной текст и дополнительный текст
+    insertTextToTextarea(fullText + additionalText);
+    setExpandedPlaque(null);
   };
 
   return (

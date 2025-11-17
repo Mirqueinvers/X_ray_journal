@@ -50,18 +50,20 @@ export default function OsteophytesModal({ onClose, insertTextToTextarea }) { //
       return `Определяются краевые костные разрастания на ${surfacePluralMap["медиальная"]} и ${surfacePluralMap["латеральная"]} поверхностях ${bonePluralMap["бедренная"]} и ${bonePluralMap["большеберцовая"]} костей.`;
     }
 
-    const parts = [];
+const parts = [];
 
-    Object.entries(table).forEach(([surface, bones]) => {
-      Object.entries(bones).forEach(([bone, sides]) => {
-        if (sides.left && sides.right) {
-          parts.push(`${surfacePluralMap[surface]} поверхностях ${boneMap[bone]} кости`);
-        } else {
-          if (sides.left) parts.push(`${surfaceMap[surface]} поверхности левой ${boneMap[bone]} кости`);
-          if (sides.right) parts.push(`${surfaceMap[surface]} поверхности правой ${boneMap[bone]} кости`);
-        }
-      });
-    });
+Object.entries(table).forEach(([surface, bones]) => {
+  Object.entries(bones).forEach(([bone, sides]) => {
+    if (sides.left && sides.right) {
+      // ОБА СТОРОНЫ - используем множественное число для кости
+      parts.push(`${surfacePluralMap[surface]} поверхностях ${bonePluralMap[bone]} костей`);
+    } else {
+      if (sides.left) parts.push(`${surfaceMap[surface]} поверхности левой ${boneMap[bone]} кости`);
+      if (sides.right) parts.push(`${surfaceMap[surface]} поверхности правой ${boneMap[bone]} кости`);
+    }
+  });
+});
+
 
     const mergeSurfacesSameBone = (parts) => {
       const merged = [];

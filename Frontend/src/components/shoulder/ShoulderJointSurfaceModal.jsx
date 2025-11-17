@@ -154,7 +154,7 @@ export default function ShoulderJointSurfaceModal({ isOpen, onClose, insertTextT
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
             onClick={() => {
-              insertTextToTextarea(generateDescription());
+              insertTextToTextarea("\n" + generateDescription());
               onClose();
             }}
           >

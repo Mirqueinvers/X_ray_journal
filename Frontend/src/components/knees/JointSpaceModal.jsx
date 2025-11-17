@@ -1,13 +1,12 @@
-// JointSpaceModal.jsx
+// Frontend/src/components/knees/JointSpaceModal.jsx
 // Суставные щели
 import React, { useState } from "react";
 import { generateDescriptionKneeGapSurface } from "../generateDescription/Knees/generateDescriptionKneeGapSurface";
 
-export default function JointSpaceSection({ 
-  isOpen, 
-  onClose, 
+export default function JointSpaceSection({
+  isOpen,
+  onClose,
   insertTextToTextarea,
-  // НОВЫЙ пропс для эндопротеза
   hasEndoprosthesis = false
 }) {
   const [selectedOptions, setSelectedOptions] = useState({
@@ -23,6 +22,14 @@ export default function JointSpaceSection({
   });
 
   const [expandedZone, setExpandedZone] = useState(null);
+
+  // НОВОЕ: состояние "преимущественно" для каждой зоны отдельно
+  const [predominantlyByZone, setPredominantlyByZone] = useState({
+    leftMedial: false,
+    leftLateral: false,
+    rightMedial: false,
+    rightLateral: false,
+  });
 
   const degreeOptions = [
     "равномерной высоты",
@@ -40,9 +47,9 @@ export default function JointSpaceSection({
     { key: "leftLateral", name: "Левый латеральный", position: { top: "28%", left: "70.5%" } },
   ];
 
-  // Логика выбора
+  // Логика выбора степеней
   const toggleZoneOption = (zoneKey, option) => {
-    setSelectedOptions((prev) => {
+    setSelectedOptions(prev => {
       const currentOptions = prev[zoneKey];
       if (option === "равномерной высоты") {
         return {
@@ -56,7 +63,7 @@ export default function JointSpaceSection({
         return {
           ...prev,
           [zoneKey]: currentOptions.includes(option)
-            ? currentOptions.filter((opt) => opt !== option)
+            ? currentOptions.filter(opt => opt !== option)
             : [...currentOptions, option],
         };
       }
@@ -64,28 +71,31 @@ export default function JointSpaceSection({
     setExpandedZone(null);
   };
 
+  // НОВОЕ: переключение "преимущественно" для конкретной зоны
+  const togglePredominantlyForZone = (zoneKey) => {
+    setPredominantlyByZone(prev => ({
+      ...prev,
+      [zoneKey]: !prev[zoneKey]
+    }));
+  };
+
   if (!isOpen) return null;
 
-  const isOptionSelected = (zoneKey, option) => {
-    return selectedOptions[zoneKey] && selectedOptions[zoneKey].includes(option);
-  };
-  
-  const hasAnySelection = (zoneKey) => {
-    return selectedOptions[zoneKey] && selectedOptions[zoneKey].length > 0;
-  }
+  const isOptionSelected = (zoneKey, option) =>
+    selectedOptions[zoneKey] && selectedOptions[zoneKey].includes(option);
 
-  // Обработчик клика на зону
-  const handleZoneClick = (zoneKey) => {
-    if (expandedZone === zoneKey) {
-      setExpandedZone(null);
-    } else {
-      setExpandedZone(zoneKey);
-    }
-  }
+  const hasAnySelection = zoneKey =>
+    selectedOptions[zoneKey] && selectedOptions[zoneKey].length > 0;
+
+  const handleZoneClick = zoneKey => {
+    setExpandedZone(expandedZone === zoneKey ? null : zoneKey);
+  };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 cursor-pointer"
-         onClick={onClose}>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 cursor-pointer"
+      onClick={onClose}
+    >
       <div
         className="bg-gray-800 rounded-lg shadow-xl w-[350mm] h-[148.5mm] relative overflow-hidden"
         onClick={e => e.stopPropagation()}
@@ -100,6 +110,7 @@ export default function JointSpaceSection({
           </svg>
         </button>
 
+        {/* Фон с изображениями коленей */}
         <div
           className="w-full h-full relative"
           style={{
@@ -110,7 +121,7 @@ export default function JointSpaceSection({
             backgroundColor: "#374151",
           }}
         >
-          {zones.map((zone) => (
+          {zones.map(zone => (
             <div
               key={zone.key}
               className={`absolute w-[100px] h-[150px] border-2 rounded-lg cursor-pointer flex flex-col items-center justify-center transition-all duration-200 ${
@@ -122,10 +133,14 @@ export default function JointSpaceSection({
               onClick={() => handleZoneClick(zone.key)}
             >
               <span className="text-white text-xs font-medium text-center">{zone.name}</span>
+              {/* НОВОЕ: индикатор "преимущественно" для зоны */}
+              {predominantlyByZone[zone.key] && (
+                <span className="text-yellow-300 text-[10px] mt-1">преим.</span>
+              )}
             </div>
           ))}
 
-          {/* Меню выбора степени сужения */}
+          {/* Раскрывающееся меню зоны */}
           {expandedZone && (
             <div
               className="absolute bg-gray-700 p-2 rounded-lg shadow-lg z-20"
@@ -134,7 +149,8 @@ export default function JointSpaceSection({
                 left: zones.find(z => z.key === expandedZone).position.left,
               }}
             >
-              {degreeOptions.map((option) => (
+              {/* Список степеней */}
+              {degreeOptions.map(option => (
                 <div
                   key={`${expandedZone}-${option}`}
                   className={`p-2 border text-xs text-white mb-1 ${
@@ -147,22 +163,34 @@ export default function JointSpaceSection({
                   {option}
                 </div>
               ))}
+
+              {/* ВТОРОЙ РЯД: Плашка «Преимущественно» для конкретной зоны */}
+              <div className="mt-1 pt-1 border-t border-yellow-500">
+                <button
+                  onClick={() => togglePredominantlyForZone(expandedZone)}
+                  className={`w-full text-left text-xs ${
+                    predominantlyByZone[expandedZone] ? "text-yellow-300" : "text-white"
+                  }`}
+                >
+                  Преимущественно
+                </button>
+              </div>
             </div>
           )}
-
         </div>
 
-        <div className="absolute bottom-4 left-4">
+        {/* Кнопка «Добавить» + индикатор состояния */}
+        <div className="absolute bottom-4 left-4 flex items-center gap-2">
           <button
             className="px-4 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400 disabled:opacity-50"
             onClick={() => {
-              // НОВОЕ: Передаем hasEndoprosthesis в генератор
               insertTextToTextarea(
                 "\n" + generateDescriptionKneeGapSurface({
                   mode: "gaps",
                   selectedOptions,
                   selectedPositions,
-                  hasEndoprosthesis
+                  hasEndoprosthesis,
+                  predominantlyByZone
                 })
               );
               onClose();
@@ -170,6 +198,10 @@ export default function JointSpaceSection({
           >
             Добавить
           </button>
+
+          <span className="text-xs text-gray-400">
+            Настройте каждую зону отдельно
+          </span>
         </div>
       </div>
     </div>

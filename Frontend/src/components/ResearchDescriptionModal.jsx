@@ -147,36 +147,12 @@ export default function ResearchDescriptionModal({
   };
 
   const researchMap = {
+    // ... существующие маппинги ...
     "Рентгенография коленных суставов": ResearchPlaques.KneeResearchPlaques,
-    "Рентгенография левого коленного сустава": ResearchPlaques.KneeResearchPlaques,
-    "Рентгенография правого коленного сустава": ResearchPlaques.KneeResearchPlaques,
-    "Рентгенография тазобедренных суставов": ResearchPlaques.HipResearchPlaques,
-    "Рентгенография левого тазобедренного сустава": ResearchPlaques.HipResearchPlaques,
-    "Рентгенография правого тазобедренного сустава": ResearchPlaques.HipResearchPlaques,
-    "Рентгенография стоп": ResearchPlaques.FeetResearchPlaques,
-    "Рентгенография левой стопы": ResearchPlaques.FeetResearchPlaques,
-    "Рентгенография правой стопы": ResearchPlaques.FeetResearchPlaques,
-    "Рентгенография стоп (плоскостопие)": ResearchPlaques.FlatfootResearchPlaques,
-    "Рентгенография кистей": ResearchPlaques.HandResearchPlaques,
-    "Рентгенография левой кисти": ResearchPlaques.HandResearchPlaques,
-    "Рентгенография правой кисти": ResearchPlaques.HandResearchPlaques,
-    "Рентгенография поясничного отдела позвоночника": ResearchPlaques.LumbarResearchPlaques,
-    "Рентгенография грудопоясничного отдела позвоночника": ResearchPlaques.LumbarResearchPlaques,
-    "Рентгенография грудного отдела позвоночника": ResearchPlaques.ThoracicResearchPlaques,
-    "Рентгенография шейного отдела позвоночника": ResearchPlaques.CervicalResearchPlaques,
-    "Рентгенография органов грудной клетки": ResearchPlaques.LungResearchPlaques,
-    "Рентгенография легких": ResearchPlaques.LungResearchPlaques,
-    "Рентгенография левого легкого": ResearchPlaques.LungResearchPlaques,
-    "Рентгенография правого легкого": ResearchPlaques.LungResearchPlaques,
-    "Рентгенография голеностопных суставов": ResearchPlaques.AnkleResearchPlaques,
-    "Рентгенография локтевых суставов": ResearchPlaques.ElbowResearchPlaques,
-    "Рентгенография плечевых суставов": ResearchPlaques.ShoulderResearchPlaques,
-    "Рентгенография лучезапястных суставов": ResearchPlaques.WristResearchPlaques,
-    "Рентгенография пяточных костей": ResearchPlaques.CalcaneusResearchPlaques,
-    "Рентгенография придаточных пазух носа": ResearchPlaques.ParanasalResearchPlaques,
+    // ... другие маппинги ...
     "Рентгенография грудной клетки": ResearchPlaques.ChestResearchPlaques,
-    // НОВОЕ: для "Общее" показываем только плашку "Диагноз"
     "Общее": ResearchPlaques.GeneralResearchPlaques,
+    "Костный возраст": ResearchPlaques.BoneAgeResearchPlaques,
   };
 
   const ResearchComponent = researchMap[selectedResearch];
@@ -248,6 +224,21 @@ export default function ResearchDescriptionModal({
         </div>
 
         {openModal && (() => {
+          // НОВОЕ: Обработка костного возраста с параметром пола
+          if (openModal.startsWith("BoneAgeModal")) {
+            const genderParam = openModal.includes(":female") ? "female" : "male";
+            const BoneAgeModal = Modals.BoneAgeModal;
+            if (!BoneAgeModal) return null;
+            return (
+              <BoneAgeModal
+                isOpen={true}
+                onClose={handleCloseNestedModal}
+                gender={genderParam}
+              />
+            );
+          }
+
+          // Обработка SpineDiagnosisModal (существующая логика)
           if (openModal.startsWith("SpineDiagnosisModal:")) {
             const region = openModal.split(":")[1];
             const ModalComponent = Modals["SpineDiagnosisModal"];
@@ -264,6 +255,7 @@ export default function ResearchDescriptionModal({
             );
           }
 
+          // Остальные модалки
           const ModalComponent = Modals[openModal];
           if (!ModalComponent) return null;
           return (

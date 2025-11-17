@@ -54,7 +54,7 @@ const insertSelected = () => {
     parts.push(`и боковым поверхностям тел ${buildSegments(selected.боковые).join(", ")}`);
   }
   if (parts.length === 0) return;
-  const insertText = `Определяются краевые костные разрастания ${parts.join(" ")}.`;
+  const insertText = `\nОпределяются краевые костные разрастания ${parts.join(" ")}.`;
 
   // Используем пропс для вставки
   insertTextToTextarea(insertText);

@@ -23,6 +23,12 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
     onClose();
   };
 
+  // НОВОЕ: обработчик для "Костный возраст"
+  const handleBoneAgeClick = () => {
+    onInsertText("", "Костный возраст");
+    onClose();
+  };
+
   const handleResearchClick = (researchName, projection) => {
     const fullResearch = researchCategories[1].items.find(item => item.name === researchName);
 
@@ -104,6 +110,18 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
             >
               <div className="flex justify-between items-center p-3">
                 <span className="text-sm text-gray-800">Общее</span>
+              </div>
+            </div>
+          </div>
+
+          {/* НОВАЯ ПЛАШКА "Костный возраст" */}
+          <div className="relative self-start">
+            <div
+              className="cursor-pointer bg-gray-50 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+              onClick={handleBoneAgeClick}
+            >
+              <div className="flex justify-between items-center p-3">
+                <span className="text-sm text-gray-800">Костный возраст</span>
               </div>
             </div>
           </div>

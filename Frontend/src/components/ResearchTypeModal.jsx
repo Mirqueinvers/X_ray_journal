@@ -5,7 +5,6 @@ import { XMarkIcon, ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/2
 import researchData from "./ResearchData";
 
 export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertText }) {
-  // --- ВАША ЛОГИКА ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ ---
   const [expandedItems, setExpandedItems] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -16,6 +15,12 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
       ...prev,
       [name]: !prev[name],
     }));
+  };
+
+  // НОВОЕ: обработчик для "Общее"
+  const handleGeneralClick = () => {
+    onInsertText("", "Общее");
+    onClose();
   };
 
   const handleResearchClick = (researchName, projection) => {
@@ -56,8 +61,6 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
       document.body.style.overflow = "";
     };
   }, []);
-  // --- КОНЕЦ БЛОКА ЛОГИКИ ---
-
 
   const modalContent = (
     <div
@@ -65,10 +68,9 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-xl w-full max-w-5xl p-6 relative max-h-[90vh] overflow-y-auto" // Увеличил max-w для лучшего вида двух колонок
+        className="bg-white rounded-2xl shadow-xl w-full max-w-5xl p-6 relative max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* --- ВИЗУАЛЬНЫЙ СТИЛЬ КАК В AddResearchModal --- */}
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl"
@@ -92,54 +94,66 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
           />
         </div>
 
-        {/* --- ИЗМЕНЕНИЕ ЗДЕСЬ: ДВЕ КОЛОНКИ --- */}
+        {/* Две колонки */}
         <div className="grid grid-cols-2 gap-4 items-start">
-  {researchCategories[1].items
-    .filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .map((item, index) => {
-      const isExpanded = expandedItems[item.name] || false;
-
-      return (
-        <div key={index} className="relative self-start">
-          <div
-            className="cursor-pointer bg-gray-50 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow"
-            onClick={() => {
-              if (item.subItems?.length > 0) {
-                toggleItem(item.name);
-              } else {
-                handleResearchClick(item.name);
-              }
-            }}
-          >
-            <div className="flex justify-between items-center p-3">
-              <span className="text-sm text-gray-800">{item.name}</span>
-              {item.subItems?.length > 0 && (
-                isExpanded ? 
-                  <ChevronDownIcon className="h-5 w-5 text-gray-400" />
-                  :
-                  <ChevronRightIcon className="h-5 w-5 text-gray-400" />
-              )}
+          {/* НОВАЯ ПЛАШКА "Общее" */}
+          <div className="relative self-start">
+            <div
+              className="cursor-pointer bg-gray-50 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+              onClick={handleGeneralClick}
+            >
+              <div className="flex justify-between items-center p-3">
+                <span className="text-sm text-gray-800">Общее</span>
+              </div>
             </div>
           </div>
 
-          {isExpanded && item.subItems && (
-            <div className="mt-1 ml-2 space-y-1 z-10">
-              {item.subItems.map((subItem, subIndex) => (
-                <div
-                  key={subIndex}
-                  className="cursor-pointer bg-white border border-gray-200 rounded-md p-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors shadow-sm"
-                  onClick={() => handleResearchClick(item.name, subItem)}
-                >
-                  {subItem}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      );
-    })}
-</div>
+          {/* Список исследований */}
+          {researchCategories[1].items
+            .filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+            .map((item, index) => {
+              const isExpanded = expandedItems[item.name] || false;
 
+              return (
+                <div key={index} className="relative self-start">
+                  <div
+                    className="cursor-pointer bg-gray-50 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                    onClick={() => {
+                      if (item.subItems?.length > 0) {
+                        toggleItem(item.name);
+                      } else {
+                        handleResearchClick(item.name);
+                      }
+                    }}
+                  >
+                    <div className="flex justify-between items-center p-3">
+                      <span className="text-sm text-gray-800">{item.name}</span>
+                      {item.subItems?.length > 0 && (
+                        isExpanded ? 
+                          <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                          :
+                          <ChevronRightIcon className="h-5 w-5 text-gray-400" />
+                      )}
+                    </div>
+                  </div>
+
+                  {isExpanded && item.subItems && (
+                    <div className="mt-1 ml-2 space-y-1 z-10">
+                      {item.subItems.map((subItem, subIndex) => (
+                        <div
+                          key={subIndex}
+                          className="cursor-pointer bg-white border border-gray-200 rounded-md p-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors shadow-sm"
+                          onClick={() => handleResearchClick(item.name, subItem)}
+                        >
+                          {subItem}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+        </div>
       </div>
     </div>
   );

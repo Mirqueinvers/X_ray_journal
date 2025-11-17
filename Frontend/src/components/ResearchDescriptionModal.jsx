@@ -10,7 +10,6 @@ export default function ResearchDescriptionModal({
   selectedResearch,
   researchId,
   setTextareaRef,
-  // НОВЫЙ ПРОП: callback для обновления после сохранения
   onDescriptionSaved
 }) {
   const [expandedPlaque, setExpandedPlaque] = useState(null);
@@ -26,7 +25,6 @@ export default function ResearchDescriptionModal({
   const [insertionData, setInsertionData] = useState(null);
   const [isNestedModalOpen, setIsNestedModalOpen] = useState(false);
 
-  // НОВОЕ: Состояние для эндопротеза
   const [hasEndoprosthesis, setHasEndoprosthesis] = useState(false);
 
   useEffect(() => setText(description || ""), [description]);
@@ -65,14 +63,11 @@ export default function ResearchDescriptionModal({
     setInsertionData({ textToInsert, start, end });
   };
 
-  // НОВАЯ ФУНКЦИЯ: Обработчик клавиш для текстового поля
   const handleTextareaKeyDown = (e) => {
     if (e.key === 'Enter') {
-      // Для Enter: предотвращаем поведение по умолчанию и всплытие
       e.preventDefault();
       e.stopPropagation();
 
-      // Вставляем перенос строки вручную
       const textarea = e.target;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
@@ -80,19 +75,17 @@ export default function ResearchDescriptionModal({
       setText((currentText) => {
         const newText = currentText.substring(0, start) + "\n" + currentText.substring(end);
         
-        // Возвращаем курсор в правильную позицию после обновления состояния
         setTimeout(() => {
           textarea.selectionStart = textarea.selectionEnd = start + 1;
         }, 0);
         
         return newText;
       });
-    } else if (e.key === ' ') { // Для пробела
-      // Предотвращаем всплытие, но разрешаем вставку пробела
+    } else if (e.key === ' ') {
+      // ИСПРАВЛЕНИЕ: предотвращаем стандартное поведение и вставляем пробел вручную
+      e.preventDefault();
       e.stopPropagation();
-      // НЕ вызываем preventDefault(), чтобы позволить браузеру вставить пробел
 
-      // Вставляем пробел вручную, чтобы быть уверенными в поведении
       const textarea = e.target;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
@@ -100,7 +93,6 @@ export default function ResearchDescriptionModal({
       setText((currentText) => {
         const newText = currentText.substring(0, start) + " " + currentText.substring(end);
         
-        // Возвращаем курсор в правильную позицию после обновления состояния
         setTimeout(() => {
           textarea.selectionStart = textarea.selectionEnd = start + 1;
         }, 0);
@@ -134,18 +126,14 @@ export default function ResearchDescriptionModal({
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 2000);
         
-        // НОВОЕ: Обновляем локальное состояние и вызываем callback
         const updatedResearch = {
           id: researchId,
           description: textToSave,
-          // можно добавить другие поля, которые нужно обновить
         };
         
-        // Если есть callback, вызываем его
         if (onDescriptionSaved) {
           onDescriptionSaved(updatedResearch);
         } else {
-          // Если нет callback, просто закрываем модальное окно
           onClose();
         }
       } else {
@@ -186,7 +174,9 @@ export default function ResearchDescriptionModal({
     "Рентгенография лучезапястных суставов": ResearchPlaques.WristResearchPlaques,
     "Рентгенография пяточных костей": ResearchPlaques.CalcaneusResearchPlaques,
     "Рентгенография придаточных пазух носа": ResearchPlaques.ParanasalResearchPlaques,
-    "Рентгенография грудной клетки": ResearchPlaques.ChestResearchPlaques
+    "Рентгенография грудной клетки": ResearchPlaques.ChestResearchPlaques,
+    // НОВОЕ: для "Общее" показываем только плашку "Диагноз"
+    "Общее": ResearchPlaques.GeneralResearchPlaques,
   };
 
   const ResearchComponent = researchMap[selectedResearch];
@@ -200,7 +190,6 @@ export default function ResearchDescriptionModal({
         className="relative bg-white rounded-2xl shadow-2xl w-[1300px] h-[700px] flex flex-col overflow-hidden border border-gray-200"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Кнопка закрытия */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
@@ -209,15 +198,13 @@ export default function ResearchDescriptionModal({
           <XMarkIcon className="h-6 w-6" />
         </button>
 
-        {/* Контент */}
         <div className="flex flex-1 h-full gap-6 p-6">
-          {/* Левая часть — текстовое поле */}
           <div className="flex flex-col w-2/3 h-full">
             <textarea
               ref={textareaRef}
               value={text}
               onChange={(e) => setText(e.target.value)}
-              onKeyDown={handleTextareaKeyDown} // <-- Теперь функция определена
+              onKeyDown={handleTextareaKeyDown}
               placeholder="Введите описание исследования..."
               className="flex-1 resize-none bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
             />
@@ -235,10 +222,8 @@ export default function ResearchDescriptionModal({
             </button>
           </div>
 
-          {/* Вертикальная линия */}
           <div className="w-px bg-gray-200"></div>
 
-          {/* Правая часть — плаки */}
           <div className="flex-1 h-full overflow-y-auto pr-2">
             {ResearchComponent && (
               <ResearchComponent
@@ -255,7 +240,6 @@ export default function ResearchDescriptionModal({
                 textareaRef={textareaRef}
                 setOpenModal={handleOpenModal}
                 insertTextToTextarea={insertTextToTextarea}
-                // НОВОЕ: Передаем состояние эндопротеза
                 hasEndoprosthesis={hasEndoprosthesis}
                 setHasEndoprosthesis={setHasEndoprosthesis}
               />
@@ -263,7 +247,6 @@ export default function ResearchDescriptionModal({
           </div>
         </div>
 
-        {/* Вложенные модалки */}
         {openModal && (() => {
           if (openModal.startsWith("SpineDiagnosisModal:")) {
             const region = openModal.split(":")[1];
@@ -276,7 +259,6 @@ export default function ResearchDescriptionModal({
                 textareaRef={textareaRef}
                 spineRegion={region}
                 insertTextToTextarea={insertTextToTextarea}
-                // НОВОЕ: Передаем состояние эндопротеза
                 hasEndoprosthesis={hasEndoprosthesis}
               />
             );
@@ -290,7 +272,6 @@ export default function ResearchDescriptionModal({
               onClose={handleCloseNestedModal}
               textareaRef={textareaRef}
               insertTextToTextarea={insertTextToTextarea}
-              // НОВОЕ: Передаем состояние эндопротеза
               hasEndoprosthesis={hasEndoprosthesis}
             />
           );

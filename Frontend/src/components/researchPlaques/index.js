@@ -1,4 +1,3 @@
-// Knees
 import KneeResearchPlaques from "../knees/KneeResearchPlaques";
 // Hip
 import HipResearchPlaques from "../hipjoints/HipResearchPlaques";
@@ -26,8 +25,8 @@ import CalcaneusResearchPlaques from "../calcaneus/CalcaneusResearchPlaques";
 import FlatfootResearchPlaques from "../flatfoot/FlatfootResearchPlaques";
 // Paranasal
 import ParanasalResearchPlaques from "../paranasal/ParanasalResearchPlaques";
-
 import ChestResearchPlaques from "../lungs/ChestResearchPlaques";
+import GeneralResearchPlaques from "../researchPlaques/GeneralResearchPlaques";
 
 export {
   KneeResearchPlaques,
@@ -46,4 +45,5 @@ export {
   FlatfootResearchPlaques,
   ParanasalResearchPlaques,
   ChestResearchPlaques,
+  GeneralResearchPlaques,
 };

@@ -52,6 +52,7 @@ import LungPatternModal from "../lungs/LungPatternModal";
 import DiagnosisModal from "../general/DiagnosisModal";
 
 import BoneAgeModal from "../bone_age/BoneAgeModal";
+import ChronologicalAgeModal from "../bone_age/ChronologicalAgeModal";
 
 export {
   OsteophytesModal,
@@ -95,4 +96,5 @@ export {
   LungPatternModal,
   DiagnosisModal,
   BoneAgeModal,
+  ChronologicalAgeModal,
 };

@@ -10,12 +10,12 @@ export default function BoneAgeResearchPlaques({
     {
       label: "Мальчик",
       type: "modal",
-      modalName: "BoneAgeModal", // без параметра = male по умолчанию
+      modalName: "ChronologicalAgeModal:male", // изменено на ChronologicalAgeModal
     },
     {
-      label: "Девочка",
+      label: "Девочка", 
       type: "modal",
-      modalName: "BoneAgeModal:female", // с параметром female
+      modalName: "ChronologicalAgeModal:female", // изменено на ChronologicalAgeModal
     },
   ];
 

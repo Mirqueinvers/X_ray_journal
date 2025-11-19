@@ -4,7 +4,7 @@ export default function LumbarLordosisSection({ insertTextToTextarea, setExpande
   const options = ["не изменен", "сглажен"];
 
   const insertText = (option) => {
-    insertTextToTextarea(`Лордоз грудного отдела позвоночника ${option}.`);
+    insertTextToTextarea(`Лордоз поясничного отдела позвоночника ${option}.`);
     setExpandedPlaque(null);
   };
 

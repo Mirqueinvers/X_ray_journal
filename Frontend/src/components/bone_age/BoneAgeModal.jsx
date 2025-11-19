@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
-const BoneAgeModal = ({ isOpen, onClose, gender = 'male' }) => {
+const BoneAgeModal = ({ isOpen, onClose, gender = 'male', chronologicalAge }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   
   // Названия картинок в правильном порядке
@@ -11,7 +11,7 @@ const BoneAgeModal = ({ isOpen, onClose, gender = 'male' }) => {
      '9y', '10y', '11y', '12y', '13y', '14y', '15y', '16y', '17y', '18y'
   ];
 
-  // НОВОЕ: Формируем путь с учетом пола
+  // Формируем путь с учетом пола
   const images = imageNames.map(name => `images/bone_age/${gender}/${name}.png`);
 
   const handlePrev = () => {
@@ -24,16 +24,21 @@ const BoneAgeModal = ({ isOpen, onClose, gender = 'male' }) => {
 
   if (!isOpen) return null;
 
-  // НОВОЕ: Подпись пола в заголовке
+  // Подпись пола в заголовке
   const genderLabel = gender === 'male' ? 'мальчик' : 'девочка';
+  
+  // Формируем заголовок с хронологическим возрастом если он есть
+  const title = chronologicalAge 
+    ? `Костный возраст ({genderLabel}) | Хронологический возраст: ${chronologicalAge}`
+    : `Костный возраст ({genderLabel})`;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-lg max-w-6xl w-full max-h-[90vh] overflow-hidden">
         {/* Заголовок */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
           <h2 className="text-xl font-bold text-gray-900">
-            Костный возраст ({genderLabel}): {imageNames[currentIndex]} ({currentIndex + 1}/{images.length})
+            {title}
           </h2>
           <button
             onClick={onClose}
@@ -44,16 +49,16 @@ const BoneAgeModal = ({ isOpen, onClose, gender = 'male' }) => {
         </div>
 
         {/* Основное изображение */}
-        <div className="flex items-center justify-center p-6 bg-gray-50">
+        <div className="flex items-center justify-center p-6 bg-gray-50 overflow-hidden">
           <img
             src={images[currentIndex]}
             alt={`Bone age ${genderLabel} ${imageNames[currentIndex]}`}
-            className="max-h-96 object-contain"
+            className="max-h-[600px] object-contain"
           />
         </div>
 
         {/* Навигация */}
-        <div className="flex items-center justify-between p-4 border-t border-gray-200">
+        <div className="flex items-center justify-between p-4 border-t border-gray-200 flex-shrink-0">
           <button
             onClick={handlePrev}
             className="p-2 hover:bg-gray-100 rounded-lg transition"

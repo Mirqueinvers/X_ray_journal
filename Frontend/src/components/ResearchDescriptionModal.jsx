@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import * as Modals from "./allModals";
 import * as ResearchPlaques from "./researchPlaques";
+import ChronologicalAgeModal from "./bone_age/ChronologicalAgeModal";
 
 export default function ResearchDescriptionModal({
   onClose,
@@ -24,6 +25,9 @@ export default function ResearchDescriptionModal({
   const textareaRef = useRef(null);
   const [insertionData, setInsertionData] = useState(null);
   const [isNestedModalOpen, setIsNestedModalOpen] = useState(false);
+
+  // НОВОЕ: состояние для хронологического возраста
+  const [chronologicalAgeData, setChronologicalAgeData] = useState(null);
 
   const [hasEndoprosthesis, setHasEndoprosthesis] = useState(false);
 
@@ -110,6 +114,15 @@ export default function ResearchDescriptionModal({
   const handleCloseNestedModal = () => {
     setIsNestedModalOpen(false);
     setOpenModal(null);
+    setChronologicalAgeData(null); // сбрасываем данные хронологического возраста
+  };
+
+  // НОВЫЙ обработчик для данных хронологического возраста
+  const handleChronologicalAgeSubmit = (ageData) => {
+    setChronologicalAgeData(ageData);
+    // После получения данных открываем модалку костного возраста
+    const genderParam = ageData.gender === 'female' ? 'female' : 'male';
+    setOpenModal(`BoneAgeModal:${genderParam}`);
   };
 
   const saveDescription = async () => {
@@ -147,9 +160,33 @@ export default function ResearchDescriptionModal({
   };
 
   const researchMap = {
-    // ... существующие маппинги ...
     "Рентгенография коленных суставов": ResearchPlaques.KneeResearchPlaques,
-    // ... другие маппинги ...
+    "Рентгенография левого коленного сустава": ResearchPlaques.KneeResearchPlaques,
+    "Рентгенография правого коленного сустава": ResearchPlaques.KneeResearchPlaques,
+    "Рентгенография тазобедренных суставов": ResearchPlaques.HipResearchPlaques,
+    "Рентгенография левого тазобедренного сустава": ResearchPlaques.HipResearchPlaques,
+    "Рентгенография правого тазобедренного сустава": ResearchPlaques.HipResearchPlaques,
+    "Рентгенография стоп": ResearchPlaques.FeetResearchPlaques,
+    "Рентгенография левой стопы": ResearchPlaques.FeetResearchPlaques,
+    "Рентгенография правой стопы": ResearchPlaques.FeetResearchPlaques,
+    "Рентгенография стоп (плоскостопие)": ResearchPlaques.FlatfootResearchPlaques,
+    "Рентгенография кистей": ResearchPlaques.HandResearchPlaques,
+    "Рентгенография левой кисти": ResearchPlaques.HandResearchPlaques,
+    "Рентгенография правой кисти": ResearchPlaques.HandResearchPlaques,
+    "Рентгенография поясничного отдела позвоночника": ResearchPlaques.LumbarResearchPlaques,
+    "Рентгенография грудопоясничного отдела позвоночника": ResearchPlaques.LumbarResearchPlaques,
+    "Рентгенография грудного отдела позвоночника": ResearchPlaques.ThoracicResearchPlaques,
+    "Рентгенография шейного отдела позвоночника": ResearchPlaques.CervicalResearchPlaques,
+    "Рентгенография органов грудной клетки": ResearchPlaques.LungResearchPlaques,
+    "Рентгенография легких": ResearchPlaques.LungResearchPlaques,
+    "Рентгенография левого легкого": ResearchPlaques.LungResearchPlaques,
+    "Рентгенография правого легкого": ResearchPlaques.LungResearchPlaques,
+    "Рентгенография голеностопных суставов": ResearchPlaques.AnkleResearchPlaques,
+    "Рентгенография локтевых суставов": ResearchPlaques.ElbowResearchPlaques,
+    "Рентгенография плечевых суставов": ResearchPlaques.ShoulderResearchPlaques,
+    "Рентгенография лучезапястных суставов": ResearchPlaques.WristResearchPlaques,
+    "Рентгенография пяточных костей": ResearchPlaques.CalcaneusResearchPlaques,
+    "Рентгенография придаточных пазух носа": ResearchPlaques.ParanasalResearchPlaques,
     "Рентгенография грудной клетки": ResearchPlaques.ChestResearchPlaques,
     "Общее": ResearchPlaques.GeneralResearchPlaques,
     "Костный возраст": ResearchPlaques.BoneAgeResearchPlaques,
@@ -224,16 +261,31 @@ export default function ResearchDescriptionModal({
         </div>
 
         {openModal && (() => {
-          // НОВОЕ: Обработка костного возраста с параметром пола
+          // НОВОЕ: Обработка модалки хронологического возраста
+          if (openModal.startsWith("ChronologicalAgeModal")) {
+            const genderParam = openModal.includes(":female") ? "female" : "male";
+            return (
+              <ChronologicalAgeModal
+                isOpen={true}
+                onClose={handleCloseNestedModal}
+                gender={genderParam}
+                onAgeSubmit={handleChronologicalAgeSubmit}
+              />
+            );
+          }
+
+          // НОВОЕ: Обработка костного возраста с учетом хронологического возраста
           if (openModal.startsWith("BoneAgeModal")) {
             const genderParam = openModal.includes(":female") ? "female" : "male";
             const BoneAgeModal = Modals.BoneAgeModal;
             if (!BoneAgeModal) return null;
+            
             return (
               <BoneAgeModal
                 isOpen={true}
                 onClose={handleCloseNestedModal}
                 gender={genderParam}
+                chronologicalAge={chronologicalAgeData?.age} // передаем хронологический возраст
               />
             );
           }

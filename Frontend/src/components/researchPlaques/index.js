@@ -27,7 +27,7 @@ import FlatfootResearchPlaques from "../flatfoot/FlatfootResearchPlaques";
 import ParanasalResearchPlaques from "../paranasal/ParanasalResearchPlaques";
 import ChestResearchPlaques from "../lungs/ChestResearchPlaques";
 import GeneralResearchPlaques from "./GeneralResearchPlaques";
-import BoneAgeResearchPlaques from "./BoneAgeResearchPlaques";
+import BoneAgeResearchPlaques from "../bone_age/BoneAgeResearchPlaques";
 
 export {
   KneeResearchPlaques,

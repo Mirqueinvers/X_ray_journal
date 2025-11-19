@@ -25,7 +25,7 @@ export default function ResearchTypeModal({ onClose, onResearchSelect, onInsertT
 
   // НОВОЕ: обработчик для "Костный возраст"
   const handleBoneAgeClick = () => {
-    onInsertText("", "Костный возраст");
+    onInsertText("Рентгенография кистей в прямой проекции с захватом луче-запястных суставов\n", "Костный возраст");
     onClose();
   };
 

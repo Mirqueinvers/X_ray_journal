@@ -2,16 +2,61 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 
 const ChronologicalAgeModal = ({ isOpen, onClose, gender, onAgeSubmit }) => {
-  const [age, setAge] = useState('');
+  const [years, setYears] = useState('');
+  const [months, setMonths] = useState('');
+
+  const handleYearsChange = (e) => {
+    // Оставляем только цифры
+    const value = e.target.value.replace(/\D/g, '');
+    setYears(value);
+  };
+
+  const handleMonthsChange = (e) => {
+    // Оставляем только цифры
+    const value = e.target.value.replace(/\D/g, '');
+    setMonths(value);
+  };
 
   const handleSubmit = () => {
-    if (age.trim() === '') return;
+    // Проверяем, что хотя бы одно поле заполнено
+    if (years.trim() === '' && months.trim() === '') return;
+    
+    // Формируем строку возраста
+    let ageStr = '';
+    if (years.trim() !== '') {
+      ageStr += years.trim();
+      const numYears = parseInt(years.trim());
+      if (numYears === 1) {
+        ageStr += ' год';
+      } else if (numYears < 5) {
+        ageStr += ' года';
+      } else {
+        ageStr += ' лет';
+      }
+    }
+    
+    if (months.trim() !== '') {
+      if (ageStr !== '') ageStr += ' ';
+      ageStr += months.trim();
+      const numMonths = parseInt(months.trim());
+      if (numMonths === 1) {
+        ageStr += ' месяц';
+      } else if (numMonths < 5) {
+        ageStr += ' месяца';
+      } else {
+        ageStr += ' месяцев';
+      }
+    }
+    
+    const ageData = {
+      age: ageStr,
+      gender: gender
+    };
+    
+    console.log('Submitting age:', ageData);
     
     // Передаем возраст и пол в callback
-    onAgeSubmit({
-      age: age.trim(),
-      gender: gender
-    });
+    onAgeSubmit(ageData);
     
     // Закрываем текущую модалку
     onClose();
@@ -43,22 +88,55 @@ const ChronologicalAgeModal = ({ isOpen, onClose, gender, onAgeSubmit }) => {
           </button>
         </div>
 
-        {/* Поле ввода */}
+        {/* Поля ввода */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Введите хронологический возраст
           </label>
-          <input
-            type="text"
-            value={age}
-            onChange={(e) => setAge(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Например: 8 лет 5 месяцев"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-            autoFocus
-          />
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Годы
+              </label>
+              <input
+                type="text"
+                value={years}
+                onChange={handleYearsChange}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSubmit();
+                  }
+                }}
+                placeholder="0"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                autoFocus
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Месяцы
+              </label>
+              <input
+                type="text"
+                value={months}
+                onChange={handleMonthsChange}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSubmit();
+                  }
+                }}
+                placeholder="0"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+              />
+            </div>
+          </div>
+          
           <p className="text-xs text-gray-500 mt-1">
-            Можно указать в формате: "8 лет 5 месяцев" или "8.5"
+            Укажите возраст в годах и/или месяцах. В поля можно вводить только цифры.
           </p>
         </div>
 
@@ -72,7 +150,7 @@ const ChronologicalAgeModal = ({ isOpen, onClose, gender, onAgeSubmit }) => {
           </button>
           <button
             onClick={handleSubmit}
-            disabled={age.trim() === ''}
+            disabled={years.trim() === '' && months.trim() === ''}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
           >
             ОК

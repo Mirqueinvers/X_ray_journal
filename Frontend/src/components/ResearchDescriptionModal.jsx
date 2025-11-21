@@ -26,9 +26,9 @@ export default function ResearchDescriptionModal({
   const [insertionData, setInsertionData] = useState(null);
   const [isNestedModalOpen, setIsNestedModalOpen] = useState(false);
 
-  // НОВОЕ: состояние для хронологического возраста
-  const [chronologicalAgeData, setChronologicalAgeData] = useState(null);
-
+  // НОВОЕ: отдельное состояние для хронологического возраста, которое не будет сбрасываться
+  const [boneAgeData, setBoneAgeData] = useState(null);
+  
   const [hasEndoprosthesis, setHasEndoprosthesis] = useState(false);
 
   useEffect(() => setText(description || ""), [description]);
@@ -107,22 +107,37 @@ export default function ResearchDescriptionModal({
   };
 
   const handleOpenModal = (modalName) => {
+    console.log('Opening modal:', modalName);
     setIsNestedModalOpen(true);
     setOpenModal(modalName);
   };
 
   const handleCloseNestedModal = () => {
+    console.log('Closing nested modal');
     setIsNestedModalOpen(false);
     setOpenModal(null);
-    setChronologicalAgeData(null); // сбрасываем данные хронологического возраста
   };
 
   // НОВЫЙ обработчик для данных хронологического возраста
   const handleChronologicalAgeSubmit = (ageData) => {
-    setChronologicalAgeData(ageData);
-    // После получения данных открываем модалку костного возраста
+    console.log('Received age data:', ageData);
+    
+    // Извлекаем пол из данных
     const genderParam = ageData.gender === 'female' ? 'female' : 'male';
-    setOpenModal(`BoneAgeModal:${genderParam}`);
+    
+    // Сохраняем данные в отдельное состояние, которое не будет сбрасываться
+    setBoneAgeData({
+      age: ageData.age,
+      gender: ageData.gender
+    });
+    
+    console.log('Saved bone age data:', { age: ageData.age, gender: ageData.gender });
+    
+    // Открываем модалку костного возраста
+    setTimeout(() => {
+      setOpenModal(`BoneAgeModal:${genderParam}`);
+      setIsNestedModalOpen(true);
+    }, 100);
   };
 
   const saveDescription = async () => {
@@ -278,6 +293,11 @@ export default function ResearchDescriptionModal({
           if (openModal.startsWith("BoneAgeModal")) {
             const genderParam = openModal.includes(":female") ? "female" : "male";
             const BoneAgeModal = Modals.BoneAgeModal;
+            
+            console.log('Rendering BoneAgeModal with data:', boneAgeData);
+            console.log('Gender param:', genderParam);
+            console.log('chronologicalAge:', boneAgeData ? boneAgeData.age : undefined);
+            
             if (!BoneAgeModal) return null;
             
             return (
@@ -285,7 +305,8 @@ export default function ResearchDescriptionModal({
                 isOpen={true}
                 onClose={handleCloseNestedModal}
                 gender={genderParam}
-                chronologicalAge={chronologicalAgeData?.age} // передаем хронологический возраст
+                chronologicalAge={boneAgeData ? boneAgeData.age : undefined}
+                insertTextToTextarea={insertTextToTextarea}
               />
             );
           }

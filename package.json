@@ -20,9 +20,11 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "better-sqlite3": "^12.2.0",
+    "chart.js": "^4.5.1",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.541.0",
     "mysql2": "^3.14.3",
+    "react-chartjs-2": "^5.3.1",
     "react-datepicker": "^8.4.0",
     "react-modal": "^3.16.3",
     "recharts": "^3.3.0"

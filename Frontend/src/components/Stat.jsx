@@ -15,11 +15,11 @@ export default function App() {
   <div className="flex space-x-2 items-center justify-center">
   {/* Начальная дата */}
   <div className="inline-flex items-center">
-    <label className="font-semibold text-yellow-200 mr-1">Статистика за период с </label>
+    <label className="font-semibold text-gray-800 mr-1">Статистика за период с </label>
     <DatePicker
       selected={startDate ? new Date(startDate) : null}
       onChange={(date) => setStartDate(date ? date.toISOString().split("T")[0] : "")}
-      className="border border-yellow-500 bg-gray-800 text-yellow-200 px-3 py-1 rounded text-center"
+      className="border border-gray-400 bg-gray-50 text-yellow-200 px-3 py-1 rounded text-center"
       calendarClassName="bg-gray-900 text-yellow-200 border border-yellow-500 rounded shadow-lg"
       dateFormat="dd.MM.yyyy"
       locale="ru"
@@ -29,11 +29,11 @@ export default function App() {
 
   {/* Конечная дата */}
   <div className="inline-flex items-center">
-    <label className="font-semibold text-yellow-200 mr-1">по </label>
+    <label className="font-semibold text-gray-800 mr-1">по </label>
     <DatePicker
       selected={endDate ? new Date(endDate) : null}
       onChange={(date) => setEndDate(date ? date.toISOString().split("T")[0] : "")}
-      className="border border-yellow-500 bg-gray-800 text-yellow-200 px-3 py-1 rounded text-center"
+      className="border border-gray-400 bg-gray-50 text-yellow-200 px-3 py-1 rounded text-center"
       calendarClassName="bg-gray-900 text-yellow-200 border border-yellow-500 rounded shadow-lg"
       dateFormat="dd.MM.yyyy"
       locale="ru"

@@ -13,20 +13,29 @@ export default function ResearchDescriptionModal({
   setTextareaRef,
   onDescriptionSaved
 }) {
-  const [expandedPlaque, setExpandedPlaque] = useState(null);
-  const [selectedSubItem, setSelectedSubItem] = useState(null);
-  const [selectedNarrowingLevel, setSelectedNarrowingLevel] = useState(null);
-  const [selectedChangeLevel, setSelectedChangeLevel] = useState(null);
-  const [selectedShapeLevel, setSelectedShapeLevel] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  // ОБЪЕДИНЕННЫЕ СОСТОЯНИЯ для плакет и элементов
+  const [plaqueState, setPlaqueState] = useState({
+    expandedPlaque: null,
+    selectedSubItem: null,
+    selectedNarrowingLevel: null,
+    selectedChangeLevel: null,
+    selectedShapeLevel: null
+  });
+
+  // ОБЪЕДИНЕННОЕ СОСТОЯНИЕ для статуса сохранения
+  const [saveStatus, setSaveStatus] = useState({
+    saving: false,
+    success: false,
+    error: null
+  });
+
   const [openModal, setOpenModal] = useState(null);
   const [text, setText] = useState(description || "");
   const textareaRef = useRef(null);
   const [insertionData, setInsertionData] = useState(null);
   const [isNestedModalOpen, setIsNestedModalOpen] = useState(false);
 
-  // НОВОЕ: отдельное состояние для хронологического возраста, которое не будет сбрасываться
+  // НОВОЕ: отдельное состояние для хронологического возраста
   const [boneAgeData, setBoneAgeData] = useState(null);
   
   const [hasEndoprosthesis, setHasEndoprosthesis] = useState(false);
@@ -36,13 +45,19 @@ export default function ResearchDescriptionModal({
     if (setTextareaRef) setTextareaRef(textareaRef.current);
   }, [setTextareaRef]);
 
+  // НОВЫЙ: автоматический фокус на поле при открытии модалки
   useEffect(() => {
-    if (text && textareaRef.current) {
-      const textarea = textareaRef.current;
-      textarea.focus();
-      textarea.setSelectionRange(text.length, text.length);
-    }
-  }, [text]);
+    const timer = setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        // Если текст пустой, ставим курсор в начало, иначе в конец
+        const cursorPosition = text.length > 0 ? text.length : 0;
+        textareaRef.current.setSelectionRange(cursorPosition, cursorPosition);
+      }
+    }, 100); // Небольшая задержка чтобы модалка успела отрендериться
+
+    return () => clearTimeout(timer);
+  }, []); // Пустой массив = выполнится только при монтировании
 
   useEffect(() => {
     if (!insertionData || !textareaRef.current) return;
@@ -67,6 +82,7 @@ export default function ResearchDescriptionModal({
     setInsertionData({ textToInsert, start, end });
   };
 
+  // УПРАВЛЯЕМЫЙ обработчик клавиш
   const handleTextareaKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -86,54 +102,31 @@ export default function ResearchDescriptionModal({
         return newText;
       });
     } else if (e.key === ' ') {
-      // ИСПРАВЛЕНИЕ: предотвращаем стандартное поведение и вставляем пробел вручную
-      e.preventDefault();
+      // ТОЛЬКО предотвращаем распространение события, но НЕ блокируем вставку пробела!
       e.stopPropagation();
-
-      const textarea = e.target;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      
-      setText((currentText) => {
-        const newText = currentText.substring(0, start) + " " + currentText.substring(end);
-        
-        setTimeout(() => {
-          textarea.selectionStart = textarea.selectionEnd = start + 1;
-        }, 0);
-        
-        return newText;
-      });
+      // НЕ вызываем preventDefault() - браузер сам вставит пробел
     }
   };
 
   const handleOpenModal = (modalName) => {
-    console.log('Opening modal:', modalName);
     setIsNestedModalOpen(true);
     setOpenModal(modalName);
   };
 
   const handleCloseNestedModal = () => {
-    console.log('Closing nested modal');
     setIsNestedModalOpen(false);
     setOpenModal(null);
   };
 
   // НОВЫЙ обработчик для данных хронологического возраста
   const handleChronologicalAgeSubmit = (ageData) => {
-    console.log('Received age data:', ageData);
-    
-    // Извлекаем пол из данных
     const genderParam = ageData.gender === 'female' ? 'female' : 'male';
     
-    // Сохраняем данные в отдельное состояние, которое не будет сбрасываться
     setBoneAgeData({
       age: ageData.age,
       gender: ageData.gender
     });
     
-    console.log('Saved bone age data:', { age: ageData.age, gender: ageData.gender });
-    
-    // Открываем модалку костного возраста
     setTimeout(() => {
       setOpenModal(`BoneAgeModal:${genderParam}`);
       setIsNestedModalOpen(true);
@@ -141,18 +134,19 @@ export default function ResearchDescriptionModal({
   };
 
   const saveDescription = async () => {
+    setSaveStatus(prev => ({ ...prev, saving: true, error: null }));
+    
     const textToSave = text;
-    setSaving(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/save-research-description`, {
+      const res = await fetch(`http://${API_BASE}/api/save-research-description`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ research_id: researchId, description: textToSave })
       });
       const data = await res.json();
       if (data.success) {
-        setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 2000);
+        setSaveStatus(prev => ({ ...prev, saving: false, success: true }));
+        setTimeout(() => setSaveStatus(prev => ({ ...prev, success: false })), 2000);
         
         const updatedResearch = {
           id: researchId,
@@ -165,12 +159,18 @@ export default function ResearchDescriptionModal({
           onClose();
         }
       } else {
-        console.error("Ошибка сохранения:", data.error);
+        setSaveStatus(prev => ({ 
+          ...prev, 
+          saving: false, 
+          error: data.error || 'Ошибка сохранения' 
+        }));
       }
     } catch (err) {
-      console.error("Ошибка запроса:", err);
-    } finally {
-      setSaving(false);
+      setSaveStatus(prev => ({ 
+        ...prev, 
+        saving: false, 
+        error: 'Ошибка запроса' 
+      }));
     }
   };
 
@@ -246,8 +246,17 @@ export default function ResearchDescriptionModal({
               }}
               className="mt-3 self-start px-5 py-2 bg-blue-400 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition"
             >
-              {saving ? "Сохраняем..." : saveSuccess ? "Сохранено!" : "Сохранить и скопировать"}
+              {saveStatus.saving ? "Сохраняем..." : 
+               saveStatus.success ? "Сохранено!" : 
+               saveStatus.error ? "Ошибка" : "Сохранить и скопировать"}
             </button>
+            
+            {/* Показать ошибку если есть */}
+            {saveStatus.error && (
+              <div className="mt-2 text-red-500 text-sm">
+                {saveStatus.error}
+              </div>
+            )}
           </div>
 
           <div className="w-px bg-gray-200"></div>
@@ -255,16 +264,16 @@ export default function ResearchDescriptionModal({
           <div className="flex-1 h-full overflow-y-auto pr-2">
             {ResearchComponent && (
               <ResearchComponent
-                expandedPlaque={expandedPlaque}
-                setExpandedPlaque={setExpandedPlaque}
-                selectedSubItem={selectedSubItem}
-                setSelectedSubItem={setSelectedSubItem}
-                selectedNarrowingLevel={selectedNarrowingLevel}
-                setSelectedNarrowingLevel={setSelectedNarrowingLevel}
-                selectedChangeLevel={selectedChangeLevel}
-                setSelectedChangeLevel={setSelectedChangeLevel}
-                selectedShapeLevel={selectedShapeLevel}
-                setSelectedShapeLevel={setSelectedShapeLevel}
+                expandedPlaque={plaqueState.expandedPlaque}
+                setExpandedPlaque={(value) => setPlaqueState(prev => ({ ...prev, expandedPlaque: value }))}
+                selectedSubItem={plaqueState.selectedSubItem}
+                setSelectedSubItem={(value) => setPlaqueState(prev => ({ ...prev, selectedSubItem: value }))}
+                selectedNarrowingLevel={plaqueState.selectedNarrowingLevel}
+                setSelectedNarrowingLevel={(value) => setPlaqueState(prev => ({ ...prev, selectedNarrowingLevel: value }))}
+                selectedChangeLevel={plaqueState.selectedChangeLevel}
+                setSelectedChangeLevel={(value) => setPlaqueState(prev => ({ ...prev, selectedChangeLevel: value }))}
+                selectedShapeLevel={plaqueState.selectedShapeLevel}
+                setSelectedShapeLevel={(value) => setPlaqueState(prev => ({ ...prev, selectedShapeLevel: value }))}
                 textareaRef={textareaRef}
                 setOpenModal={handleOpenModal}
                 insertTextToTextarea={insertTextToTextarea}
@@ -276,7 +285,6 @@ export default function ResearchDescriptionModal({
         </div>
 
         {openModal && (() => {
-          // НОВОЕ: Обработка модалки хронологического возраста
           if (openModal.startsWith("ChronologicalAgeModal")) {
             const genderParam = openModal.includes(":female") ? "female" : "male";
             return (
@@ -289,46 +297,6 @@ export default function ResearchDescriptionModal({
             );
           }
 
-          // НОВОЕ: Обработка костного возраста с учетом хронологического возраста
-          if (openModal.startsWith("BoneAgeModal")) {
-            const genderParam = openModal.includes(":female") ? "female" : "male";
-            const BoneAgeModal = Modals.BoneAgeModal;
-            
-            console.log('Rendering BoneAgeModal with data:', boneAgeData);
-            console.log('Gender param:', genderParam);
-            console.log('chronologicalAge:', boneAgeData ? boneAgeData.age : undefined);
-            
-            if (!BoneAgeModal) return null;
-            
-            return (
-              <BoneAgeModal
-                isOpen={true}
-                onClose={handleCloseNestedModal}
-                gender={genderParam}
-                chronologicalAge={boneAgeData ? boneAgeData.age : undefined}
-                insertTextToTextarea={insertTextToTextarea}
-              />
-            );
-          }
-
-          // Обработка SpineDiagnosisModal (существующая логика)
-          if (openModal.startsWith("SpineDiagnosisModal:")) {
-            const region = openModal.split(":")[1];
-            const ModalComponent = Modals["SpineDiagnosisModal"];
-            if (!ModalComponent) return null;
-            return (
-              <ModalComponent
-                isOpen={true}
-                onClose={handleCloseNestedModal}
-                textareaRef={textareaRef}
-                spineRegion={region}
-                insertTextToTextarea={insertTextToTextarea}
-                hasEndoprosthesis={hasEndoprosthesis}
-              />
-            );
-          }
-
-          // Остальные модалки
           const ModalComponent = Modals[openModal];
           if (!ModalComponent) return null;
           return (

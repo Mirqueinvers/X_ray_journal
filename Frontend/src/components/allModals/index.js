@@ -44,6 +44,7 @@ import SpineOsteophytesModal from "../spine/OsteophytesModal";
 import SpineCurvatureModal from "../spine/SpineCurvatureModal";
 import SpineModal from "../spine/SpineModal";
 
+
 import SinusesModal from "../paranasal/SinusesModal";
 
 import RibsModal from "../lungs/RibsModal";
@@ -91,6 +92,7 @@ export {
   SpineOsteophytesModal,
   SpineCurvatureModal,
   SpineModal,
+
   SinusesModal,
   RibsModal,
   LungPatternModal,

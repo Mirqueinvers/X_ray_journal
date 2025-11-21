@@ -768,6 +768,163 @@ const startServer = () => {
     });
   });
 
+  // График направлений от врачей
+app.get('/api/referrals-by-doctor', (req, res) => {
+  const { startDate, endDate } = req.query;
+
+  let sql = `
+    SELECT 
+      r.sent as doctor_name,
+      COUNT(DISTINCT CONCAT(v.visit_date, '-', r.patient_id)) as referral_count
+    FROM research r
+    JOIN visits v ON r.visit_id = v.id
+    WHERE r.sent IS NOT NULL AND r.sent != ''
+  `;
+
+  const params = [];
+
+  if (startDate) {
+    sql += ' AND v.visit_date >= ?';
+    params.push(startDate);
+  }
+
+  if (endDate) {
+    sql += ' AND v.visit_date <= ?';
+    params.push(endDate);
+  }
+
+  sql += ' GROUP BY r.sent ORDER BY referral_count DESC';
+
+  db.query(sql, params, (err, rows) => {
+    if (err) {
+      console.error('❌ Ошибка получения направлений от врачей:', err);
+      return res.status(500).json({ success: false, error: err.message });
+    }
+
+    // Преобразуем данные для графика
+    const chartData = rows.map(row => ({
+      name: row.doctor_name || 'Не указан',
+      value: parseInt(row.referral_count) || 0
+    })).filter(item => item.value > 0);
+
+    res.json({ success: true, data: chartData });
+  });
+});
+
+// Статистика по регионам исследований
+app.get('/api/research-regions', (req, res) => {
+  const { startDate, endDate } = req.query;
+
+  let sql = `
+    SELECT 
+      r.research_region,
+      COUNT(r.id) as research_count,
+      SUM(CAST(r.numb_of_proc AS UNSIGNED)) as total_procedures,
+      SUM(COALESCE(r.dose, 0)) as total_dose
+    FROM research r
+    JOIN visits v ON r.visit_id = v.id
+    WHERE r.research_region IS NOT NULL AND r.research_region != ''
+  `;
+
+  const params = [];
+
+  if (startDate) {
+    sql += ' AND v.visit_date >= ?';
+    params.push(startDate);
+  }
+
+  if (endDate) {
+    sql += ' AND v.visit_date <= ?';
+    params.push(endDate);
+  }
+
+  sql += ' GROUP BY r.research_region ORDER BY research_count DESC';
+
+  db.query(sql, params, (err, rows) => {
+    if (err) {
+      console.error('❌ Ошибка получения статистики по регионам:', err);
+      return res.status(500).json({ success: false, error: err.message });
+    }
+
+    // Преобразуем данные для графика
+    const chartData = rows.map(row => ({
+      region: row.research_region,
+      researchCount: parseInt(row.research_count) || 0,
+      procedureCount: parseInt(row.total_procedures) || 0,
+      totalDose: parseFloat(row.total_dose) || 0
+    })).filter(item => item.researchCount > 0);
+
+    res.json({ success: true, data: chartData });
+  });
+});
+
+// Статистика количества пациентов по месяцам
+app.get('/api/patients-by-month', (req, res) => {
+  const { startDate, endDate } = req.query;
+
+  let sql = `
+    SELECT 
+      DATE_FORMAT(v.visit_date, '%Y-%m') as month,
+      COUNT(DISTINCT CONCAT(v.visit_date, '-', r.patient_id)) as unique_patients,
+      COUNT(DISTINCT v.visit_date) as working_days,
+      COUNT(r.id) as total_researches
+    FROM visits v
+    LEFT JOIN research r ON v.id = r.visit_id
+    WHERE 1=1
+  `;
+
+  const params = [];
+
+  if (startDate) {
+    sql += ' AND v.visit_date >= ?';
+    params.push(startDate);
+  }
+
+  if (endDate) {
+    sql += ' AND v.visit_date <= ?';
+    params.push(endDate);
+  }
+
+  sql += ' GROUP BY DATE_FORMAT(v.visit_date, \'%Y-%m\') ORDER BY month ASC';
+
+  db.query(sql, params, (err, rows) => {
+    if (err) {
+      console.error('❌ Ошибка получения статистики по месяцам:', err);
+      return res.status(500).json({ success: false, error: err.message });
+    }
+
+    // Преобразуем данные для графика (БЕЗ дополнительной сортировки!)
+    const chartData = rows.map(row => ({
+      month: row.month,
+      monthName: getMonthName(row.month),
+      monthOrder: getMonthOrder(row.month),
+      uniquePatients: parseInt(row.unique_patients) || 0,
+      workingDays: parseInt(row.working_days) || 0,
+      totalResearches: parseInt(row.total_researches) || 0
+    })).filter(item => item.uniquePatients > 0);
+
+    // Сортируем только по календарному порядку (январь, февраль, март...)
+    chartData.sort((a, b) => a.monthOrder - b.monthOrder);
+
+    console.log('Отсортированные данные:', chartData.map(item => ({ month: item.monthName, order: item.monthOrder })));
+
+    res.json({ success: true, data: chartData });
+  });
+});
+
+// Вспомогательная функция для получения названия месяца
+function getMonthName(monthStr) {
+  const [year, month] = monthStr.split('-');
+  const date = new Date(year, month - 1);
+  return date.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+}
+
+// Вспомогательная функция для получения порядкового номера месяца
+function getMonthOrder(monthStr) {
+  const [year, month] = monthStr.split('-');
+  return parseInt(year + month);
+}
+
   // ▶️ Запуск сервера
   app.listen(port, () => {
     console.log(`🚀 Сервер запущен: http://localhost:${port}`);

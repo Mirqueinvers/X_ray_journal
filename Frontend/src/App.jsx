@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Header from "./components/Header";
-import Stat from "./components/Stat";
+import Stat from "./components/statistics/Stat";
 import Search from "./components/Search";
 import AddPatient from "./components/Add_patient";
 import ExpButton from "./components/ExpButton";

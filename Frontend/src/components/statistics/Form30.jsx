@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import API_BASE from './api';
+import API_BASE from '../api';
 
 export default function Form30({ startDate, endDate }) {
   const headersTop = [

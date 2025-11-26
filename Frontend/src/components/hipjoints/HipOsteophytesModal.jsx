@@ -53,7 +53,7 @@ const generateDescription = () => {
   // Объединяем одинаковые поверхности на обоих суставах
   surfaces.forEach((surf) => {
     if (hips.left[surf] && hips.right[surf]) {
-      parts.push(`${surfaceNames[surf]}ых поверхностях вертлужных впадин тазобедренных суставов`);
+      parts.push(`${surfaceNames[surf]}ым поверхностям вертлужных впадин тазобедренных суставов`);
       hips.left[surf] = hips.right[surf] = false; // помечаем как использованные
     }
   });

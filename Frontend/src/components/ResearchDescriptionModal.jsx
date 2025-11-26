@@ -138,7 +138,7 @@ export default function ResearchDescriptionModal({
     
     const textToSave = text;
     try {
-      const res = await fetch(`http://${API_BASE}/api/save-research-description`, {
+      const res = await fetch(`http://localhost:5000/api/save-research-description`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ research_id: researchId, description: textToSave })

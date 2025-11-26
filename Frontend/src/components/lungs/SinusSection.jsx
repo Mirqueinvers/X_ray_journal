@@ -6,7 +6,7 @@ export default function SinusSection({ insertTextToTextarea, setExpandedPlaque }
   const [showExpansionModal, setShowExpansionModal] = useState(false);
 
   const sinusOptions = [
-    { label: "Свободны", text: "пазухи прозрачные" },
+    { label: "Свободны", text: "свободны" },
     { label: "Патология", text: null } // текст вставляется через модальное окно
   ];
 

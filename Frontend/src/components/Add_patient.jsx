@@ -1,36 +1,40 @@
+// Frontend/src/components/Add_patient.jsx
 import React, { useState, useEffect } from 'react';
 import AddResearchModal from './AddResearchModal';
 import AddPatientModal from './AddPatientModal';
 import DayResult from './DayResult';
 import EditPatientModal from './EditPatientModal';
+import ResearchViewModal from './ResearchViewModal';
 import VisitDatePicker from './VisitDatePicker';
 import AddPatientButton from './AddPatientButton';
 import EditResearchModal from './EditResearchModal';
+import { useModal, useModalWithData } from './hooks/useModal';
 import API_BASE from './api';
 
-
-
-
 const AddPatient = () => {
-  // Для редактирования исследования
+  // Хуки для управления модалками
+  const researchModal = useModalWithData();      // Для модалки описания исследования
+  const addResearchModal = useModal();           // Для модалки добавления исследования
+  const editPatientModal = useModalWithData();   // Для модалки редактирования пациента
+  const editResearchModal = useModalWithData();  // Для модалки редактирования исследования
+
+  // Для редактирования исследования (старые состояния для совместимости)
   const [editingResearch, setEditingResearch] = useState(null);
   const [formData, setFormData] = useState({});
 
   // Для добавления/редактирования пациента
   const [formDataPatient, setFormDataPatient] = useState({
-  last_name: '',
-  first_name: '',
-  middle_name: '',
-  birth_date: '',
-  adress: '',
+    last_name: '',
+    first_name: '',
+    middle_name: '',
+    birth_date: '',
+    adress: '',
   });
   const [visitDate, setVisitDate] = useState('');
   const [patientsOnDate, setPatientsOnDate] = useState([]);
   const [visits, setVisits] = useState({}); // { patientId: visitId }
   const [showForm, setShowForm] = useState(false);
   const [modalPatientId, setModalPatientId] = useState(null);
-
-  
 
   // Форма добавления исследования
   const [researchForm, setResearchForm] = useState({
@@ -56,15 +60,6 @@ const AddPatient = () => {
     sent: ['Терапевт', 'Хирург', 'Невролог', 'Педиатр', 'ЛОР', 'Стоматолог', 'Женская консультация', 'Стационар дневной', 'Стационар круглосуточный', 'Приемный покой', 'ФЛ дообследование'],
   };  
 
-  // Для редактирования пациента
-  const [editingPatient, setEditingPatient] = useState(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editFormData, setEditFormData] = useState({
-    fio: '',
-    birth_date: '',
-    adress: '',
-  });
-
   // Фокус на пациенте, чтобы раскрыть его исследования
   const [focusedPatientId, setFocusedPatientId] = useState(null);
 
@@ -75,14 +70,37 @@ const AddPatient = () => {
     adress: 'Адрес',
   };
 
-  // Открыть модалку редактирования исследования
+  // НОВАЯ ФУНКЦИЯ: Открыть модалку описания исследования
+  const openResearchDescriptionModal = (research) => {
+    researchModal.openModal({
+      id: research.id,
+      research_type: research.research_type,
+      description: research.description || "",
+      patient_id: research.patient_id
+    });
+  };
+
+  // НОВАЯ ФУНКЦИЯ: Открыть модалку редактирования исследования
   const openEditResearchModal = (research) => {
+    editResearchModal.openModal({
+      research: research,
+      formData: research
+    });
     setEditingResearch(research);
     setFormData(research);
   };
 
   const closeEditModal = () => {
+    editResearchModal.closeModal();
     setEditingResearch(null);
+  };
+
+  // Обновленная функция редактирования пациента
+  const openEditModal = (patient) => {
+    editPatientModal.openModal({
+      ...patient,
+      formattedBirthDate: formatBirthDateForInput(patient.birth_date)
+    });
   };
 
   // Обработчики изменения полей
@@ -93,7 +111,13 @@ const AddPatient = () => {
 
   const handleEditChange = (e) => {
     const { id, value } = e.target;
-    setEditFormData((prev) => ({ ...prev, [id]: value }));
+    // Обновляем данные в модалке редактирования пациента
+    if (editPatientModal.modalData) {
+      editPatientModal.setModalData({
+        ...editPatientModal.modalData,
+        [id]: value
+      });
+    }
   };
 
   const handleResearchChange = (e) => {
@@ -162,97 +186,84 @@ const AddPatient = () => {
   }, [visitDate]);
 
   // Добавить нового пациента с визитом
-const handleSubmit = async () => {
-  if (!/^\d{8}$/.test(formDataPatient.birth_date)) {
-    alert('Введите дату рождения в формате ДДММГГГГ (например, 12101990)');
-    return;
-  }
-  if (!visitDate) {
-    alert('Выберите дату визита');
-    return;
-  }
-
-  const fio = `${formDataPatient.last_name || ''} ${formDataPatient.first_name || ''} ${formDataPatient.middle_name || ''}`.trim();
-  if (!fio) {
-    alert('Заполните Фамилию, Имя и Отчество');
-    return;
-  }
-  if (!formDataPatient.adress) {
-    alert('Заполните адрес');
-    return;
-  }
-
-  const formattedBirthDate = formatBirthDateForApi(formDataPatient.birth_date);
-
-  console.log({ fio, birth_date: formattedBirthDate, adress: formDataPatient.adress, visit_date: visitDate });
-
-try {
-    const response = await fetch(`${API_BASE}/api/add-patient-with-visit`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        fio,
-        birth_date: formattedBirthDate,
-        adress: formDataPatient.adress,
-        visit_date: visitDate,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      setFormDataPatient({
-        last_name: '',
-        first_name: '',
-        middle_name: '',
-        birth_date: '',
-        adress: '',
-      });
-      setShowForm(false);
-
-      // Вот тут открываем модалку добавления исследования
-      setModalPatientId(data.patientId);
-
-      fetchPatientsAndVisits(visitDate);
-    } else {
-      alert('Ошибка: ' + data.error);
+  const handleSubmit = async () => {
+    if (!/^\d{8}$/.test(formDataPatient.birth_date)) {
+      alert('Введите дату рождения в формате ДДММГГГГ (например, 12101990)');
+      return;
     }
-  } catch (error) {
-    alert('Ошибка сети: ' + error.message);
-  }
-};
+    if (!visitDate) {
+      alert('Выберите дату визита');
+      return;
+    }
 
+    const fio = `${formDataPatient.last_name || ''} ${formDataPatient.first_name || ''} ${formDataPatient.middle_name || ''}`.trim();
+    if (!fio) {
+      alert('Заполните Фамилию, Имя и Отчество');
+      return;
+    }
+    if (!formDataPatient.adress) {
+      alert('Заполните адрес');
+      return;
+    }
 
+    const formattedBirthDate = formatBirthDateForApi(formDataPatient.birth_date);
 
-  
+    try {
+      const response = await fetch(`${API_BASE}/api/add-patient-with-visit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fio,
+          birth_date: formattedBirthDate,
+          adress: formDataPatient.adress,
+          visit_date: visitDate,
+        }),
+      });
 
-  // Открыть модалку редактирования пациента
-  const openEditModal = (patient) => {
-    setEditingPatient(patient);
-    setEditFormData({
-      fio: patient.full_name,
-      birth_date: formatBirthDateForInput(patient.birth_date),
-      adress: patient.adress,
-    });
-    setIsEditModalOpen(true);
+      const data = await response.json();
+
+      if (data.success) {
+        setFormDataPatient({
+          last_name: '',
+          first_name: '',
+          middle_name: '',
+          birth_date: '',
+          adress: '',
+        });
+        setShowForm(false);
+
+        // Открываем модалку добавления исследования
+        addResearchModal.openModal();
+        setModalPatientId(data.patientId);
+
+        fetchPatientsAndVisits(visitDate);
+      } else {
+        alert('Ошибка: ' + data.error);
+      }
+    } catch (error) {
+      alert('Ошибка сети: ' + error.message);
+    }
   };
 
   // Сохранить изменения пациента
   const savePatientChanges = async () => {
-    if (!/^\d{8}$/.test(editFormData.birth_date)) {
+    const patientData = editPatientModal.modalData;
+    if (!patientData) return;
+
+    if (!/^\d{8}$/.test(patientData.formattedBirthDate || '')) {
       alert('Введите дату рождения в формате ДДММГГГГ (например, 12101990)');
       return;
     }
-    const formattedDate = formatBirthDateForApi(editFormData.birth_date);
+    const formattedDate = formatBirthDateForApi(patientData.formattedBirthDate);
 
     const payload = {
-      fio: editFormData.fio,
+      fio: patientData.full_name,
       birth_date: formattedDate,
-      adress: editFormData.adress,
+      adress: patientData.adress,
     };
 
     try {
-      const res = await fetch(`${API_BASE}/api/patient/${editingPatient.id}`, {
+      const res = await fetch(`${API_BASE}/api/patient/${patientData.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -267,7 +278,7 @@ try {
       }
 
       if (res.ok && data?.success) {
-        setIsEditModalOpen(false);
+        editPatientModal.closeModal();
         fetchPatientsAndVisits(visitDate);
       } else {
         alert(data?.error || text || 'Ошибка при обновлении');
@@ -280,11 +291,13 @@ try {
 
   // Открыть модалку добавления исследования для пациента
   const openModal = (patientId) => {
+    addResearchModal.openModal();
     setModalPatientId(patientId);
   };
 
   // Закрыть модалку добавления исследования
   const closeModal = () => {
+    addResearchModal.closeModal();
     setModalPatientId(null);
     setResearchForm({
       dsnapr: '',
@@ -317,7 +330,6 @@ try {
       });
       const data = await res.json();
       if (data.success) {
-        
         setFocusedPatientId(modalPatientId);
         closeModal();
         fetchPatientsAndVisits(visitDate);
@@ -366,8 +378,8 @@ try {
 
       if (data.success) {
         alert('Исследование успешно обновлено');
-        setEditingResearch(null);
-        fetchPatientsAndVisits(visitDate); // Обновить список пациентов и исследований
+        closeEditModal();
+        fetchPatientsAndVisits(visitDate);
       } else {
         alert('Ошибка: ' + data.error);
       }
@@ -376,9 +388,22 @@ try {
     }
   };
 
-
-
-  
+  // НОВАЯ функция: обработка сохранения описания исследования
+  const handleDescriptionSaved = (updatedResearch) => {
+    // Обновляем исследование в списке пациентов
+    setPatientsOnDate(prev => 
+      prev.map(patient => ({
+        ...patient,
+        researches: patient.researches.map(research =>
+          research.id === updatedResearch.id 
+            ? { ...research, description: updatedResearch.description }
+            : research
+        )
+      }))
+    );
+    
+    researchModal.closeModal();
+  };
 
   return (
     <div className="flex flex-col items-center min-h-screen pt-10 px-4 mx-20">
@@ -394,7 +419,7 @@ try {
       <DayResult
         visitDate={visitDate}
         patientsOnDate={patientsOnDate}
-        setPatientsOnDate={setPatientsOnDate} // <- добавили!
+        setPatientsOnDate={setPatientsOnDate}
         focusedPatientId={focusedPatientId}
         setFocusedPatientId={setFocusedPatientId}
         openModal={openModal}
@@ -402,16 +427,27 @@ try {
         deletePatient={deletePatient}
         formatBirthDate={formatBirthDate}
         fetchPatientsByDate={() => fetchPatientsAndVisits(visitDate)}
-        onEditResearch={openEditResearchModal}
-        
+        onEditResearch={openResearchDescriptionModal} // Для описания исследования
+        onEditResearchData={openEditResearchModal}    // НОВЫЙ ПРОПС для редактирования данных
       />
 
+      {/* Модальное окно описания исследования */}
+      <ResearchViewModal
+        isOpen={researchModal.isOpen}
+        onClose={researchModal.closeModal}
+        researchId={researchModal.modalData?.id}
+        description={researchModal.modalData?.description}
+      />
 
       {/* Модальное окно редактирования пациента */}
       <EditPatientModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        formData={editFormData}
+        isOpen={editPatientModal.isOpen}
+        onClose={editPatientModal.closeModal}
+        formData={{
+          fio: editPatientModal.modalData?.full_name || '',
+          birth_date: editPatientModal.modalData?.formattedBirthDate || '',
+          adress: editPatientModal.modalData?.adress || '',
+        }}
         onChange={handleEditChange}
         onSave={savePatientChanges}
       />
@@ -435,8 +471,9 @@ try {
 
       {/* Модальное окно добавления исследования */}
       <AddResearchModal
-        modalPatientId={modalPatientId}
+        isOpen={addResearchModal.isOpen}
         closeModal={closeModal}
+        modalPatientId={modalPatientId}
         researchForm={researchForm}
         researchPlaceholders={researchPlaceholders}
         handleResearchChange={handleResearchChange}
@@ -444,9 +481,9 @@ try {
       />
 
       {/* Модальное окно редактирования исследования */}
-      {editingResearch && (
+      {editResearchModal.isOpen && (
         <EditResearchModal
-          isOpen={true}
+          isOpen={editResearchModal.isOpen}
           researchData={formData}
           onChange={handleChange}
           onClose={closeEditModal}

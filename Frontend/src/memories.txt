@@ -1,1 +1,1 @@
-
+перенес модалки researchviewmodal, researchtypemodal, researchdescriptionmodal в basemodal

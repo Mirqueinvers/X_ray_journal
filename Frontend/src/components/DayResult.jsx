@@ -13,7 +13,7 @@ export default function DayResult({
   deletePatient,
   formatBirthDate,
   onEditResearch,
-  
+  onEditResearchData,    // НОВЫЙ ПРОПС для редактирования данных исследования
 }) {
   const [copiedId, setCopiedId] = useState(null);
 
@@ -144,10 +144,10 @@ export default function DayResult({
                 openEditModal={openEditModal}
                 deletePatient={deletePatient}
                 onDeleteResearch={handleDeleteResearch}
-                onEditResearch={onEditResearch}
+                onEditResearch={onEditResearch}           // Для описания исследования
+                onEditResearchData={onEditResearchData}   // НОВЫЙ ПРОПС для редактирования данных
                 onIssueResearch={handleIssueResearch}
                 groupByDate={false}
-                // НОВЫЙ ПРОП: передаем функцию обновления исследования
                 onUpdateResearch={handleUpdateResearch}
               />
             ))}

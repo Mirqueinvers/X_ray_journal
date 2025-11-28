@@ -1,35 +1,40 @@
 import { PencilIcon, TrashIcon, DocumentDuplicateIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { useState, useEffect } from 'react';
+import { useModal, useModalWithData } from './hooks/useModal';
 import ResearchTypeModal from './ResearchTypeModal';
 import ResearchDescriptionModal from './ResearchDescriptionModal';
 import ResearchViewModal from './ResearchViewModal';
 
-export default function PatientResearchList({ patientId, researches, onEdit, onDelete, onIssue,   // НОВЫЙ ПРОП: функция обновления исследования
-  onUpdateResearch }) {
+export default function PatientResearchList({ 
+  patientId, 
+  researches, 
+  onDelete, 
+  onIssue,
+  onEdit,           // Для редактирования данных исследования
+  onEditDescription, // Для редактирования описания исследования
+  onUpdateResearch 
+}) {
+  // Заменяем множественные useState на useModal хуки
+  const typeModal = useModal();           // Для модалки выбора типа исследования
+  const descriptionModal = useModalWithData(); // Для модалки описания
+  const viewModal = useModalWithData();   // Для модалки просмотра описания
+
   const [issuedResearchIds, setIssuedResearchIds] = useState([]);
-  const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
-  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
   const [selectedResearch, setSelectedResearch] = useState(null);
   const [textareaRef, setTextareaRef] = useState(null);
-  const [selectedResearchId, setSelectedResearchId] = useState(null);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [selectedDescription, setSelectedDescription] = useState("");
-  const [tempDescription, setTempDescription] = useState("");
 
   useEffect(() => {
     const issuedIds = researches?.filter(r => r.issued_on_hands).map(r => r.id) || [];
     setIssuedResearchIds(issuedIds);
   }, [researches]);
 
-    // НОВАЯ ФУНКЦИЯ: обработчик успешного сохранения описания
+  // НОВАЯ ФУНКЦИЯ: обработчик успешного сохранения описания
   const handleDescriptionSaved = (updatedResearch) => {
-    // Вызываем callback для обновления состояния в родительском компоненте
     if (onUpdateResearch) {
       onUpdateResearch(updatedResearch);
     }
-    // Закрываем модальное окно
-    setIsDescriptionModalOpen(false);
-    setTempDescription("");
+    descriptionModal.closeModal();
+    setSelectedResearch(null);
   };
 
   const handleIssue = (researchId) => {
@@ -50,39 +55,42 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
     onIssue?.(researchId, true);
   };
 
-  const openTypeModal = (researchId = null) => {
-    setSelectedResearchId(researchId);
-    setIsTypeModalOpen(true);
-  };
-
-  const closeTypeModal = () => setIsTypeModalOpen(false);
-
-  const closeDescriptionModal = () => {
-    setIsDescriptionModalOpen(false);
-    setTempDescription("");
-  };
-
   const handleResearchTypeSelect = (researchName) => {
     setSelectedResearch(researchName);
   };
 
   const handleInsertText = (text, researchName) => {
     setSelectedResearch(researchName);
-    setTempDescription(text);
-    setIsTypeModalOpen(false);
-    setIsDescriptionModalOpen(true);
+    descriptionModal.openModal({ 
+      text, 
+      researchName,
+      researchId: typeModal.modalData?.researchId 
+    });
+    typeModal.closeModal();
   };
 
   const handleResearchClick = (research) => {
-    setSelectedResearchId(research.id);
     const hasDescription = research.description && research.description.trim() !== "";
 
     if (hasDescription) {
-      setSelectedDescription(research.description);
-      setIsViewModalOpen(true);
+      viewModal.openModal({
+        id: research.id,
+        description: research.description
+      });
     } else {
-      openTypeModal(research.id);
+      typeModal.openModal({ researchId: research.id });
     }
+  };
+
+  // Функция для открытия модалки редактирования данных исследования
+  const handleEditResearch = (research) => {
+    console.log('Opening edit research modal for:', research); // Отладочный лог
+    onEdit?.(research); // Вызываем функцию редактирования данных из родительского компонента
+  };
+
+  // Функция для открытия модалки редактирования описания
+  const handleEditDescription = (research) => {
+    onEditDescription?.(research);
   };
 
   return (
@@ -95,7 +103,7 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
           <div
             key={r.id}
             onClick={(e) => {
-              e.stopPropagation(); // ← Останавливаем всплытие
+              e.stopPropagation();
               handleResearchClick(r);
             }}
             className={`cursor-pointer bg-gray-50 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow ${
@@ -116,18 +124,31 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
               </div>
 
               <div className="flex items-center gap-2">
+                {/* Кнопка редактирования данных исследования */}
                 <PencilIcon
                   className="h-5 w-5 text-gray-500 cursor-pointer hover:text-gray-700"
-                  onClick={(e) => { e.stopPropagation(); onEdit?.(r); }}
-                  title="Редактировать"
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    handleEditResearch(r);
+                  }}
+                  title="Редактировать данные"
                 />
+                
+
+                
                 <TrashIcon
                   className="h-5 w-5 text-gray-500 cursor-pointer hover:text-red-500"
-                  onClick={(e) => { e.stopPropagation(); onDelete?.(r.id); }}
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    onDelete?.(r.id); 
+                  }}
                   title="Удалить"
                 />
                 <button
-                  onClick={(e) => { e.stopPropagation(); handleIssue(r.id); }}
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    handleIssue(r.id); 
+                  }}
                   className={`h-5 w-5 cursor-pointer ${
                     isIssued ? 'text-green-500 hover:text-green-300' : 'text-gray-500 hover:text-blue-300'
                   }`}
@@ -157,31 +178,34 @@ export default function PatientResearchList({ patientId, researches, onEdit, onD
         );
       })}
 
-      {isTypeModalOpen && (
+      {/* Модалка выбора типа исследования */}
+      {typeModal.isOpen && (
         <ResearchTypeModal
-          onClose={closeTypeModal}
+          onClose={typeModal.closeModal}
           onResearchSelect={handleResearchTypeSelect}
           onInsertText={handleInsertText}
+          researchId={typeModal.modalData?.researchId}
         />
       )}
 
-      {isDescriptionModalOpen && (
+      {/* Модалка описания исследования */}
+      {descriptionModal.isOpen && (
         <ResearchDescriptionModal
-          onClose={closeDescriptionModal}
+          onClose={descriptionModal.closeModal}
           selectedResearch={selectedResearch}
-          description={tempDescription || selectedDescription}
-          researchId={selectedResearchId}
+          description={descriptionModal.modalData?.text || ""}
+          researchId={descriptionModal.modalData?.researchId}
           setTextareaRef={setTextareaRef}
-                    // НОВЫЙ ПРОП: передаем callback для обновления после сохранения
           onDescriptionSaved={handleDescriptionSaved}
         />
       )}
 
-      {isViewModalOpen && (
+      {/* Модалка просмотра описания */}
+      {viewModal.isOpen && (
         <ResearchViewModal
-          onClose={() => setIsViewModalOpen(false)}
-          researchId={selectedResearchId}
-          description={selectedDescription}
+          onClose={viewModal.closeModal}
+          researchId={viewModal.modalData?.id}
+          description={viewModal.modalData?.description}
         />
       )}
     </div>

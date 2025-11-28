@@ -24,7 +24,8 @@ export default function PatientCard({
   openModal,
   openEditModal,
   deletePatient,
-  onEditResearch,
+  onEditResearch,         // Для описания исследования
+  onEditResearchData,     // НОВЫЙ ПРОПС для редактирования данных
   onDeleteResearch,
   onIssueResearch,
   groupByDate = false, // новый проп для управления группировкой
@@ -190,9 +191,9 @@ export default function PatientCard({
                       patientId={patient.id}
                       researches={researchList}
                       onDelete={onDeleteResearch}
-                      onEdit={onEditResearch}
+                      onEdit={onEditResearchData}        // Передаем функцию редактирования данных
+                      onEditDescription={onEditResearch} // Для описания исследования
                       onIssue={onIssueResearch}
-                      // НОВЫЙ ПРОП: передаем функцию обновления исследования
                       onUpdateResearch={onUpdateResearch}
                     />
                   </div>
@@ -207,9 +208,9 @@ export default function PatientCard({
             patientId={patient.id}
             researches={researches}
             onDelete={onDeleteResearch}
-            onEdit={onEditResearch}
+            onEdit={onEditResearchData}        // Передаем функцию редактирования данных
+            onEditDescription={onEditResearch} // Для описания исследования
             onIssue={onIssueResearch}
-            // НОВЫЙ ПРОП: передаем функцию обновления исследования
             onUpdateResearch={onUpdateResearch}
           />
         )}

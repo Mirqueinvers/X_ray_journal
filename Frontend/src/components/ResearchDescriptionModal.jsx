@@ -1,11 +1,12 @@
+// Frontend/src/components/ResearchDescriptionModal.jsx
 import { useState, useRef, useEffect } from "react";
-import { createPortal } from "react-dom";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import BaseModal from "./common/BaseModal";
 import * as Modals from "./allModals";
 import * as ResearchPlaques from "./researchPlaques";
 import ChronologicalAgeModal from "./bone_age/ChronologicalAgeModal";
 
 export default function ResearchDescriptionModal({
+  isOpen,
   onClose,
   description,
   selectedResearch,
@@ -13,6 +14,12 @@ export default function ResearchDescriptionModal({
   setTextareaRef,
   onDescriptionSaved
 }) {
+  // ДОБАВЛЯЕМ ТУ ЖЕ ЛОГИКУ, ЧТО И В ResearchTypeModal
+  const modalIsOpen = isOpen !== undefined ? isOpen : true;
+
+  // Если модалка не должна быть открыта, не рендерим ничего
+  if (!modalIsOpen) return null;
+
   // ОБЪЕДИНЕННЫЕ СОСТОЯНИЯ для плакет и элементов
   const [plaqueState, setPlaqueState] = useState({
     expandedPlaque: null,
@@ -37,7 +44,6 @@ export default function ResearchDescriptionModal({
 
   // НОВОЕ: отдельное состояние для хронологического возраста
   const [boneAgeData, setBoneAgeData] = useState(null);
-  
   const [hasEndoprosthesis, setHasEndoprosthesis] = useState(false);
 
   useEffect(() => setText(description || ""), [description]);
@@ -47,6 +53,8 @@ export default function ResearchDescriptionModal({
 
   // НОВЫЙ: автоматический фокус на поле при открытии модалки
   useEffect(() => {
+    if (!modalIsOpen) return; // ИСПОЛЬЗУЕМ modalIsOpen
+    
     const timer = setTimeout(() => {
       if (textareaRef.current) {
         textareaRef.current.focus();
@@ -57,7 +65,7 @@ export default function ResearchDescriptionModal({
     }, 100); // Небольшая задержка чтобы модалка успела отрендериться
 
     return () => clearTimeout(timer);
-  }, []); // Пустой массив = выполнится только при монтировании
+  }, [modalIsOpen, text.length]); // ИСПОЛЬЗУЕМ modalIsOpen
 
   useEffect(() => {
     if (!insertionData || !textareaRef.current) return;
@@ -210,108 +218,103 @@ export default function ResearchDescriptionModal({
   const ResearchComponent = researchMap[selectedResearch];
 
   const modalContent = (
-    <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6"
-      onClick={!isNestedModalOpen ? onClose : undefined}
-    >
-      <div
-        className="relative bg-white rounded-2xl shadow-2xl w-[1300px] h-[700px] flex flex-col overflow-hidden border border-gray-200"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="flex flex-1 h-full gap-6 p-6">
+      <div className="flex flex-col w-2/3 h-full">
+        <textarea
+          ref={textareaRef}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleTextareaKeyDown}
+          placeholder="Введите описание исследования..."
+          className="flex-1 resize-none bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
+        />
         <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
-          title="Закрыть"
+          onClick={() => {
+            if (textareaRef.current) {
+              const textToCopy = "\n\n" + textareaRef.current.value + "\n";
+              navigator.clipboard.writeText(textToCopy).catch(err => console.error(err));
+            }
+            saveDescription();
+          }}
+          className="mt-3 self-start px-5 py-2 bg-blue-400 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition"
         >
-          <XMarkIcon className="h-6 w-6" />
+          {saveStatus.saving ? "Сохраняем..." : 
+           saveStatus.success ? "Сохранено!" : 
+           saveStatus.error ? "Ошибка" : "Сохранить и скопировать"}
         </button>
-
-        <div className="flex flex-1 h-full gap-6 p-6">
-          <div className="flex flex-col w-2/3 h-full">
-            <textarea
-              ref={textareaRef}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyDown={handleTextareaKeyDown}
-              placeholder="Введите описание исследования..."
-              className="flex-1 resize-none bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all"
-            />
-            <button
-              onClick={() => {
-                if (textareaRef.current) {
-                  const textToCopy = "\n\n" + textareaRef.current.value + "\n";
-                  navigator.clipboard.writeText(textToCopy).catch(err => console.error(err));
-                }
-                saveDescription();
-              }}
-              className="mt-3 self-start px-5 py-2 bg-blue-400 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition"
-            >
-              {saveStatus.saving ? "Сохраняем..." : 
-               saveStatus.success ? "Сохранено!" : 
-               saveStatus.error ? "Ошибка" : "Сохранить и скопировать"}
-            </button>
-            
-            {/* Показать ошибку если есть */}
-            {saveStatus.error && (
-              <div className="mt-2 text-red-500 text-sm">
-                {saveStatus.error}
-              </div>
-            )}
+        
+        {/* Показать ошибку если есть */}
+        {saveStatus.error && (
+          <div className="mt-2 text-red-500 text-sm">
+            {saveStatus.error}
           </div>
+        )}
+      </div>
 
-          <div className="w-px bg-gray-200"></div>
+      <div className="w-px bg-gray-200"></div>
 
-          <div className="flex-1 h-full overflow-y-auto pr-2">
-            {ResearchComponent && (
-              <ResearchComponent
-                expandedPlaque={plaqueState.expandedPlaque}
-                setExpandedPlaque={(value) => setPlaqueState(prev => ({ ...prev, expandedPlaque: value }))}
-                selectedSubItem={plaqueState.selectedSubItem}
-                setSelectedSubItem={(value) => setPlaqueState(prev => ({ ...prev, selectedSubItem: value }))}
-                selectedNarrowingLevel={plaqueState.selectedNarrowingLevel}
-                setSelectedNarrowingLevel={(value) => setPlaqueState(prev => ({ ...prev, selectedNarrowingLevel: value }))}
-                selectedChangeLevel={plaqueState.selectedChangeLevel}
-                setSelectedChangeLevel={(value) => setPlaqueState(prev => ({ ...prev, selectedChangeLevel: value }))}
-                selectedShapeLevel={plaqueState.selectedShapeLevel}
-                setSelectedShapeLevel={(value) => setPlaqueState(prev => ({ ...prev, selectedShapeLevel: value }))}
-                textareaRef={textareaRef}
-                setOpenModal={handleOpenModal}
-                insertTextToTextarea={insertTextToTextarea}
-                hasEndoprosthesis={hasEndoprosthesis}
-                setHasEndoprosthesis={setHasEndoprosthesis}
-              />
-            )}
-          </div>
-        </div>
+      <div className="flex-1 h-full overflow-y-auto pr-2">
+        {ResearchComponent && (
+          <ResearchComponent
+            expandedPlaque={plaqueState.expandedPlaque}
+            setExpandedPlaque={(value) => setPlaqueState(prev => ({ ...prev, expandedPlaque: value }))}
+            selectedSubItem={plaqueState.selectedSubItem}
+            setSelectedSubItem={(value) => setPlaqueState(prev => ({ ...prev, selectedSubItem: value }))}
+            selectedNarrowingLevel={plaqueState.selectedNarrowingLevel}
+            setSelectedNarrowingLevel={(value) => setPlaqueState(prev => ({ ...prev, selectedNarrowingLevel: value }))}
+            selectedChangeLevel={plaqueState.selectedChangeLevel}
+            setSelectedChangeLevel={(value) => setPlaqueState(prev => ({ ...prev, selectedChangeLevel: value }))}
+            selectedShapeLevel={plaqueState.selectedShapeLevel}
+            setSelectedShapeLevel={(value) => setPlaqueState(prev => ({ ...prev, selectedShapeLevel: value }))}
+            textareaRef={textareaRef}
+            setOpenModal={handleOpenModal}
+            insertTextToTextarea={insertTextToTextarea}
+            hasEndoprosthesis={hasEndoprosthesis}
+            setHasEndoprosthesis={setHasEndoprosthesis}
+          />
+        )}
+      </div>
 
-        {openModal && (() => {
-          if (openModal.startsWith("ChronologicalAgeModal")) {
-            const genderParam = openModal.includes(":female") ? "female" : "male";
-            return (
-              <ChronologicalAgeModal
-                isOpen={true}
-                onClose={handleCloseNestedModal}
-                gender={genderParam}
-                onAgeSubmit={handleChronologicalAgeSubmit}
-              />
-            );
-          }
-
-          const ModalComponent = Modals[openModal];
-          if (!ModalComponent) return null;
+      {/* Вложенные модалки */}
+      {openModal && (() => {
+        if (openModal.startsWith("ChronologicalAgeModal")) {
+          const genderParam = openModal.includes(":female") ? "female" : "male";
           return (
-            <ModalComponent
+            <ChronologicalAgeModal
               isOpen={true}
               onClose={handleCloseNestedModal}
-              textareaRef={textareaRef}
-              insertTextToTextarea={insertTextToTextarea}
-              hasEndoprosthesis={hasEndoprosthesis}
+              gender={genderParam}
+              onAgeSubmit={handleChronologicalAgeSubmit}
             />
           );
-        })()}
-      </div>
+        }
+
+        const ModalComponent = Modals[openModal];
+        if (!ModalComponent) return null;
+        return (
+          <ModalComponent
+            isOpen={true}
+            onClose={handleCloseNestedModal}
+            textareaRef={textareaRef}
+            insertTextToTextarea={insertTextToTextarea}
+            hasEndoprosthesis={hasEndoprosthesis}
+          />
+        );
+      })()}
     </div>
   );
 
-  return createPortal(modalContent, document.body);
+  return (
+    <BaseModal
+      isOpen={modalIsOpen} // ИСПОЛЬЗУЕМ modalIsOpen ВМЕСТО isOpen
+      onClose={onClose}
+      title="Описание исследования"
+      size="custom"
+      contentClassName="w-[1300px] h-[700px] overflow-hidden"
+      bodyClassName="p-0"
+      closeOnOverlayClick={!isNestedModalOpen}
+    >
+      {modalContent}
+    </BaseModal>
+  );
 }

@@ -1,5 +1,6 @@
+// Frontend/src/components/bone_age/ChronologicalAgeModal.jsx
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import BaseModal from '../common/BaseModal.jsx';
 
 const ChronologicalAgeModal = ({ isOpen, onClose, gender, onAgeSubmit }) => {
   const [years, setYears] = useState('');
@@ -68,26 +69,17 @@ const ChronologicalAgeModal = ({ isOpen, onClose, gender, onAgeSubmit }) => {
     }
   };
 
-  if (!isOpen) return null;
-
   const genderLabel = gender === 'male' ? 'мальчик' : 'девочка';
+  const title = `Хронологический возраст (${genderLabel})`;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
-        {/* Заголовок */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">
-            Хронологический возраст ({genderLabel})
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded-lg transition"
-          >
-            <X className="w-6 h-6 text-gray-600" />
-          </button>
-        </div>
-
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      size="small"
+    >
+      <div className="p-6">
         {/* Поля ввода */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -157,7 +149,7 @@ const ChronologicalAgeModal = ({ isOpen, onClose, gender, onAgeSubmit }) => {
           </button>
         </div>
       </div>
-    </div>
+    </BaseModal>
   );
 };
 

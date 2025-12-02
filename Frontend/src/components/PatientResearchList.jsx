@@ -14,10 +14,10 @@ export default function PatientResearchList({
   onEditDescription, // Для редактирования описания исследования
   onUpdateResearch 
 }) {
-  // Заменяем множественные useState на useModal хуки
-  const typeModal = useModal();           // Для модалки выбора типа исследования
-  const descriptionModal = useModalWithData(); // Для модалки описания
-  const viewModal = useModalWithData();   // Для модалки просмотра описания
+  // ИСПРАВЛЯЕМ: используем useModalWithData для typeModal
+  const typeModal = useModalWithData();           // Для модалки выбора типа исследования
+  const descriptionModal = useModalWithData();    // Для модалки описания
+  const viewModal = useModalWithData();           // Для модалки просмотра описания
 
   const [issuedResearchIds, setIssuedResearchIds] = useState([]);
   const [selectedResearch, setSelectedResearch] = useState(null);
@@ -59,12 +59,21 @@ export default function PatientResearchList({
     setSelectedResearch(researchName);
   };
 
-  const handleInsertText = (text, researchName) => {
+  // ИСПРАВЛЯЕМ: правильная передача research_id из ResearchTypeModal
+  const handleInsertText = (text, researchName, researchId) => {
+    console.log('handleInsertText called with:', { text, researchName, researchId });
+    console.log('typeModal.modalData:', typeModal.modalData);
+    
     setSelectedResearch(researchName);
+    
+    // researchId теперь должен прийти из ResearchTypeModal
+    const finalResearchId = researchId || typeModal.modalData?.researchId;
+    console.log('finalResearchId:', finalResearchId);
+    
     descriptionModal.openModal({ 
       text, 
       researchName,
-      researchId: typeModal.modalData?.researchId 
+      researchId: finalResearchId
     });
     typeModal.closeModal();
   };
@@ -78,19 +87,30 @@ export default function PatientResearchList({
         description: research.description
       });
     } else {
-      typeModal.openModal({ researchId: research.id });
+      // ИСПРАВЛЯЕМ: передаем researchId через useModalWithData
+      typeModal.openModal({ 
+        researchId: research.id
+      });
     }
   };
 
   // Функция для открытия модалки редактирования данных исследования
   const handleEditResearch = (research) => {
-    console.log('Opening edit research modal for:', research); // Отладочный лог
-    onEdit?.(research); // Вызываем функцию редактирования данных из родительского компонента
+    console.log('Opening edit research modal for:', research);
+    onEdit?.(research);
   };
 
-  // Функция для открытия модалки редактирования описания
+  // ИСПРАВЛЯЕМ: правильная функция для редактирования описания
   const handleEditDescription = (research) => {
-    onEditDescription?.(research);
+    console.log('Opening description modal for editing:', research);
+    
+    descriptionModal.openModal({
+      researchId: research.id,
+      text: research.description || "",
+      researchName: research.research_type,
+      isEditing: true
+    });
+    setSelectedResearch(research.research_type);
   };
 
   return (
@@ -133,9 +153,21 @@ export default function PatientResearchList({
                   }}
                   title="Редактировать данные"
                 />
-                
 
-                
+                {/* КНОПКА редактирования описания */}
+                {hasDescription && (
+                  <button
+                    className="text-gray-500 hover:text-blue-600 text-xs font-medium px-2 py-1 border border-gray-300 rounded hover:border-blue-400 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditDescription(r);
+                    }}
+                    title="Редактировать описание"
+                  >
+                    Ред. описание
+                  </button>
+                )}
+
                 <TrashIcon
                   className="h-5 w-5 text-gray-500 cursor-pointer hover:text-red-500"
                   onClick={(e) => { 
@@ -178,9 +210,10 @@ export default function PatientResearchList({
         );
       })}
 
-      {/* Модалка выбора типа исследования */}
+      {/* ИСПРАВЛЯЕМ: теперь typeModal имеет modalData */}
       {typeModal.isOpen && (
         <ResearchTypeModal
+          isOpen={typeModal.isOpen}
           onClose={typeModal.closeModal}
           onResearchSelect={handleResearchTypeSelect}
           onInsertText={handleInsertText}
@@ -188,21 +221,24 @@ export default function PatientResearchList({
         />
       )}
 
-      {/* Модалка описания исследования */}
+      {/* ИСПРАВЛЯЕМ: передаем все необходимые пропсы */}
       {descriptionModal.isOpen && (
         <ResearchDescriptionModal
+          isOpen={descriptionModal.isOpen}
           onClose={descriptionModal.closeModal}
           selectedResearch={selectedResearch}
           description={descriptionModal.modalData?.text || ""}
           researchId={descriptionModal.modalData?.researchId}
           setTextareaRef={setTextareaRef}
           onDescriptionSaved={handleDescriptionSaved}
+          modalData={descriptionModal.modalData}
         />
       )}
 
       {/* Модалка просмотра описания */}
       {viewModal.isOpen && (
         <ResearchViewModal
+          isOpen={viewModal.isOpen}
           onClose={viewModal.closeModal}
           researchId={viewModal.modalData?.id}
           description={viewModal.modalData?.description}

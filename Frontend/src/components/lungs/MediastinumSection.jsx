@@ -1,4 +1,4 @@
-import PlaqueButton from "../ui/PlaqueButton";
+import GenericOptionsSection from "./GenericOptionsSection";
 
 export default function MediastinumSection({ insertTextToTextarea, setExpandedPlaque }) {
   const mediastinumOptions = [
@@ -8,21 +8,12 @@ export default function MediastinumSection({ insertTextToTextarea, setExpandedPl
     { label: "Расширено верхнее средостение", text: "расширена в верхних отделах" }
   ];
 
-  const handleOptionClick = (option) => {
-    insertTextToTextarea("\n" + `Тень средостения ${option.text}.`);
-    setExpandedPlaque(null);
-  };
-
   return (
-    <div className="ml-6 mt-1 space-y-1">
-      {mediastinumOptions.map((option, idx) => (
-        <PlaqueButton
-          key={idx}
-          label={option.label}
-          onClick={() => handleOptionClick(option)}
-          hasChildren={false}
-        />
-      ))}
-    </div>
+    <GenericOptionsSection
+      options={mediastinumOptions}
+      textPrefix="Тень средостения"
+      insertTextToTextarea={insertTextToTextarea}
+      setExpandedPlaque={setExpandedPlaque}
+    />
   );
 }

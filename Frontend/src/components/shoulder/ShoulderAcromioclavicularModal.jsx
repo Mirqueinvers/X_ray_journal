@@ -1,4 +1,6 @@
+// Frontend/src/components/shoulder/ShoulderAcromioclavicularModal.jsx
 import React, { useState } from "react";
+import BaseModal from "../common/BaseModal";
 
 const jointSpaceMap = {
   "незначительно сужена": "незначительно сужена",
@@ -95,110 +97,107 @@ export default function ShoulderAcromioclavicularModal({
     }
   };
 
-const generateDescription = () => {
-  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+  const generateDescription = () => {
+    const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
-  const makeDescParts = (data) => {
-    const parts = {};
-    if (data.jointSpace) parts.jointSpace = jointSpaceMap[data.jointSpace];
-    if (data.jointSurface) parts.jointSurface = surfaceMap[data.jointSurface];
-    if (data.osteophytes.length > 0) {
-      if (
-        data.osteophytes.includes("по верхнему краю") &&
-        data.osteophytes.includes("по нижнему краю")
-      ) {
-        parts.osteophytes = "по верхнему и нижнему краям";
-      } else {
-        parts.osteophytes = data.osteophytes.join(" и ");
+    const makeDescParts = (data) => {
+      const parts = {};
+      if (data.jointSpace) parts.jointSpace = jointSpaceMap[data.jointSpace];
+      if (data.jointSurface) parts.jointSurface = surfaceMap[data.jointSurface];
+      if (data.osteophytes.length > 0) {
+        if (
+          data.osteophytes.includes("по верхнему краю") &&
+          data.osteophytes.includes("по нижнему краю")
+        ) {
+          parts.osteophytes = "по верхнему и нижнему краям";
+        } else {
+          parts.osteophytes = data.osteophytes.join(" и ");
+        }
       }
+      return parts;
+    };
+
+    const leftParts = makeDescParts(leftData);
+    const rightParts = makeDescParts(rightData);
+
+    // 🔹 Оба нормальные
+    if (leftData.isNormal && rightData.isNormal) {
+      return "Ключично-акромиальные сочленения без особенностей.";
     }
-    return parts;
-  };
 
-  const leftParts = makeDescParts(leftData);
-  const rightParts = makeDescParts(rightData);
+    // 🔹 Одинаковые изменения суставной щели и поверхностей
+    const sameJointSpace =
+      leftData.jointSpace && leftData.jointSpace === rightData.jointSpace;
+    const sameSurface =
+      leftData.jointSurface && leftData.jointSurface === rightData.jointSurface;
+    const leftHasOsteophytes = leftData.osteophytes.length > 0;
+    const rightHasOsteophytes = rightData.osteophytes.length > 0;
 
-  // 🔹 Оба нормальные
-  if (leftData.isNormal && rightData.isNormal) {
-    return "Ключично-акромиальные сочленения без особенностей.";
-  }
+    if (sameJointSpace && sameSurface) {
+      const parts = [];
+      parts.push(
+        `Суставные щели ключично-акромиальных сочленений ${leftParts.jointSpace.replace(
+          "сужена",
+          "сужены"
+        )}`
+      );
+      parts.push(
+        `суставные поверхности ${leftParts.jointSurface.replace(
+          "склерозирована",
+          "склерозированы"
+        )}`
+      );
 
-  // 🔹 Одинаковые изменения суставной щели и поверхностей
-  const sameJointSpace =
-    leftData.jointSpace && leftData.jointSpace === rightData.jointSpace;
-  const sameSurface =
-    leftData.jointSurface && leftData.jointSurface === rightData.jointSurface;
-  const leftHasOsteophytes = leftData.osteophytes.length > 0;
-  const rightHasOsteophytes = rightData.osteophytes.length > 0;
-
-  if (sameJointSpace && sameSurface) {
-    const parts = [];
-    parts.push(
-      `Суставные щели ключично-акромиальных сочленений ${leftParts.jointSpace.replace(
-        "сужена",
-        "сужены"
-      )}`
-    );
-    parts.push(
-      `суставные поверхности ${leftParts.jointSurface.replace(
-        "склерозирована",
-        "склерозированы"
-      )}`
-    );
-
-    // 🔸 Добавляем остеофиты (разные / одинаковые)
-    if (leftHasOsteophytes && rightHasOsteophytes) {
-      if (leftParts.osteophytes === rightParts.osteophytes) {
-        parts.push(`определяются краевые костные разрастания ${leftParts.osteophytes}`);
-      } else {
+      // 🔸 Добавляем остеофиты (разные / одинаковые)
+      if (leftHasOsteophytes && rightHasOsteophytes) {
+        if (leftParts.osteophytes === rightParts.osteophytes) {
+          parts.push(`определяются краевые костные разрастания ${leftParts.osteophytes}`);
+        } else {
+          parts.push(
+            `определяются краевые костные разрастания ${leftParts.osteophytes} левого и ${rightParts.osteophytes} правого ключично-акромиальных сочленений`
+          );
+        }
+      } else if (leftHasOsteophytes) {
         parts.push(
-          `определяются краевые костные разрастания ${leftParts.osteophytes} левого и ${rightParts.osteophytes} правого ключично-акромиальных сочленений`
+          `определяются краевые костные разрастания ${leftParts.osteophytes} левого ключично-акромиального сочленения`
+        );
+      } else if (rightHasOsteophytes) {
+        parts.push(
+          `определяются краевые костные разрастания ${rightParts.osteophytes} правого ключично-акромиального сочленения`
         );
       }
-    } else if (leftHasOsteophytes) {
-      parts.push(
-        `определяются краевые костные разрастания ${leftParts.osteophytes} левого ключично-акромиального сочленения`
-      );
-    } else if (rightHasOsteophytes) {
-      parts.push(
-        `определяются краевые костные разрастания ${rightParts.osteophytes} правого ключично-акромиального сочленения`
-      );
+
+      return capitalize(parts.join(", ")) + ".";
     }
 
-    return capitalize(parts.join(", ")) + ".";
-  }
+    // 🔹 Разные изменения — отдельные описания
+    const makeSideDesc = (label, data, parts) => {
+      if (data.isNormal)
+        return `${label} ключично-акромиальное сочленение без особенностей`;
 
-  // 🔹 Разные изменения — отдельные описания
-  const makeSideDesc = (label, data, parts) => {
-    if (data.isNormal)
-      return `${label} ключично-акромиальное сочленение без особенностей`;
+      const sideParts = [];
+      if (parts.jointSpace)
+        sideParts.push(`суставная щель ${parts.jointSpace}`);
+      if (parts.jointSurface)
+        sideParts.push(`суставные поверхности ${parts.jointSurface}`);
+      if (parts.osteophytes)
+        sideParts.push(`определяются краевые костные разрастания ${parts.osteophytes}`);
 
-    const sideParts = [];
-    if (parts.jointSpace)
-      sideParts.push(`суставная щель ${parts.jointSpace}`);
-    if (parts.jointSurface)
-      sideParts.push(`суставные поверхности ${parts.jointSurface}`);
-    if (parts.osteophytes)
-      sideParts.push(`определяются краевые костные разрастания ${parts.osteophytes}`);
+      return `${label} ключично-акромиальное сочленение: ${sideParts.join(", ")}`;
+    };
 
-    return `${label} ключично-акромиальное сочленение: ${sideParts.join(", ")}`;
+    const result =
+      makeSideDesc("Левое", leftData, leftParts) +
+      ".\n" +
+      makeSideDesc("Правое", rightData, rightParts) +
+      ".";
+
+    return capitalize(result);
   };
 
-  const result =
-    makeSideDesc("Левое", leftData, leftParts) +
-    ".\n" +
-    makeSideDesc("Правое", rightData, rightParts) +
-    ".";
-
-  return capitalize(result);
-};
-
-
-
-
-
-  if (!isOpen) return null;
-
+  // -----------------------------------------------------------------
+  // UI
+  // -----------------------------------------------------------------
   const jointSpaceOptions = [
     "незначительно сужена",
     "умеренно сужена",
@@ -212,7 +211,7 @@ const generateDescription = () => {
   ];
   const osteophytesOptions = ["по верхнему краю", "по нижнему краю"];
 
-  const renderJoint = (side, data, setHandlerPrefix) => (
+  const renderJoint = (side, data) => (
     <div className="flex-1 p-4 bg-gray-700 rounded-lg">
       <h3 className="text-lg font-semibold text-yellow-300 mb-4 text-center">
         {side === "left" ? "Левое сочленение" : "Правое сочленение"}
@@ -295,44 +294,37 @@ const generateDescription = () => {
   );
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 cursor-pointer"
-      onClick={onClose}
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="custom"
+      showCloseButton={true}
+      closeOnOverlayClick={true}
+      className="bg-gray-800 text-white"
+      contentClassName="w-[750px] max-h-[85vh] overflow-y-auto"
     >
-      <div
-        className="bg-gray-800 rounded-lg shadow-xl w-[750px] max-h-[85vh] overflow-y-auto relative"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-yellow-400 hover:text-yellow-200 z-10"
-        >
-          ✕
-        </button>
+      <div className="p-6">
+        <h2 className="text-xl font-bold text-yellow-200 mb-6 text-center">
+          Ключично-акромиальные сочленения
+        </h2>
 
-        <div className="p-6">
-          <h2 className="text-xl font-bold text-yellow-200 mb-6 text-center">
-            Ключично-акромиальные сочленения
-          </h2>
+        <div className="flex gap-4">
+          {renderJoint("left", leftData)}
+          {renderJoint("right", rightData)}
+        </div>
 
-          <div className="flex gap-4">
-            {renderJoint("left", leftData)}
-            {renderJoint("right", rightData)}
-          </div>
-
-          <div className="flex justify-center mt-6">
-            <button
-              className="px-6 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
-              onClick={() => {
-                insertTextToTextarea("\n" + generateDescription());
-                onClose();
-              }}
-            >
-              Добавить
-            </button>
-          </div>
+        <div className="flex justify-center mt-6">
+          <button
+            className="px-6 py-2 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-400"
+            onClick={() => {
+              insertTextToTextarea("\n" + generateDescription());
+              onClose();
+            }}
+          >
+            Добавить
+          </button>
         </div>
       </div>
-    </div>
+    </BaseModal>
   );
 }

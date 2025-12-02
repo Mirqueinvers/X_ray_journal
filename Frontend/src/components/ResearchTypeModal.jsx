@@ -8,7 +8,8 @@ export default function ResearchTypeModal({
   isOpen, 
   onClose, 
   onResearchSelect, 
-  onInsertText 
+  onInsertText,
+  researchId // ДОБАВЛЯЕМ researchId как пропс
 }) {
   const [expandedItems, setExpandedItems] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,20 +29,25 @@ export default function ResearchTypeModal({
     }));
   };
 
-  // НОВОЕ: обработчик для "Общее"
+  // ДОБАВЛЯЕМ отладку
+  console.log('ResearchTypeModal researchId:', researchId);
+
+  // НОВОЕ: обработчик для "Общее" - передаем researchId
   const handleGeneralClick = () => {
+    console.log('handleGeneralClick called with researchId:', researchId);
     if (onInsertText) {
-      onInsertText("", "Общее");
+      onInsertText("", "Общее", researchId); // ДОБАВЛЯЕМ researchId
     }
     if (onClose) {
       onClose();
     }
   };
 
-  // НОВОЕ: обработчик для "Костный возраст"
+  // НОВОЕ: обработчик для "Костный возраст" - передаем researchId
   const handleBoneAgeClick = () => {
+    console.log('handleBoneAgeClick called with researchId:', researchId);
     if (onInsertText) {
-      onInsertText("Рентгенография кистей в прямой проекции с захватом луче-запястных суставов\n", "Костный возраст");
+      onInsertText("Рентгенография кистей в прямой проекции с захватом луче-запястных суставов\n", "Костный возраст", researchId); // ДОБАВЛЯЕМ researchId
     }
     if (onClose) {
       onClose();
@@ -49,6 +55,8 @@ export default function ResearchTypeModal({
   };
 
   const handleResearchClick = (researchName, projection) => {
+    console.log('handleResearchClick called with researchId:', researchId, 'researchName:', researchName);
+    
     const fullResearch = researchCategories?.[1]?.items?.find(item => item.name === researchName);
 
     let textToInsert = "";
@@ -75,7 +83,7 @@ export default function ResearchTypeModal({
     }
 
     if (textToInsert && onInsertText) {
-      onInsertText(textToInsert, selectedResearchName);
+      onInsertText(textToInsert, selectedResearchName, researchId); // ДОБАВЛЯЕМ researchId
     }
     if (onClose) {
       onClose();

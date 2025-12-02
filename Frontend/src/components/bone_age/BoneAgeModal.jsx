@@ -1,5 +1,7 @@
+// Frontend/src/components/bone_age/BoneAgeModal.jsx
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import BaseModal from '../common/BaseModal.jsx';
 
 const BoneAgeModal = ({ isOpen, onClose, gender = 'male', chronologicalAge, insertTextToTextarea }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -212,8 +214,6 @@ const BoneAgeModal = ({ isOpen, onClose, gender = 'male', chronologicalAge, inse
     }
   };
 
-  if (!isOpen) return null;
-
   // Подпись пола в заголовке
   const genderLabel = gender === 'male' ? 'мальчик' : 'девочка';
   
@@ -226,34 +226,17 @@ const BoneAgeModal = ({ isOpen, onClose, gender = 'male', chronologicalAge, inse
   const currentAge = imageData[currentIndex];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-lg max-w-6xl w-full max-h-[90vh] overflow-hidden">
-        {/* Заголовок */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
-          <h2 className="text-xl font-bold text-gray-900">
-            {title}
-          </h2>
-          {/* Кнопки в правой части заголовка */}
-          <div className="flex gap-2">
-            <button
-              onClick={handleAddToDescription}
-              className="px-4 py-1.5 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-              disabled={!chronologicalAge}
-            >
-              Добавить
-            </button>
-            <button
-              onClick={onClose}
-              className="p-1 hover:bg-gray-100 rounded-lg transition"
-              title="Закрыть"
-            >
-              <X className="w-6 h-6 text-gray-600" />
-            </button>
-          </div>
-        </div>
-
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      size="large"
+      titleClassName="bg-white border-b border-gray-200"
+      bodyClassName="p-0 bg-gray-50"
+    >
+      <div className="flex flex-col h-full">
         {/* Основное изображение с подписью возраста */}
-        <div className="flex flex-col items-center justify-center p-6 bg-gray-50 overflow-hidden">
+        <div className="flex flex-col items-center justify-center p-6 bg-gray-50 flex-1 overflow-hidden">
           <div className="mb-4 text-lg font-medium text-gray-800">
             Возраст: {currentAge.label}
           </div>
@@ -264,8 +247,8 @@ const BoneAgeModal = ({ isOpen, onClose, gender = 'male', chronologicalAge, inse
           />
         </div>
 
-        {/* Навигация */}
-        <div className="flex items-center justify-between p-4 border-t border-gray-200 flex-shrink-0">
+        {/* Навигация и кнопка добавления */}
+        <div className="flex items-center justify-between p-4 border-t border-gray-200 flex-shrink-0 bg-white">
           <button
             onClick={handlePrev}
             className="p-2 hover:bg-gray-100 rounded-lg transition"
@@ -273,16 +256,26 @@ const BoneAgeModal = ({ isOpen, onClose, gender = 'male', chronologicalAge, inse
             <ChevronLeft className="w-6 h-6 text-gray-600" />
           </button>
 
-          <div className="flex gap-2">
-            {images.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-2 h-2 rounded-full transition ${
-                  index === currentIndex ? 'bg-blue-500' : 'bg-gray-300'
-                }`}
-              />
-            ))}
+          <div className="flex gap-4 items-center">
+            <div className="flex gap-2">
+              {images.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentIndex(index)}
+                  className={`w-2 h-2 rounded-full transition ${
+                    index === currentIndex ? 'bg-blue-500' : 'bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+            
+            <button
+              onClick={handleAddToDescription}
+              className="px-4 py-1.5 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition disabled:bg-gray-300"
+              disabled={!chronologicalAge}
+            >
+              Добавить
+            </button>
           </div>
 
           <button
@@ -293,7 +286,7 @@ const BoneAgeModal = ({ isOpen, onClose, gender = 'male', chronologicalAge, inse
           </button>
         </div>
       </div>
-    </div>
+    </BaseModal>
   );
 };
 

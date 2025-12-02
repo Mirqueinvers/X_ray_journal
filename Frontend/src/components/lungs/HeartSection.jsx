@@ -1,4 +1,4 @@
-import PlaqueButton from "../ui/PlaqueButton";
+import GenericOptionsSection from "./GenericOptionsSection";
 
 export default function HeartSection({ insertTextToTextarea, setExpandedPlaque }) {
   const heartOptions = [
@@ -8,21 +8,12 @@ export default function HeartSection({ insertTextToTextarea, setExpandedPlaque }
     { label: "расширена с двух сторон", text: "расширена за счет правых и левых отделов" }
   ];
 
-  const handleOptionClick = (option) => {
-    insertTextToTextarea("\n" + `Тень сердца ${option.text}.`);
-    setExpandedPlaque(null);
-  };
-
   return (
-    <div className="ml-6 mt-1 space-y-1">
-      {heartOptions.map((option, idx) => (
-        <PlaqueButton
-          key={idx}
-          label={option.label}
-          onClick={() => handleOptionClick(option)}
-          hasChildren={false}
-        />
-      ))}
-    </div>
+    <GenericOptionsSection
+      options={heartOptions}
+      textPrefix="Тень сердца"
+      insertTextToTextarea={insertTextToTextarea}
+      setExpandedPlaque={setExpandedPlaque}
+    />
   );
 }

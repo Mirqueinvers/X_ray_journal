@@ -1,4 +1,6 @@
+// Frontend/src/components/general/DiagnosisModal.jsx
 import React, { useState, useRef, useEffect } from "react";
+import BaseModal from "../common/BaseModal.jsx";
 
 export default function DiagnosisModal({ onClose, insertTextToTextarea, patientName }) {
   const [diagnosisText, setDiagnosisText] = useState("");
@@ -14,21 +16,20 @@ export default function DiagnosisModal({ onClose, insertTextToTextarea, patientN
 
   const handleAdd = () => {
     if (diagnosisText.trim() !== "") {
-      insertTextToTextarea("\n\n" + "Диагноз: " + diagnosisText.trim());
+      insertTextToTextarea("\n\n" + "Заключение: " + diagnosisText.trim());
       setDiagnosisText("");
       onClose();
     }
   };
 
-  // ИЗМЕНЕННЯ ФУНКЦИЯ
+  // ИЗМЕНЕННАЯ ФУНКЦИЯ
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      // Для Enter: предотвращаем поведение по умолчанию и вспытие
+      // Для Enter: предотвращаем поведение по умолчанию и всплытие
       e.preventDefault();
       e.stopPropagation();
 
       // Вставляем перенос строки вручную
-
       const textarea = e.target;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
@@ -36,57 +37,41 @@ export default function DiagnosisModal({ onClose, insertTextToTextarea, patientN
       setDiagnosisText(newText);
 
       // Возвращаем курсор в правильную позицию
-
       setTimeout(() => {
         textarea.selectionStart = textarea.selectionEnd = start + 1;
       }, 0);
     } else if (e.key === ' ') { // Для пробела
-      // Предотвращаем вспытие, но разрешаем действие по умолчанию (вставку пробела)
+      // Предотвращаем всплытие, но разрешаем действие по умолчанию (вставку пробела)
       e.stopPropagation();
       // НЕ нужно вызывать preventDefault(), чтобы позволить браузеру вставить пробел
     }
   };
 
+  const title = patientName 
+    ? `Заключение для ${patientName}`
+    : "Заключение";
+
   return (
-    <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      onClick={onClose}
+    <BaseModal
+      isOpen={true}
+      onClose={onClose}
+      title={title}
+      size="small"
     >
-      <div
-        className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 relative"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl"
-          aria-label="Закрыть"
-        >
-          ×
-        </button>
-
-        <h2 className="text-lg font-semibold text-gray-800 mb-1">
-          Диагноз
-        </h2>
-        {patientName && (
-          <p className="text-sm text-gray-500 mb-4">
-            Добавить диагноз для пациента: <span className="font-medium text-gray-700">{patientName}</span>
-          </p>
-        )}
-
+      <div className="p-6">
         <div className="mb-4">
           <textarea
             ref={textareaRef}
             rows={4}
             value={diagnosisText}
             onChange={(e) => setDiagnosisText(e.target.value)}
-            onKeyDown={handleKeyDown} // <-- ДОБАВЬТЕ ЭТУ СТРОКУ
-            placeholder="Введите диагноз..."
-            className="w-full bg-gray-100 rounded-md px-3 py-2 text-sm text-gray-800
-                       focus:outline-none focus:ring-4 focus:ring-gray-300 focus:border-gray-300 transition-all resize-none"
+            onKeyDown={handleKeyDown}
+            placeholder="Введите заключение..."
+            className="w-full bg-gray-100 rounded-md px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-300 focus:border-gray-300 transition-all resize-none"
           />
         </div>
 
-        <div className="flex justify-start mt-4 space-x-2">
+        <div className="flex justify-start space-x-2">
           <button
             onClick={handleAdd}
             className="px-4 py-2 rounded bg-blue-400 hover:bg-gray-800 text-white font-semibold transition"
@@ -101,6 +86,6 @@ export default function DiagnosisModal({ onClose, insertTextToTextarea, patientN
           </button>
         </div>
       </div>
-    </div>
+    </BaseModal>
   );
 }

@@ -1,5 +1,6 @@
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
+import BaseModal from "../common/BaseModal";
+import VertebraeGrid from "./VertebraeGrid";
 
 export default function SpineModal({ onClose, insertTextToTextarea }) {
   const [selected, setSelected] = useState([]);
@@ -24,83 +25,61 @@ export default function SpineModal({ onClose, insertTextToTextarea }) {
     }
   };
 
-const insertSelected = () => {
-  if (selected.length !== 2) return;
+  const insertSelected = () => {
+    if (selected.length !== 2) return;
 
-  // ВАША ЛОГИКА ГЕНЕРАЦИИ ТЕКСТА ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ
-  const firstIndex = allVertebrae.indexOf(selected[0]);
-  const secondIndex = allVertebrae.indexOf(selected[1]);
-  const [from, to] =
-    firstIndex < secondIndex
-      ? [selected[0], selected[1]]
-      : [selected[1], selected[0]];
-  const insertText = `Позвоночный столб визуализируется на уровне ${from}-${to}.`;
+    const firstIndex = allVertebrae.indexOf(selected[0]);
+    const secondIndex = allVertebrae.indexOf(selected[1]);
+    const [from, to] =
+      firstIndex < secondIndex
+        ? [selected[0], selected[1]]
+        : [selected[1], selected[0]];
+    const insertText = `Позвоночный столб визуализируется на уровне ${from}-${to}.`;
 
-  // --- ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ ---
-  // Добавляем перенос строки и используем пропс для вставки
-  const finalText = `\n${insertText}`;
-  insertTextToTextarea(finalText);
-  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
-
-  onClose();
-};
+    const finalText = `\n${insertText}`;
+    insertTextToTextarea(finalText);
+    onClose();
+  };
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
-      onClick={onClose}
+    <BaseModal
+      isOpen={true}
+      onClose={onClose}
+      size="custom"
+      showCloseButton={true}
+      closeOnOverlayClick={true}
+      className="bg-gray-900 text-white"
+      contentClassName="w-[750px] h-[600px] overflow-hidden p-6"
     >
-      <div
-        className="relative w-[750px] h-[600px] bg-gray-900 rounded-lg overflow-hidden shadow-xl p-6"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Закрыть */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-yellow-400 hover:text-yellow-200"
-        >
-          <XMarkIcon className="h-6 w-6" />
-        </button>
+      <h2 className="text-yellow-300 text-lg mb-4">Выберите 2 позвонка</h2>
 
-        <h2 className="text-yellow-300 text-lg mb-4">Выберите 2 позвонка</h2>
-
-        {/* Секции по отделам */}
-        <div className="space-y-4 overflow-y-auto max-h-[450px] pr-2">
-          {Object.entries(vertebraeGroups).map(([section, verts]) => (
-            <div key={section}>
-              <h3 className="text-yellow-400 mb-2">{section}</h3>
-              <div className="grid grid-cols-8 gap-2">
-                {verts.map((v) => (
-                  <button
-                    key={v}
-                    onClick={() => toggleSelect(v)}
-                    className={`px-3 py-2 border rounded text-sm ${
-                      selected.includes(v)
-                        ? "bg-yellow-500 text-black border-yellow-400"
-                        : "bg-gray-700 text-yellow-200 border-gray-500 hover:bg-gray-600"
-                    }`}
-                  >
-                    {v}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Добавить */}
-        <button
-          onClick={insertSelected}
-          disabled={selected.length !== 2}
-          className={`absolute bottom-4 right-4 px-6 py-2 rounded ${
-            selected.length === 2
-              ? "bg-yellow-400 text-black hover:bg-yellow-300"
-              : "bg-gray-600 text-gray-400 cursor-not-allowed"
-          }`}
-        >
-          Добавить
-        </button>
+      {/* Секции по отделам */}
+      <div className="space-y-4 overflow-y-auto max-h-[450px] pr-2">
+        {Object.entries(vertebraeGroups).map(([section, verts]) => (
+          <div key={section}>
+            <h3 className="text-yellow-400 mb-2">{section}</h3>
+            <VertebraeGrid
+              vertebrae={verts}
+              selected={selected}
+              onToggle={toggleSelect}
+              max={2}
+            />
+          </div>
+        ))}
       </div>
-    </div>
+
+      {/* Добавить */}
+      <button
+        onClick={insertSelected}
+        disabled={selected.length !== 2}
+        className={`absolute bottom-4 right-4 px-6 py-2 rounded ${
+          selected.length === 2
+            ? "bg-yellow-400 text-black hover:bg-yellow-300"
+            : "bg-gray-600 text-gray-400 cursor-not-allowed"
+        }`}
+      >
+        Добавить
+      </button>
+    </BaseModal>
   );
 }

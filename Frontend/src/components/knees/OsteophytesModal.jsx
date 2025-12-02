@@ -1,27 +1,25 @@
-import { XMarkIcon } from "@heroicons/react/24/outline";
+// Frontend/src/components/knees/OsteophytesModal.jsx
 import { useState } from "react";
+import BaseModal from "../common/BaseModal.jsx";
 
-export default function OsteophytesModal({ onClose, insertTextToTextarea }) { // 1. Принимаем пропс
+const OSTEOPHYTES_DATA = [
+  { id: 1, text: "латеральной поверхности левой бедренной кости", pos: { top: "30%", right: "22%" } },
+  { id: 2, text: "медиальной поверхности левой бедренной кости", pos: { top: "30%", right: "35%" } },
+  { id: 3, text: "медиальной поверхности левой большеберцовой кости", pos: { bottom: "50%", right: "35%" } },
+  { id: 4, text: "латеральной поверхности левой большеберцовой кости", pos: { bottom: "50%", right: "22%" } },
+  { id: 5, text: "латеральной поверхности правой бедренной кости", pos: { top: "30%", left: "22%" } },
+  { id: 6, text: "медиальной поверхности правой бедренной кости", pos: { top: "30%", left: "35%" } },
+  { id: 7, text: "медиальной поверхности правой большеберцовой кости", pos: { bottom: "50%", left: "35%" } },
+  { id: 8, text: "латеральной поверхности правой большеберцовой кости", pos: { bottom: "50%", left: "22%" } },
+];
+
+export default function OsteophytesModal({ onClose, insertTextToTextarea }) {
   const [selected, setSelected] = useState([]);
 
-  const osteophytes = [
-    { id: 1, text: "латеральной поверхности левой бедренной кости", pos: { top: "30%", right: "22%" } },
-    { id: 2, text: "медиальной поверхности левой бедренной кости", pos: { top: "30%", right: "35%" } },
-    { id: 3, text: "медиальной поверхности левой большеберцовой кости", pos: { bottom: "50%", right: "35%" } },
-    { id: 4, text: "латеральной поверхности левой большеберцовой кости", pos: { bottom: "50%", right: "22%" } },
-    { id: 5, text: "латеральной поверхности правой бедренной кости", pos: { top: "30%", left: "22%" } },
-    { id: 6, text: "медиальной поверхности правой бедренной кости", pos: { top: "30%", left: "35%" } },
-    { id: 7, text: "медиальной поверхности правой большеберцовой кости", pos: { bottom: "50%", left: "35%" } },
-    { id: 8, text: "латеральной поверхности правой большеберцовой кости", pos: { bottom: "50%", left: "22%" } },
-  ];
-
   const toggleSelect = (text) => {
-    setSelected((prev) =>
-      prev.includes(text) ? prev.filter((t) => t !== text) : [...prev, text]
-    );
+    setSelected(prev => prev.includes(text) ? prev.filter(t => t !== text) : [...prev, text]);
   };
 
-  // --- Вся ваша логика генерации текста остается без изменений ---
   const generateInsertText = (selected) => {
     const surfaceMap = { "медиальная": "медиальной", "латеральная": "латеральной" };
     const surfacePluralMap = { "медиальная": "медиальных", "латеральная": "латеральных" };
@@ -50,20 +48,18 @@ export default function OsteophytesModal({ onClose, insertTextToTextarea }) { //
       return `Определяются краевые костные разрастания на ${surfacePluralMap["медиальная"]} и ${surfacePluralMap["латеральная"]} поверхностях ${bonePluralMap["бедренная"]} и ${bonePluralMap["большеберцовая"]} костей.`;
     }
 
-const parts = [];
+    const parts = [];
 
-Object.entries(table).forEach(([surface, bones]) => {
-  Object.entries(bones).forEach(([bone, sides]) => {
-    if (sides.left && sides.right) {
-      // ОБА СТОРОНЫ - используем множественное число для кости
-      parts.push(`${surfacePluralMap[surface]} поверхностях ${bonePluralMap[bone]} костей`);
-    } else {
-      if (sides.left) parts.push(`${surfaceMap[surface]} поверхности левой ${boneMap[bone]} кости`);
-      if (sides.right) parts.push(`${surfaceMap[surface]} поверхности правой ${boneMap[bone]} кости`);
-    }
-  });
-});
-
+    Object.entries(table).forEach(([surface, bones]) => {
+      Object.entries(bones).forEach(([bone, sides]) => {
+        if (sides.left && sides.right) {
+          parts.push(`${surfacePluralMap[surface]} поверхностях ${bonePluralMap[bone]} костей`);
+        } else {
+          if (sides.left) parts.push(`${surfaceMap[surface]} поверхности левой ${boneMap[bone]} кости`);
+          if (sides.right) parts.push(`${surfaceMap[surface]} поверхности правой ${boneMap[bone]} кости`);
+        }
+      });
+    });
 
     const mergeSurfacesSameBone = (parts) => {
       const merged = [];
@@ -100,70 +96,54 @@ Object.entries(table).forEach(([surface, bones]) => {
     if (finalParts.length === 2) return `Определяются краевые костные разрастания на ${finalParts.join(" и ")}.`;
     return `Определяются краевые костные разрастания на ${finalParts.slice(0, -1).join(", ")}, ${finalParts[finalParts.length - 1]}.`;
   };
-  // --- Конец вашей логики ---
 
-  // --- ИЗМЕНЕННАЯ ФУНКЦИЯ ---
   const insertSelected = () => {
     if (selected.length === 0) return;
-
-    // 2. Генерируем текст с помощью вашей функции
     const textToInsert = generateInsertText(selected);
-    
-    // 3. Добавляем перенос строки для лучшего форматирования
-    const finalText = `${textToInsert}`;
-
-    // 4. Вызываем пропс для вставки, который придет от ResearchDescriptionModal
-    insertTextToTextarea("\n" + finalText);
-    
+    insertTextToTextarea("\n" + textToInsert);
     onClose();
   };
-  // --- КОНЕЦ ИЗМЕНЕНИЙ ---
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
-      onClick={onClose}
+    <BaseModal
+      isOpen={true}
+      onClose={onClose}
+      size="custom"
+      showCloseButton={true}
+      closeOnOverlayClick={true}
+      className="bg-gray-800 text-white"
+      contentClassName="w-[350mm] h-[148.5mm] overflow-hidden"
     >
-      <div
-        className="relative w-[350mm] h-[148.5mm] bg-gray-800 rounded-lg overflow-hidden shadow-xl"
-        onClick={(e) => e.stopPropagation()}
+      <div 
+        className="w-full h-full relative" 
+        style={{
+          backgroundImage: `url(/images/knee-right.png), url(/images/knee-left.png)`,
+          backgroundSize: "contain",
+          backgroundPosition: "10% 95%, 90% 95%",
+          backgroundRepeat: "no-repeat",
+          backgroundColor: "#374151",
+        }}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-yellow-400 hover:text-yellow-200 z-20"
-        >
-          <XMarkIcon className="h-6 w-6" />
-        </button>
-
-        <div className="w-full h-full relative" style={{
-            backgroundImage: `url(/images/knee-right.png), url(/images/knee-left.png)`,
-            backgroundSize: "contain",
-            backgroundPosition: "10% 95%, 90% 95%",
-            backgroundRepeat: "no-repeat",
-            backgroundColor: "#374151",
-        }}>
-
-          {osteophytes.map(({ id, text, pos }) => (
-            <button
-              key={id}
-              onClick={() => toggleSelect(text)}
-              className={`absolute w-28 h-12 border rounded bg-black/40 border-yellow-400 text-yellow-200 hover:bg-yellow-400/30 ${
-                selected.includes(text) ? "bg-yellow-400/50" : ""
-              }`}
-              style={pos}
-            >
-              {id}
-            </button>
-          ))}
-
+        {OSTEOPHYTES_DATA.map(({ id, text, pos }) => (
           <button
-            onClick={insertSelected}
-            className="absolute bottom-4 right-4 px-6 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-300"
+            key={id}
+            onClick={() => toggleSelect(text)}
+            className={`absolute w-28 h-12 border rounded bg-black/40 border-yellow-400 text-yellow-200 hover:bg-yellow-400/30 ${
+              selected.includes(text) ? "bg-yellow-400/50" : ""
+            }`}
+            style={pos}
           >
-            Добавить
+            {id}
           </button>
-        </div>
+        ))}
+
+        <button
+          onClick={insertSelected}
+          className="absolute bottom-4 right-4 px-6 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-300"
+        >
+          Добавить
+        </button>
       </div>
-    </div>
+    </BaseModal>
   );
 }
